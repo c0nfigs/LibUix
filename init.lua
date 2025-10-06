@@ -2630,20 +2630,20 @@ function Tekscripts:CreateDropdown(tab: any, options: {
     connections.ButtonClick = botaoText.MouseButton1Click:Connect(toggleDropdown)
 
     -- Click fora para fechar (desktop e mobile)
-    connections.InputBegan = UserInputService.InputBegan:Connect(function(input, gameProcessed)
-        if not isOpen or gameProcessed then return end
+connections.InputBegan = UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if not isOpen or gameProcessed then return end
 
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or 
-           input.UserInputType == Enum.UserInputType.Touch then
-            
-            local clickedGui = input.GuiObject
-            
-            -- Fecha se clicou fora do dropdown
-            if not clickedGui or not clickedGui:IsDescendantOf(box) then
-                toggleDropdown()
-            end
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or 
+       input.UserInputType == Enum.UserInputType.Touch then
+        
+        local clickedGui = input.Target -- ✅ corrigido de GuiObject para Target
+        
+        -- Fecha se clicou fora do dropdown
+        if not clickedGui or not clickedGui:IsDescendantOf(box) then
+            toggleDropdown()
         end
-    end)
+    end
+end)
 
     -- =================================================================
     -- API PÚBLICA
