@@ -1,8 +1,8 @@
-# 🎯 UIManager - Documentação Completa  
+# 🎯 Tekscripts uix - Documentação Completa  
   
 ## 📋 Visão Geral  
   
-A **UIManager** é uma biblioteca especializada para exploiters, projetada para criar interfaces gráficas intuitivas e funcionais em jogos Roblox. Esta documentação fornece todas as informações necessárias para implementar e utilizar a biblioteca de forma eficaz.  
+A Tekscripts uix** é uma biblioteca especializada para exploiters, projetada para criar interfaces gráficas intuitivas e funcionais em jogos Roblox. Esta documentação fornece todas as informações necessárias para implementar e utilizar a biblioteca de forma eficaz.  
   
 ---  
   
@@ -13,7 +13,7 @@ A **UIManager** é uma biblioteca especializada para exploiters, projetada para 
   
 ### 🔧 Instalação  
   
-Para utilizar a UIManager, você precisa carregar o módulo em seu script de exploit:  
+Para utilizar a Tekscripts uix, você precisa carregar o módulo em seu script de exploit:  
   
 ```lua  
 local UIManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/c0nfigs/LibUix/refs/heads/main/init.lua"))()  
@@ -28,7 +28,7 @@ local UIManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/c0n
 ### 💡 Criando a Janela Principal  
   
 ```lua  
-local gui = UIManager.new({  
+local gui = Tekscripts.new({  
     Name = "Meu Painel de Exploit",  
     FloatText = "Abrir Painel",  
     startTab = "Principal"  
@@ -349,7 +349,7 @@ local speedSlider = Tekscripts:CreateSlider(tabSettings, {
   
 | Método | Descrição |  
 |--------|-----------|  
-| `UIManager.new(options)` | Cria nova instância do painel |  
+| `Teksscripts.new(options)` | Cria nova instância do painel |  
 | `gui:CreateTab(options)` | Cria nova aba |  
 | `gui:CreateButton(tab, options)` | Cria botão |  
 | `gui:CreateToggle(tab, options)` | Cria interruptor |  
