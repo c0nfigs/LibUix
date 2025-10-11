@@ -349,7 +349,7 @@ local speedSlider = Tekscripts:CreateSlider(tabSettings, {
   
 | Método | Descrição |  
 |--------|-----------|  
-| `Teksscripts.new(options)` | Cria nova instância do painel |  
+| `Tekscripts.new(options)` | Cria nova instância do painel |  
 | `gui:CreateTab(options)` | Cria nova aba |  
 | `gui:CreateButton(tab, options)` | Cria botão |  
 | `gui:CreateToggle(tab, options)` | Cria interruptor |  
