@@ -160,8 +160,6 @@ gui:CreateHR(tabPrincipal, {
   
 ---  
   
-## 🆕 Novos Componentes  
-  
 ### 🔄 Float Button (Botão Flutuante)  
   
 Componente avançado que pode ser movido pela tela:  
@@ -302,9 +300,7 @@ section:Toggle() → alterna entre aberto/fechado
 section:Block(state, message?) → ativa/desativa o bloqueio visual
 
 section:Destroy() → remove completamente a seção
-  
----  
-  
+ 
 ## 🎯 Controles Avançados  
   
 ### 🔒 Bloqueio de Interface  
@@ -322,13 +318,12 @@ gui:Block(false)
 ```lua  
 -- Remove completamente a interface  
 gui:Destroy()  
-```  
+```
   
 ---  
   
 ## 📝 Exemplo Completo  
 
-![](https://i.ibb.co/KckLww45/example.jpg)
   
 ```lua  
 -- Carregar a biblioteca  
