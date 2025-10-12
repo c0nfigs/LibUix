@@ -1,454 +1,353 @@
-# 🎯 Tekscripts uix - Documentação Completa  
-  
-## 📋 Visão Geral  
-  
-A **Tekscripts uix** é uma biblioteca especializada para scripters, projetada para criar interfaces gráficas intuitivas e funcionais em jogos Roblox. Esta documentação fornece todas as informações necessárias para implementar e utilizar a biblioteca de forma eficaz.  
-  
----  
-  
-## 🚀 Começando  
-  
+# Tekscripts UIX: Documentação Oficial
 
-> ⚠️ **Importante**: Esta linha deve ser executada antes de qualquer utilização da biblioteca.  
-  
-### 🔧 Instalação  
-  
-Para utilizar a Tekscripts uix, você precisa carregar o módulo em seu script de exploit:  
-  
-```lua  
-local Tekscripts = loadstring(game:HttpGet("https://raw.githubusercontent.com/c0nfigs/LibUix/refs/heads/main/init.lua"))()  
-```  
+<p align="center">
+  <img src="./assets/imagem.png" alt="Tekscripts UIX" width="500"/>
+</p>
 
+## 🎯 Visão Geral
 
-  
----  
-  
-## 🏗️ Estrutura Básica  
-  
-### 💡 Criando a Janela Principal  
-  
-```lua  
-local gui = Tekscripts.new({  
-    Name = "Meu Painel de Exploit",  
-    FloatText = "Abrir Painel",  
-    startTab = "Principal"  
-})  
-```  
-  
-### 📁 Criando Abas  
-  
-```lua  
-local tabPrincipal = gui:CreateTab({ Title = "Principal" })  
-local tabConfig = gui:CreateTab({ Title = "Configurações" })  
-local tabPlayer = gui:CreateTab({ Title = "Player" })  
-```  
-  
----  
-  
-## 🛠️ Componentes Disponíveis  
+A **Tekscripts UIX** é uma biblioteca de interface gráfica (GUI) para [Roblox](https://www.roblox.com/), desenvolvida para criadores de scripts que buscam construir menus e painéis de controle de forma rápida e intuitiva. Com uma API simplificada e um conjunto robusto de componentes, a biblioteca permite a criação de interfaces funcionais e visualmente agradáveis com poucas linhas de código.
 
-![](./assets/imagem.png)
-  
-### 1. 🎮 Botões (Buttons)  
-  
-Componentes clicáveis para executar ações específicas:  
-  
-```lua  
-gui:CreateButton(tabPrincipal, {  
-    Text = "ESP Players",  
-    Callback = function()  
-        print("ESP ativado!")  
-        -- Seu código de ESP aqui  
-    end  
-})  
-```  
-  
-### 2. 🔁 Interruptores (Toggles)  
-  
-Componentes que alternam entre estados ON/OFF:  
-  
-```lua  
-gui:CreateToggle(tabPrincipal, {  
-    Text = "Fly",  
-    Callback = function(estado)  
-        if estado then  
-            print("Fly ativado!")  
-        else  
-            print("Fly desativado.")  
-        end  
-    end  
-})  
-```  
-  
-### 3. 📋 Menu Suspenso (Dropdown)  
-  
-Seleção múltipla de opções:  
-  
-```lua  
-gui:CreateDropdown(tabPrincipal, {  
-    Title = "Modo de Velocidade",  
-    Values = { "Normal", "Rápido", "Super Rápido" },  
-    SelectedValue = "Normal",  
-    Callback = function(valorSelecionado)  
-        print("Velocidade: " .. valorSelecionado)  
-    end  
-})  
-```  
-  
-### 4. 📝 Rótulos (Labels)  
-  
-Texto informativo para orientações:  
-  
-```lua  
-gui:CreateLabel(tabConfig, {  
-    Title = "Informação Importante",  
-    Desc = "Este painel foi desenvolvido para exploiters usarem de forma simples e prática."  
-})  
-```  
-  
-### 5. 🏷️ Etiquetas (Tags)  
-  
-Indicadores visuais de status:  
-  
-```lua  
-gui:CreateTag(tabConfig, {  
-    Text = "VERSÃO 1.0",  
-    Color = Color3.fromRGB(90, 140, 200)  
-})  
-```  
-  
-### 6. ✍️ Campos de Entrada (Inputs)  
-  
-Entrada de texto ou números:  
-  
-```lua  
--- Para texto  
-gui:CreateInput(tabPlayer, {  
-    Text = "Nome do Jogador",  
-    Placeholder = "Digite o username...",  
-    Callback = function(texto)  
-        print("Teleportar para: " .. texto)  
-    end  
-})  
-  
--- Para números  
-gui:CreateInput(tabPlayer, {  
-    Text = "Walkspeed",  
-    Placeholder = "16",  
-    Type = "number",  
-    Callback = function(numero)  
-        if type(numero) == "number" then  
-            print("Velocidade: " .. numero)  
-        end  
-    end  
-})  
-```  
-  
-### 7. 📏 Linhas Divisoras (HR)  
-  
-Separação visual entre componentes:  
-  
-```lua  
--- Linha simples  
-gui:CreateHR(tabPrincipal, {})  
-  
--- Linha com texto  
-gui:CreateHR(tabPrincipal, {  
-    Text = "Funções de Combate"  
-})  
-```  
-  
----  
-  
-### 8. 🔄 Float Button (Botão Flutuante)  
-  
-Componente avançado que pode ser movido pela tela:  
-  
-```lua  
--- Criar o float button  
-local button = Tekscripts:CreateFloatingButton({  
-    Text = "Ativar Kill Aura",  
-    Title = "Ferramenta",  
-    BorderRadius = 12,  
-    Value = false,  
-    Visible = true,  
-    Drag = true,  
-    Block = false,  
-    Callback = function(state)  
-        if state then  
-            print("Kill Aura ativado!")  
-            -- Código para ativar a Kill Aura  
-        else  
-            print("Kill Aura desativado!")  
-            -- Código para desativar a Kill Aura  
-        end  
-    end  
-})  
-  
--- Atualizar propriedades  
-button.Update({  
-    Text = "Desativar Kill Aura",  
-    BorderRadius = 20  
-})  
-  
--- Verificar estado atual  
-print(button.State().Value) -- true ou false  
-  
--- Destruir o botão  
--- button.Destroy()  
-```  
-  
-### 9. 📊 Slider (Controle Deslizante)  
-  
-Controle de valores numéricos com intervalos:  
-  
-```lua  
--- Criar o slider  
-local slider = Tekscripts:CreateSlider(tabPrincipal, {  
-    Text = "Velocidade do Player",  
-    Min = 10,  
-    Max = 100,  
-    Step = 5,  
-    Value = 50,  
-    Callback = function(val)  
-        print("Velocidade atual:", val)  
-        -- game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = val  
-    end  
-})  
-  
--- Alterar valor programaticamente  
-slider.Set(75)  
-  
--- Pegar valor atual  
-print("Valor atual do slider:", slider.Get())  
-  
--- Atualizar opções do slider  
-slider.Update({  
-    Text = "Nova Velocidade",  
-    Min = 20,  
-    Max = 200,  
-    Step = 10  
-})  
-  
--- Destruir slider  
--- slider.Destroy()  
-```  
-  
----  
-  
-## 10. 📢 Notificações  
-  
-**em Correção**
+Esta documentação detalha todos os recursos, componentes e métodos disponíveis, oferecendo um guia completo para desenvolvedores de todos os níveis.
 
-### 11. 🧩 Section (Seção de Componentes)
+---
 
-Agrupa elementos relacionados dentro de uma aba, permitindo abrir/fechar e bloquear o conteúdo dinamicamente.
+## 🚀 Começando
+
+Para integrar a Tekscripts UIX em seu projeto, o primeiro passo é carregar a biblioteca em seu ambiente de script. Este processo é feito executando uma única linha de código que busca e inicializa o módulo mais recente.
+
+> ⚠️ **Importante**: A linha de código abaixo deve ser executada antes de qualquer outra chamada à biblioteca para garantir que todas as funções sejam carregadas corretamente.
+
+### 🔧 Instalação
+
+Copie e cole o código a seguir em seu script para carregar a biblioteca:
 
 ```lua
--- Criar uma Section dentro da aba principal
-local section = Tekscripts:CreateSection(tabPrincipal, {
-    Title = "Configurações do Player",
-    Open = true,   -- começa aberta
-    Fixed = false  -- pode ser recolhida manualmente
-})
-
--- Adicionar componentes dentro da Section
-local slider = Tekscripts:CreateSlider(tabPrincipal, {
-    Text = "Velocidade",
-    Min = 10,
-    Max = 100,
-    Step = 5,
-    Value = 25
-})
-
-section:AddComponent(slider)  -- adiciona o slider dentro da section
-
--- Alterar o título da Section dinamicamente
-section:SetTitle("⚙️ Ajustes do Player")
-
--- Bloquear e desbloquear a Section
-section:Block(true, "Função bloqueada")
-task.wait(2)
-section:Block(false)
-
--- Alternar abertura manualmente
-section:Toggle()
-
--- Destruir a Section e seus componentes
--- section:Destroy()
-
-✅ Principais métodos disponíveis:
-
-section:AddComponent(component) → adiciona um componente interno
-
-section:SetTitle(text) → muda o título exibido
-
-section:Toggle() → alterna entre aberto/fechado
-
-section:Block(state, message?) → ativa/desativa o bloqueio visual
-
-section:Destroy() → remove completamente a seção
+local Tekscripts = loadstring(game:HttpGet("https://raw.githubusercontent.com/c0nfigs/LibUix/refs/heads/main/init.lua"))()
 ```
 
-### 12. ⌨️ Bind (Atalho de Tecla)
+---
 
-Permite associar uma tecla do teclado a uma função personalizada, possibilitando que o usuário altere a tecla dinamicamente pela interface.
+## 🏗️ Estrutura Fundamental
+
+A estrutura da Tekscripts UIX é baseada em uma janela principal que contém abas, e cada aba pode abrigar múltiplos componentes. Esta organização modular facilita a criação de interfaces complexas e bem segmentadas.
+
+### 💡 Criando a Janela Principal
+
+A janela é o contêiner principal da sua interface. Você pode personalizá-la com um título, um texto flutuante para abri-la e definir qual aba será exibida inicialmente.
 
 ```lua
--- Criar um Bind dentro da aba principal
-local bind = Tekscripts:CreateBind(tabPrincipal, {
+local gui = Tekscripts.new({
+    Name = "Meu Painel de Controle",
+    FloatText = "Abrir Painel",
+    startTab = "Principal"
+})
+```
+
+### 📁 Criando Abas
+
+As abas (tabs) são usadas para organizar os componentes em diferentes seções, como "Principal", "Configurações" ou "Jogador".
+
+```lua
+local tabPrincipal = gui:CreateTab({ Title = "Principal" })
+local tabConfig = gui:CreateTab({ Title = "Configurações" })
+local tabPlayer = gui:CreateTab({ Title = "Jogador" })
+```
+
+---
+
+## 🛠️ Componentes Disponíveis
+
+A Tekscripts UIX oferece uma vasta gama de componentes para construir sua interface. Abaixo estão detalhados os principais componentes e como utilizá-los.
+
+### 1. Botões (Buttons)
+
+Botões são componentes clicáveis que executam uma ação definida por uma função de *callback*.
+
+```lua
+gui:CreateButton(tabPrincipal, {
     Text = "Ativar ESP",
-    Desc = "Pressione a tecla para alternar o ESP",
+    Callback = function()
+        print("Função ESP ativada!")
+        -- Insira seu código aqui
+    end
+})
+```
+
+### 2. Interruptores (Toggles)
+
+Interruptores permitem ao usuário alternar uma funcionalidade entre os estados ligado (true) e desligado (false).
+
+```lua
+gui:CreateToggle(tabPrincipal, {
+    Text = "Modo Voo",
+    Callback = function(estado)
+        if estado then
+            print("Modo Voo ativado!")
+        else
+            print("Modo Voo desativado.")
+        end
+    end
+})
+```
+
+### 3. Menu Suspenso (Dropdown)
+
+O menu suspenso (ou dropdown) oferece uma lista de opções para o usuário selecionar.
+
+```lua
+gui:CreateDropdown(tabPrincipal, {
+    Title = "Modo de Velocidade",
+    Values = { "Normal", "Rápido", "Super Rápido" },
+    SelectedValue = "Normal",
+    Callback = function(valorSelecionado)
+        print("Velocidade definida para: " .. valorSelecionado)
+    end
+})
+```
+
+### 4. Rótulos (Labels)
+
+Rótulos são usados para exibir textos informativos ou descrições na interface.
+
+```lua
+gui:CreateLabel(tabConfig, {
+    Title = "Informação Importante",
+    Desc = "Este painel foi desenvolvido para ser simples e prático."
+})
+```
+
+### 5. Etiquetas (Tags)
+
+Etiquetas (ou tags) são pequenos indicadores visuais, ideais para exibir informações como a versão do script ou um status específico.
+
+```lua
+gui:CreateTag(tabConfig, {
+    Text = "VERSÃO 1.0",
+    Color = Color3.fromRGB(90, 140, 200)
+})
+```
+
+### 6. Campos de Entrada (Inputs)
+
+Campos de entrada permitem que o usuário insira texto ou números.
+
+```lua
+-- Campo para texto
+gui:CreateInput(tabPlayer, {
+    Text = "Nome do Jogador",
+    Placeholder = "Digite o nome...",
+    Callback = function(texto)
+        print("Teleportar para: " .. texto)
+    end
+})
+
+-- Campo para números
+gui:CreateInput(tabPlayer, {
+    Text = "Walkspeed",
+    Placeholder = "16",
+    Type = "number",
+    Callback = function(numero)
+        if type(numero) == "number" then
+            print("Velocidade definida para: " .. numero)
+        end
+    end
+})
+```
+
+### 7. Linhas Divisoras (HR)
+
+Linhas divisórias são usadas para separar visualmente os componentes, com ou sem um texto central.
+
+```lua
+-- Linha simples
+gui:CreateHR(tabPrincipal, {})
+
+-- Linha com texto
+gui:CreateHR(tabPrincipal, {
+    Text = "Funções de Combate"
+})
+```
+
+### 8. Botão Flutuante (Float Button)
+
+Um botão que pode ser movido livremente pela tela, ideal para ações rápidas.
+
+```lua
+local floatButton = Tekscripts:CreateFloatingButton({
+    Text = "Ativar Kill Aura",
+    Title = "Ferramenta",
+    Callback = function(state)
+        print("Kill Aura:", state)
+    end
+})
+
+-- Para destruir o botão, chame: floatButton.Destroy()
+```
+
+### 9. Controle Deslizante (Slider)
+
+Sliders permitem que o usuário selecione um valor numérico dentro de um intervalo definido.
+
+```lua
+local speedSlider = Tekscripts:CreateSlider(tabPrincipal, {
+    Text = "Velocidade do Player",
+    Min = 16,
+    Max = 100,
+    Value = 16,
+    Callback = function(valor)
+        print("Velocidade atual:", valor)
+    end
+})
+
+-- Para destruir o slider, chame: speedSlider.Destroy()
+```
+
+### 10. Seções (Sections)
+
+Seções agrupam componentes dentro de uma aba, permitindo que o conteúdo seja recolhido (abrir/fechar) para melhor organização.
+
+```lua
+local section = Tekscripts:CreateSection(tabPrincipal, {
+    Title = "Configurações do Player",
+    Open = true
+})
+
+local slider = Tekscripts:CreateSlider(tabPrincipal, { Text = "Velocidade" })
+section:AddComponent(slider)
+
+-- Para destruir a seção, chame: section:Destroy()
+```
+
+### 11. Atalhos de Tecla (Binds)
+
+Associa uma tecla do teclado a uma função, permitindo que o usuário personalize o atalho.
+
+```lua
+local espBind = Tekscripts:CreateBind(tabPrincipal, {
+    Text = "Ativar ESP",
     Default = Enum.KeyCode.F,
     Callback = function(key)
         print("ESP alternado com a tecla:", key.Name)
     end
 })
 
--- Obter a tecla atual
-print("Tecla atual:", bind:GetKey().Name)
-
--- Alterar a tecla programaticamente
-bind:SetKey(Enum.KeyCode.G)
-
--- Forçar o modo de escuta (espera por uma nova tecla)
-bind:Listen()
-
--- Atualizar propriedades do bind
-bind:Update({
-    Text = "Nova Função",
-    Desc = "Troque a tecla para redefinir",
-    Default = Enum.KeyCode.H
-})
-
--- Destruir o bind
--- bind:Destroy()
-
-✅ Principais métodos disponíveis:
-
-bind:GetKey() → retorna a tecla atualmente configurada
-
-bind:SetKey(key) → define uma nova tecla manualmente
-
-bind:Listen() → entra em modo de escuta aguardando o usuário pressionar uma nova tecla
-
-bind:Update(options) → atualiza texto, descrição ou tecla padrão
-
-bind:Destroy() → remove completamente o bind e desconecta eventos
+-- Para destruir o bind, chame: espBind.Destroy()
 ```
 
-  
-## 📝 Exemplo Completo  
+### 12. Notificações
 
-  
-```lua  
--- Carregar a biblioteca  
-local UIManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/kauam73/tkrs/refs/heads/main/labory/data.lua"))()  
-  
--- Criar painel  
-local gui = UIManager.new({  
-    Name = "Meu Painel de Exploit",  
-    FloatText = "Abrir",  
-    startTab = "Principal"  
-})  
-  
--- Criar abas  
-local tabMain = gui:CreateTab({ Title = "Principal" })  
-local tabSettings = gui:CreateTab({ Title = "Configurações" })  
-  
--- Adicionar componentes  
-gui:CreateToggle(tabMain, {  
-    Text = "Fly",  
-    Callback = function(state)  
-        if state then  
-            print("Fly ON")  
-        else  
-            print("Fly OFF")  
-        end  
-    end  
-})  
-  
-gui:CreateButton(tabMain, {  
-    Text = "Ativar ESP",  
-    Callback = function()  
-        gui:Notify({  
-            Title = "ESP Ativado",  
-            Desc = "Todos os players estão visíveis",  
-            Duration = 3  
-        })  
-    end  
-})  
-  
-gui:CreateInput(tabMain, {  
-    Text = "WalkSpeed",  
-    Placeholder = "16",  
-    Type = "number",  
-    Callback = function(num)  
-        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = num  
-    end  
-})  
-  
--- Componente novo: Slider  
-local speedSlider = Tekscripts:CreateSlider(tabSettings, {  
-    Text = "Velocidade do Player",  
-    Min = 10,  
-    Max = 100,  
-    Step = 5,  
-    Value = 50,  
-    Callback = function(val)  
-        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = val  
-    end  
-})  
-```  
-  
----  
-  
-## 📊 API Referência  
-  
-### Métodos Principais  
-  
-| Método | Descrição |  
-|--------|-----------|  
-| `Tekscripts.new(options)` | Cria nova instância do painel |  
-| `gui:CreateTab(options)` | Cria nova aba |  
-| `gui:CreateButton(tab, options)` | Cria botão |  
-| `gui:CreateToggle(tab, options)` | Cria interruptor |  
-| `gui:CreateDropdown(tab, options)` | Cria dropdown |  
-| `gui:CreateInput(tab, options)` | Cria campo de entrada |  
-| `gui:CreateLabel(tab, options)` | Cria rótulo |  
-| `gui:CreateTag(tab, options)` | Cria etiqueta |  
-| `gui:CreateHR(tab, options)` | Cria linha divisória |  
-| `gui:Notify(options)` | Exibe notificação |  
-  
-### Propriedades dos Componentes  
-  
-| Propriedade | Tipo | Descrição |  
-|-------------|------|-----------|  
-| `Text` | string | Texto exibido |  
-| `Title` | string | Título do componente |  
-| `Callback` | function | Função de callback |  
-| `Values` | table | Lista de opções |  
-| `Placeholder` | string | Texto de placeholder |  
-| `Type` | string | Tipo de entrada ("text" ou "number") |  
-| `Min/Max/Step` | number | Valores para sliders |  
-| `Value` | any | Valor inicial |  
-| `Visible` | boolean | Visibilidade |  
-| `Drag` | boolean | Permitir arrastar |  
-  
----  
-  
-## ⚠️ Considerações Finais  
-  
-⚠️ **Uso Responsável**: Esta ferramenta foi desenvolvida exclusivamente para fins educacionais e de desenvolvimento de scripts. Use com responsabilidade e respeite os termos de serviço das plataformas, NÃO ME RESPONSABILIZO PELOS SCRIPTS USADOS POR TRÁS DA FERRAMENTA.  
-  
-📝 **Documentação Atualizada**: Esta documentação será mantida atualizada com novas funcionalidades e melhorias.  
-  
----  
-  
-## 📞 Suporte  
-  
-Para dúvidas ou problemas técnicos, consulte o repositório oficial no GitHub ou entre em contato com a equipe de desenvolvimento.  
-  
----  
-*Documentação atualizada em: [02/10/2025]*
+Exibe notificações temporárias na tela para informar o usuário sobre ações concluídas ou eventos importantes.
 
+```lua
+gui:Notify({
+    Title = "Ação Concluída",
+    Desc = "A função foi executada com sucesso.",
+    Duration = 5 -- em segundos
+})
+```
+
+---
+
+## 📝 Exemplo Completo
+
+Este exemplo demonstra como criar uma interface simples com uma janela, duas abas e alguns componentes básicos.
+
+```lua
+-- 1. Carregar a biblioteca
+local Tekscripts = loadstring(game:HttpGet("https://raw.githubusercontent.com/c0nfigs/LibUix/refs/heads/main/init.lua"))()
+
+-- 2. Criar a janela principal
+local gui = Tekscripts.new({
+    Name = "Painel de Controle",
+    FloatText = "Abrir",
+    startTab = "Principal"
+})
+
+-- 3. Criar abas
+local tabMain = gui:CreateTab({ Title = "Principal" })
+local tabSettings = gui:CreateTab({ Title = "Configurações" })
+
+-- 4. Adicionar componentes
+
+-- Aba Principal
+gui:CreateToggle(tabMain, {
+    Text = "Modo Voo",
+    Callback = function(state)
+        print("Modo Voo:", state and "ON" or "OFF")
+    end
+})
+
+gui:CreateButton(tabMain, {
+    Text = "Ativar ESP",
+    Callback = function()
+        gui:Notify({
+            Title = "ESP Ativado",
+            Desc = "Todos os jogadores estão visíveis.",
+            Duration = 3
+        })
+    end
+})
+
+-- Aba de Configurações
+gui:CreateInput(tabSettings, {
+    Text = "WalkSpeed",
+    Placeholder = "16",
+    Type = "number",
+    Callback = function(num)
+        if type(num) == "number" then
+            game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = num
+        end
+    end
+})
+
+Tekscripts:CreateSlider(tabSettings, {
+    Text = "Campo de Visão (FOV)",
+    Min = 70,
+    Max = 120,
+    Value = 90,
+    Callback = function(val)
+        game.workspace.CurrentCamera.FieldOfView = val
+    end
+})
+```
+
+---
+
+## 📊 Referência da API
+
+A tabela abaixo resume os principais métodos disponíveis na Tekscripts UIX.
+
+| Método | Descrição |
+| :--- | :--- |
+| `Tekscripts.new(options)` | Cria uma nova instância da janela principal. |
+| `gui:CreateTab(options)` | Adiciona uma nova aba à janela. |
+| `gui:CreateButton(tab, options)` | Cria um botão clicável. |
+| `gui:CreateToggle(tab, options)` | Cria um interruptor (on/off). |
+| `gui:CreateDropdown(tab, options)` | Cria um menu de seleção. |
+| `gui:CreateInput(tab, options)` | Cria um campo de entrada de texto ou número. |
+| `gui:CreateLabel(tab, options)` | Exibe um texto informativo. |
+| `gui:CreateTag(tab, options)` | Adiciona uma etiqueta colorida. |
+| `gui:CreateHR(tab, options)` | Insere uma linha divisória. |
+| `gui:Notify(options)` | Mostra uma notificação na tela. |
+| `Tekscripts:CreateSlider(...)` | Cria um controle deslizante. |
+| `Tekscripts:CreateSection(...)` | Cria uma seção que agrupa componentes. |
+| `Tekscripts:CreateBind(...)` | Cria um atalho de teclado personalizável. |
+| `Tekscripts:CreateFloatingButton(...)` | Cria um botão flutuante. |
+
+---
+
+## ⚠️ Considerações Finais
+
+- **Uso Responsável**: Esta biblioteca foi desenvolvida para fins educacionais e de aprendizado. A utilização de scripts em jogos deve respeitar os termos de serviço de cada plataforma. O desenvolvedor não se responsabiliza pelo uso indevido da ferramenta.
+- **Documentação Viva**: Este documento será atualizado continuamente para refletir novas funcionalidades e melhorias na biblioteca.
+
+---
+
+## 📞 Suporte
+
+Em caso de dúvidas, sugestões ou problemas técnicos, visite o repositório oficial no [GitHub](https://github.com/c0nfigs/LibUix) ou entre em contato com a equipe de desenvolvimento.
+
+---
+
+*Documentação atualizada em: 12 de outubro de 2025*
