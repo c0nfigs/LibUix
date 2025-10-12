@@ -301,7 +301,54 @@ section:Block(state, message?) → ativa/desativa o bloqueio visual
 
 section:Destroy() → remove completamente a seção
 ```
----  
+
+### ⌨️ Bind (Atalho de Tecla)
+
+Permite associar uma tecla do teclado a uma função personalizada, possibilitando que o usuário altere a tecla dinamicamente pela interface.
+
+```lua
+-- Criar um Bind dentro da aba principal
+local bind = Tekscripts:CreateBind(tabPrincipal, {
+    Text = "Ativar ESP",
+    Desc = "Pressione a tecla para alternar o ESP",
+    Default = Enum.KeyCode.F,
+    Callback = function(key)
+        print("ESP alternado com a tecla:", key.Name)
+    end
+})
+
+-- Obter a tecla atual
+print("Tecla atual:", bind:GetKey().Name)
+
+-- Alterar a tecla programaticamente
+bind:SetKey(Enum.KeyCode.G)
+
+-- Forçar o modo de escuta (espera por uma nova tecla)
+bind:Listen()
+
+-- Atualizar propriedades do bind
+bind:Update({
+    Text = "Nova Função",
+    Desc = "Troque a tecla para redefinir",
+    Default = Enum.KeyCode.H
+})
+
+-- Destruir o bind
+-- bind:Destroy()
+
+✅ Principais métodos disponíveis:
+
+bind:GetKey() → retorna a tecla atualmente configurada
+
+bind:SetKey(key) → define uma nova tecla manualmente
+
+bind:Listen() → entra em modo de escuta aguardando o usuário pressionar uma nova tecla
+
+bind:Update(options) → atualiza texto, descrição ou tecla padrão
+
+bind:Destroy() → remove completamente o bind e desconecta eventos
+```
+
   
 ## 📝 Exemplo Completo  
 
