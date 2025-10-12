@@ -2,7 +2,7 @@
   
 ## 📋 Visão Geral  
   
-A **Tekscripts uix** é uma biblioteca especializada para exploiters, projetada para criar interfaces gráficas intuitivas e funcionais em jogos Roblox. Esta documentação fornece todas as informações necessárias para implementar e utilizar a biblioteca de forma eficaz.  
+A **Tekscripts uix** é uma biblioteca especializada para scripters, projetada para criar interfaces gráficas intuitivas e funcionais em jogos Roblox. Esta documentação fornece todas as informações necessárias para implementar e utilizar a biblioteca de forma eficaz.  
   
 ---  
   
