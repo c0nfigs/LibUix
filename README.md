@@ -255,22 +255,53 @@ gui:Notify({
 ``` 
 
 ### 🧩 Section (Seção de Componentes)
- 
+
 Agrupa elementos relacionados dentro de uma aba, permitindo abrir/fechar e bloquear o conteúdo dinamicamente.
- `-- Criar uma Section dentro da aba principal local section = Tekscripts:CreateSection(tabPrincipal, {     Title = "Configurações do Player",     Open = true,   -- começa aberta     Fixed = false  -- pode ser recolhida manualmente })  -- Adicionar componentes dentro da Section local slider = Tekscripts:CreateSlider(tabPrincipal, {     Text = "Velocidade",     Min = 10,     Max = 100,     Step = 5,     Value = 25 })  section:AddComponent(slider)  -- adiciona o slider dentro da section  -- Alterar o título da Section dinamicamente section:SetTitle("⚙️ Ajustes do Player")  -- Bloquear e desbloquear a Section section:Block(true, "Função bloqueada") task.wait(2) section:Block(false)  -- Alternar abertura manualmente section:Toggle()  -- Destruir a Section e seus componentes -- section:Destroy() `  
-✅ **Principais métodos disponíveis:**
- 
- 
-- `section:AddComponent(component)` → adiciona um componente interno
- 
-- `section:SetTitle(text)` → muda o título exibido
- 
-- `section:Toggle()` → alterna entre aberto/fechado
- 
-- `section:Block(state, message?)` → ativa/desativa o bloqueio visual
- 
-- `section:Destroy()` → remove completamente a seção
- 
+
+```lua
+-- Criar uma Section dentro da aba principal
+local section = Tekscripts:CreateSection(tabPrincipal, {
+    Title = "Configurações do Player",
+    Open = true,   -- começa aberta
+    Fixed = false  -- pode ser recolhida manualmente
+})
+
+-- Adicionar componentes dentro da Section
+local slider = Tekscripts:CreateSlider(tabPrincipal, {
+    Text = "Velocidade",
+    Min = 10,
+    Max = 100,
+    Step = 5,
+    Value = 25
+})
+
+section:AddComponent(slider)  -- adiciona o slider dentro da section
+
+-- Alterar o título da Section dinamicamente
+section:SetTitle("⚙️ Ajustes do Player")
+
+-- Bloquear e desbloquear a Section
+section:Block(true, "Função bloqueada")
+task.wait(2)
+section:Block(false)
+
+-- Alternar abertura manualmente
+section:Toggle()
+
+-- Destruir a Section e seus componentes
+-- section:Destroy()
+
+✅ Principais métodos disponíveis:
+
+section:AddComponent(component) → adiciona um componente interno
+
+section:SetTitle(text) → muda o título exibido
+
+section:Toggle() → alterna entre aberto/fechado
+
+section:Block(state, message?) → ativa/desativa o bloqueio visual
+
+section:Destroy() → remove completamente a seção
   
 ---  
   
