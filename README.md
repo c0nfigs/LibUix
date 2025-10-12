@@ -300,25 +300,6 @@ section:Toggle() → alterna entre aberto/fechado
 section:Block(state, message?) → ativa/desativa o bloqueio visual
 
 section:Destroy() → remove completamente a seção
- 
-## 🎯 Controles Avançados  
-  
-### 🔒 Bloqueio de Interface  
-  
-```lua  
--- Bloqueia a interface  
-gui:Block(true)  
-  
--- Desbloqueia a interface  
-gui:Block(false)  
-```  
-  
-### 🗑️ Destruir Janela  
-  
-```lua  
--- Remove completamente a interface  
-gui:Destroy()  
-```
   
 ---  
   
