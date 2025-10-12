@@ -300,7 +300,7 @@ section:Toggle() → alterna entre aberto/fechado
 section:Block(state, message?) → ativa/desativa o bloqueio visual
 
 section:Destroy() → remove completamente a seção
-  
+```
 ---  
   
 ## 📝 Exemplo Completo  
