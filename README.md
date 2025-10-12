@@ -16,7 +16,7 @@ A **Tekscripts uix** é uma biblioteca especializada para exploiters, projetada 
 Para utilizar a Tekscripts uix, você precisa carregar o módulo em seu script de exploit:  
   
 ```lua  
-local UIManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/c0nfigs/LibUix/refs/heads/main/init.lua"))()  
+local Tekscripts = loadstring(game:HttpGet("https://raw.githubusercontent.com/c0nfigs/LibUix/refs/heads/main/init.lua"))()  
 ```  
 
 
