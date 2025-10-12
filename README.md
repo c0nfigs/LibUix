@@ -1,7 +1,7 @@
 # Tekscripts UIX: Documentação Oficial
 
 <p align="center">
-  <img src="./assets/imagem.png" alt="Tekscripts UIX" width="500"/>
+  <img src="./assets/7213904856678237190_avatar.png.jpg" alt="Tekscripts UIX" width="500"/>
 </p>
 
 ## 🎯 Visão Geral
