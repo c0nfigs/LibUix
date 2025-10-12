@@ -160,7 +160,7 @@ gui:CreateHR(tabPrincipal, {
   
 ---  
   
-### 🔄 Float Button (Botão Flutuante)  
+### 8. 🔄 Float Button (Botão Flutuante)  
   
 Componente avançado que pode ser movido pela tela:  
   
@@ -198,7 +198,7 @@ print(button.State().Value) -- true ou false
 -- button.Destroy()  
 ```  
   
-### 📊 Slider (Controle Deslizante)  
+### 9. 📊 Slider (Controle Deslizante)  
   
 Controle de valores numéricos com intervalos:  
   
@@ -236,23 +236,11 @@ slider.Update({
   
 ---  
   
-## 📢 Notificações  
+## 10. 📢 Notificações  
   
-Sistema de notificações para interações do usuário:  
-  
-```lua  
-gui:Notify({  
-    Title = "Sucesso!",  
-    Desc = "ESP ativado com sucesso.",  
-    Duration = 5,  
-    ButtonText = "OK",  
-    Callback = function()  
-        print("Notificação fechada!")  
-    end  
-})  
-``` 
+**em Correção**
 
-### 🧩 Section (Seção de Componentes)
+### 11. 🧩 Section (Seção de Componentes)
 
 Agrupa elementos relacionados dentro de uma aba, permitindo abrir/fechar e bloquear o conteúdo dinamicamente.
 
@@ -302,7 +290,7 @@ section:Block(state, message?) → ativa/desativa o bloqueio visual
 section:Destroy() → remove completamente a seção
 ```
 
-### ⌨️ Bind (Atalho de Tecla)
+### 12. ⌨️ Bind (Atalho de Tecla)
 
 Permite associar uma tecla do teclado a uma função personalizada, possibilitando que o usuário altere a tecla dinamicamente pela interface.
 
