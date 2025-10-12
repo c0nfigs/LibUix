@@ -13,113 +13,84 @@ local localPlayer = Players.LocalPlayer
 -- Tabela de Constantes de Design (Tema Dark Clean com mais contraste)
 ---
 local DESIGN = {
-    -- =================================================================
-    -- CORES (Ajustadas para maior contraste e estética)
-    -- =================================================================
-    
-    -- Cores da Janela e Fundo
-    WindowColor1 = Color3.fromRGB(20, 20, 22),        -- Fundo principal mais escuro
-    WindowColor2 = Color3.fromRGB(15, 15, 17),        -- Fundo secundário para gradiente
-    BlockScreenColor = Color3.fromRGB(0, 0, 0),       -- Overlay preto para modais
+    WindowColor1 = Color3.fromRGB(28, 28, 30),
+    WindowColor2 = Color3.fromRGB(22, 22, 25),
+    BlockScreenColor = Color3.fromRGB(0, 0, 0, 0.6),
 
-    -- Cores de Texto
-    TitleColor = Color3.fromRGB(255, 255, 255),       -- Títulos branco puro para contraste
-    ComponentTextColor = Color3.fromRGB(245, 245, 245), -- Texto dos componentes claro
-    InputTextColor = Color3.fromRGB(255, 255, 255),   -- Texto para inputs mais nítido
-    NotifyTextColor = Color3.fromRGB(245, 245, 245),  -- Texto para notificações
+    TitleColor = Color3.fromRGB(230, 230, 230),
+    ComponentTextColor = Color3.fromRGB(220, 220, 220),
+    InputTextColor = Color3.fromRGB(230, 230, 230),
+    NotifyTextColor = Color3.fromRGB(220, 220, 220),
 
-    -- Cores de Componentes
-    ComponentBackground = Color3.fromRGB(30, 30, 35), -- Fundo de componentes mais escuro
-    InputBackgroundColor = Color3.fromRGB(38, 38, 45),-- Fundo inputs com contraste
-    AccentColor = Color3.fromRGB(0, 170, 255),        -- Azul mais vibrante
-    ItemHoverColor = Color3.fromRGB(60, 60, 70),      -- Hover itens com contraste
-    ComponentHoverColor = Color3.fromRGB(80, 80, 90), -- Hover geral mais visível
-    
-    -- Cores de botões e Controles
-    ActiveToggleColor = Color3.fromRGB(0, 170, 255),  -- Azul vibrante para toggles
-    InactiveToggleColor = Color3.fromRGB(50, 50, 55), -- Cinza mais escuro
-    MinimizeButtonColor = Color3.fromRGB(230, 80, 80),-- Vermelho vibrante para minimizar
-    CloseButtonColor = Color3.fromRGB(255, 100, 100), -- Vermelho para fechar
-    FloatButtonColor = Color3.fromRGB(40, 40, 45),    -- Botão flutuante discreto
-  
-    -- Cores de menu dropdown
-    DropdownBackground = Color3.fromRGB(25, 25, 30),
-    DropdownItemHover = Color3.fromRGB(60, 60, 70),
+    ComponentBackground = Color3.fromRGB(35, 35, 40),
+    InputBackgroundColor = Color3.fromRGB(40, 40, 45),
+    AccentColor = Color3.fromRGB(120, 180, 220),
+    ItemHoverColor = Color3.fromRGB(50, 50, 55),
+    ComponentHoverColor = Color3.fromRGB(65, 65, 70),
 
-    -- Cores de Abas (Tabs)
-    TabActiveColor = Color3.fromRGB(0, 170, 255),     -- Aba ativa vibrante
-    TabInactiveColor = Color3.fromRGB(30, 30, 35),    -- Aba inativa mais escura
+    ActiveToggleColor = Color3.fromRGB(120, 180, 220),
+    InactiveToggleColor = Color3.fromRGB(55, 55, 60),
+    MinimizeButtonColor = Color3.fromRGB(180, 180, 180),
+    CloseButtonColor = Color3.fromRGB(200, 100, 100),
+    FloatButtonColor = Color3.fromRGB(45, 45, 50),
 
-    -- Cores de Sliders
-    SliderTrackColor = Color3.fromRGB(55, 55, 60),    -- Trilha slider mais escura
-    SliderFillColor = Color3.fromRGB(0, 170, 255),    -- Preenchimento ativo
-    ThumbColor = Color3.fromRGB(255, 255, 255),       -- Bolinha branca
-    ThumbOutlineColor = Color3.fromRGB(30, 30, 35),   -- Contorno da bolinha
+    DropdownBackground = Color3.fromRGB(30, 30, 35),
+    DropdownItemHover = Color3.fromRGB(55, 55, 60),
 
-    -- Cores de Elementos de UI Diversos
-    HRColor = Color3.fromRGB(80, 80, 85),             -- Divisórias mais claras
-    ResizeHandleColor = Color3.fromRGB(60, 60, 65),   -- Alça resize
-    NotifyBackground = Color3.fromRGB(35, 35, 40),    -- Fundo notificações
-    TagBackground = Color3.fromRGB(0, 170, 255),      -- Tags vibrantes
+    TabActiveColor = Color3.fromRGB(120, 180, 220),
+    TabInactiveColor = Color3.fromRGB(35, 35, 40),
 
-    -- Cores para mensagens de estado vazio
-    EmptyStateTextColor = Color3.fromRGB(180, 180, 180), -- Texto para mensagens de vazio
+    SliderTrackColor = Color3.fromRGB(60, 60, 65),
+    SliderFillColor = Color3.fromRGB(120, 180, 220),
+    ThumbColor = Color3.fromRGB(230, 230, 230),
+    ThumbOutlineColor = Color3.fromRGB(40, 40, 45),
 
-    -- =================================================================
-    -- TAMANHOS E DIMENSÕES (Valores Corrigidos/Preenchidos)
-    -- =================================================================
+    HRColor = Color3.fromRGB(70, 70, 75),
+    ResizeHandleColor = Color3.fromRGB(55, 55, 60),
+    NotifyBackground = Color3.fromRGB(40, 40, 45),
+    TagBackground = Color3.fromRGB(120, 180, 220),
 
-    WindowSize = UDim2.new(0, 500, 0, 470), -- LARGURA: 500px, ALTURA: 470px
+    EmptyStateTextColor = Color3.fromRGB(170, 170, 170),
+
+    WindowSize = UDim2.new(0, 500, 0, 470),
     MinWindowSize = Vector2.new(500, 370),
-    MaxWindowSize = Vector2.new(790, 570), -- MaxWindowSize atualizado
+    MaxWindowSize = Vector2.new(790, 570),
     TitleHeight = 42,
-    TitlePadding = 10,  -- Espaço para o ícone e o título
+    TitlePadding = 10,
 
-    -- Componentes
     ComponentHeight = 44,
     ComponentPadding = 10,
     ContainerPadding = 2,
-    CornerRadius = 8,                                 -- Cantos mais suaves
+    CornerRadius = 8,
     ButtonIconSize = 24,
-    IconSize = 28,  -- Tamanho do ícone no cabeçalho
+    IconSize = 28,
 
-    -- Abas (Tabs)
     TabButtonWidth = 140,
     TabButtonHeight = 40,
 
-    -- Elementos Diversos
     FloatButtonSize = UDim2.new(0, 140, 0, 46),
-    ResizeHandleSize = 16, -- Usado para correção do espaço
+    ResizeHandleSize = 16,
     NotifyWidth = 270,
     NotifyHeight = 70,
     TagHeight = 30,
     TagWidth = 115,
-    
-    -- Linha Divisória (HR)
+
     HRHeight = 2,
     HRTextPadding = 14,
     HRMinTextSize = 20,
     HRMaxTextSize = 30,
 
-    -- Menu Dropdown
     DropdownWidth = 150,
     DropdownItemHeight = 35,
 
-    -- =================================================================
-    -- EFEITOS
-    -- =================================================================
-    BlurEffectSize = 8,                              -- Blur mais intenso
-    AnimationSpeed = 0.30,                            -- Animações mais rápidas
-    
-    -- =================================================================
-    -- CONFIGURAÇÕES DE MINIMIZAÇÃO NAS BORDAS
-    -- =================================================================
-    EdgeThreshold = 15,                              -- Distância da borda para minimizar
-    EdgeButtonSize = 40,                             -- Tamanho do botão nas bordas
-    EdgeButtonPadding = 5,                           -- Espaçamento da borda
-    EdgeButtonCornerRadius = 6,                      -- Cantos arredondados
-}
+    BlurEffectSize = 8,
+    AnimationSpeed = 0.3,
 
+    EdgeThreshold = 15,
+    EdgeButtonSize = 40,
+    EdgeButtonPadding = 5,
+    EdgeButtonCornerRadius = 6,
+}
 ---
 -- Funções de Criação de Componentes
 ---
@@ -344,7 +315,6 @@ function Tekscripts.new(options: { Name: string?, Parent: Instance?, FloatText: 
     })
     windowGradient.Rotation = 90
     windowGradient.Parent = self.Window
-
     
     -- // BARRA DE TÍTULO (TITLE BAR) E CABEÇALHO
     
@@ -627,64 +597,63 @@ end
 ---
 function Tekscripts:SetupTitleScroll()
     local title = self.Title
-    local parentFrame = title.Parent
+    local parent = title.Parent
+    if not title or not parent then return end
+
     local isScrolling = false
+    local scrollTween
+    local TweenService = game:GetService("TweenService")
+    local RunService = game:GetService("RunService")
 
-    local function updateTitleScroll()
-        if not title or not parentFrame then return end
-        
-        local textBounds = title.TextBounds.X
-        local parentWidth = parentFrame.AbsoluteSize.X
-
-        if textBounds > parentWidth then
-            isScrolling = true
-            local scrollDistance = textBounds - parentWidth + 5 -- Adiciona um padding
-            local scrollSpeed = 50 -- pixels por segundo
-
-            local tweenInfo = TweenInfo.new(
-                scrollDistance / scrollSpeed,
-                Enum.EasingStyle.Linear,
-                Enum.EasingDirection.InOut,
-                0, -- repetições
-                false, -- não reverte
-                1 -- atraso
-            )
-
-            local tween = TweenService:Create(title, tweenInfo, { Position = UDim2.new(0, -scrollDistance, 0, 0) })
-
-            local function onTweenCompleted()
-                if not title then return end
-                title.Position = UDim2.new(0, parentWidth, 0, 0) -- Move para o final para reiniciar
-                local resetTween = TweenService:Create(title, TweenInfo.new(0, Enum.EasingStyle.Linear), { Position = UDim2.new(0, 0, 0, 0) })
-                resetTween:Play()
-                resetTween.Completed:Wait()
-                updateTitleScroll() -- Inicia o ciclo novamente
-            end
-            
-            self.TitleScrollTween = tween
-            tween.Completed:Connect(onTweenCompleted)
-            tween:Play()
-        else
-            isScrolling = false
+    local function startScroll()
+        local textWidth = title.TextBounds.X
+        local parentWidth = parent.AbsoluteSize.X
+        if textWidth <= parentWidth then
             title.Position = UDim2.new(0, 0, 0, 0)
+            isScrolling = false
+            return
         end
+
+        isScrolling = true
+        local scrollDistance = textWidth - parentWidth + 5
+        local scrollTime = scrollDistance / 50 -- 50 pixels/segundo
+
+        local tweenInfo = TweenInfo.new(
+            scrollTime,
+            Enum.EasingStyle.Linear,
+            Enum.EasingDirection.InOut,
+            -1, -- repete infinitamente
+            false,
+            0
+        )
+
+        scrollTween = TweenService:Create(title, tweenInfo, { Position = UDim2.new(0, -scrollDistance, 0, 0) })
+        scrollTween:Play()
     end
 
-    -- NOVO: Conecta a verificação do scroll a cada frame
-    self.TitleScrollConnection = RunService.RenderStepped:Connect(function()
-        local textBounds = self.Title.TextBounds.X
-        local parentWidth = self.Title.Parent.AbsoluteSize.X
-        if textBounds > parentWidth and not isScrolling then
-            updateTitleScroll()
-        elseif textBounds <= parentWidth and isScrolling then
-            isScrolling = false
-            if self.TitleScrollTween then
-                self.TitleScrollTween:Cancel()
-                self.TitleScrollTween = nil
+    -- Inicia o scroll somente quando necessário
+    local conn
+    conn = parent:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
+        if title.TextBounds.X > parent.AbsoluteSize.X and not isScrolling then
+            startScroll()
+        elseif title.TextBounds.X <= parent.AbsoluteSize.X and isScrolling then
+            if scrollTween then
+                scrollTween:Cancel()
+                scrollTween = nil
             end
-            self.Title.Position = UDim2.new(0, 0, 0, 0)
+            title.Position = UDim2.new(0, 0, 0, 0)
+            isScrolling = false
         end
     end)
+
+    -- Armazena referências para gerenciamento futuro
+    self.TitleScrollTween = scrollTween
+    self.TitleScrollConnection = conn
+
+    -- Verificação inicial
+    if title.TextBounds.X > parent.AbsoluteSize.X then
+        startScroll()
+    end
 end
 
 ---
@@ -854,79 +823,78 @@ end
 ---
 function Tekscripts:SetupEdgeButtonDragSystem(edge: string)
     local buttonData = self.EdgeButtons[edge]
-    if not buttonData then return end
+    if not buttonData or not buttonData.Frame then return end
 
-    local screen = workspace.CurrentCamera.ViewportSize
+    local camera = workspace.CurrentCamera
     local size = DESIGN.EdgeButtonSize
     local dragThreshold = 20
+    local dragging = false
+    local dragStart, startPos
 
-    local dragStart = nil
-    local startPos = nil
-    local isDragging = false
+    local function clampPosition(x, y)
+        local screen = camera.ViewportSize
+        if edge == "left" then
+            x = math.clamp(x, -size, screen.X / 2)
+            y = math.clamp(y, 0, screen.Y - size)
+        elseif edge == "right" then
+            x = math.clamp(x, screen.X / 2, screen.X - size)
+            y = math.clamp(y, 0, screen.Y - size)
+        elseif edge == "top" then
+            x = math.clamp(x, 0, screen.X - size)
+            y = math.clamp(y, -size, screen.Y / 2)
+        elseif edge == "bottom" then
+            x = math.clamp(x, 0, screen.X - size)
+            y = math.clamp(y, screen.Y / 2, screen.Y - size)
+        end
+        return x, y
+    end
 
-    local function onInputBegin(input)
+    local function onInputBegan(input)
         if self.Blocked or self.MinimizedState ~= edge then return end
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            isDragging = true
+            dragging = true
             dragStart = input.Position
             startPos = buttonData.Frame.Position
         end
     end
 
     local function onInputChanged(input)
-        if not isDragging or self.Blocked then return end
+        if not dragging or self.Blocked then return end
         if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
             local delta = input.Position - dragStart
             local newX = startPos.X.Offset + delta.X
             local newY = startPos.Y.Offset + delta.Y
+            newX, newY = clampPosition(newX, newY)
 
-            -- Limita o movimento
-            if edge == "left" then
-                newX = math.clamp(newX, -size, screen.X/2)
-                newY = math.clamp(newY, 0, screen.Y - size)
-            elseif edge == "right" then
-                newX = math.clamp(newX, screen.X/2, screen.X)
-                newY = math.clamp(newY, 0, screen.Y - size)
-            elseif edge == "top" then
-                newX = math.clamp(newX, 0, screen.X - size)
-                newY = math.clamp(newY, -size, screen.Y/2)
-            elseif edge == "bottom" then
-                newX = math.clamp(newX, 0, screen.X - size)
-                newY = math.clamp(newY, screen.Y/2, screen.Y)
-            end
-
-            -- Suaviza o movimento
+            -- Atualiza suavemente
             buttonData.Frame.Position = UDim2.new(
-                startPos.X.Scale,
-                startPos.X.Offset + (newX - startPos.X.Offset) * 0.7,
-                startPos.Y.Scale,
-                startPos.Y.Offset + (newY - startPos.Y.Offset) * 0.7
+                startPos.X.Scale, startPos.X.Offset + (newX - startPos.X.Offset) * 0.65,
+                startPos.Y.Scale, startPos.Y.Offset + (newY - startPos.Y.Offset) * 0.65
             )
 
-            -- Expande se arrastou o suficiente
+            -- Detecção de arrasto suficiente
             if math.abs(delta.X) > dragThreshold or math.abs(delta.Y) > dragThreshold then
                 self:ExpandFromEdge(edge)
             end
         end
     end
 
-    local function onInputEnd(input)
+    local function onInputEnded(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            isDragging = false
-            if self.MinimizedState == edge then
-                self:ExpandFromEdge(edge)
+            if dragging then
+                dragging = false
+                if self.MinimizedState == edge then
+                    self:ExpandFromEdge(edge)
+                end
             end
         end
     end
 
-    buttonData.Button.InputBegan:Connect(onInputBegin)
-    buttonData.Button.InputEnded:Connect(onInputEnd)
-
-    -- Conecta InputChanged apenas uma vez para este botão
-    local conn
-    conn = buttonData.Button.InputChanged:Connect(onInputChanged)
+    local button = buttonData.Button
+    button.InputBegan:Connect(onInputBegan)
+    button.InputEnded:Connect(onInputEnded)
+    button.InputChanged:Connect(onInputChanged)
 end
-
 ---
 -- Minimiza para a borda especificada
 ---
@@ -1078,165 +1046,186 @@ function Tekscripts:SetupResizeSystem()
 end
 
 function Tekscripts:UpdateContainersSize()
-    local screenSize = workspace.CurrentCamera.ViewportSize
+    local DESIGN = DESIGN -- cache local (acesso mais rápido)
+    local camera = workspace.CurrentCamera
+    if not camera or not self.Window then return end
+
     local windowSize = self.Window.AbsoluteSize
-    
-    -- Atualiza tamanho do container de conteúdo
-    self.TabContentContainer.Size = UDim2.new(
-        1, -DESIGN.TabButtonWidth - DESIGN.ResizeHandleSize,
-        1, -DESIGN.TitleHeight
-    )
-    
-    -- Atualiza posição do container de abas
-    self.TabContainer.Size = UDim2.new(
-        0, DESIGN.TabButtonWidth,
-        1, -DESIGN.TitleHeight
-    )
-    
-    -- Atualiza posição do conteúdo
-    self.TabContentContainer.Position = UDim2.new(
-        0, DESIGN.TabButtonWidth,
-        0, DESIGN.TitleHeight
-    )
-    
-    -- Atualiza posição da alça de redimensionamento
-    self.ResizeHandle.Position = UDim2.new(
-        1, -DESIGN.ResizeHandleSize,
-        1, -DESIGN.ResizeHandleSize
-    )
+    local tabWidth, handleSize, titleHeight = DESIGN.TabButtonWidth, DESIGN.ResizeHandleSize, DESIGN.TitleHeight
+
+    -- Atualiza o container de abas (lado esquerdo)
+    local tabContainer = self.TabContainer
+    if tabContainer then
+        tabContainer.Size = UDim2.new(0, tabWidth, 1, -titleHeight)
+        tabContainer.Position = UDim2.new(0, 0, 0, titleHeight)
+    end
+
+    -- Atualiza o container de conteúdo
+    local contentContainer = self.TabContentContainer
+    if contentContainer then
+        contentContainer.Position = UDim2.new(0, tabWidth, 0, titleHeight)
+        contentContainer.Size = UDim2.new(1, -tabWidth - handleSize, 1, -titleHeight)
+    end
+
+    -- Atualiza o handle de redimensionamento
+    local resizeHandle = self.ResizeHandle
+    if resizeHandle then
+        resizeHandle.Position = UDim2.new(1, -handleSize, 1, -handleSize)
+    end
 end
 
 ---
 -- Float Button
 ---
 function Tekscripts:SetupFloatButton(text: string)
-    self.FloatButton = Instance.new("Frame")
-    self.FloatButton.Size = DESIGN.FloatButtonSize
-    self.FloatButton.Position = UDim2.new(1, -130, 0, 20)
-    self.FloatButton.BackgroundColor3 = DESIGN.FloatButtonColor
-    self.FloatButton.BorderSizePixel = 0
-    self.FloatButton.Visible = false
-    self.FloatButton.Parent = self.ScreenGui
+    local UIS = game:GetService("UserInputService")
+    local DESIGN = DESIGN
+    local conns = self.Connections
 
-    addRoundedCorners(self.FloatButton, DESIGN.CornerRadius)
+    -- Criação do frame principal
+    local float = Instance.new("Frame")
+    float.Name = "FloatButton"
+    float.Size = DESIGN.FloatButtonSize
+    float.Position = UDim2.new(1, -130, 0, 20)
+    float.BackgroundColor3 = DESIGN.FloatButtonColor
+    float.BorderSizePixel = 0
+    float.Visible = false
+    float.Parent = self.ScreenGui
+    self.FloatButton = float
 
-    local floatGradient = Instance.new("UIGradient")
-    floatGradient.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, DESIGN.FloatButtonColor),
-        ColorSequenceKeypoint.new(1, DESIGN.WindowColor2)
-    })
-    floatGradient.Rotation = 45
-    floatGradient.Parent = self.FloatButton
+    addRoundedCorners(float, DESIGN.CornerRadius)
 
-    local expandBtn = Instance.new("TextButton")
-    expandBtn.Text = text
-    expandBtn.Size = UDim2.new(1, 0, 1, 0)
-    expandBtn.BackgroundTransparency = 1
-    expandBtn.TextColor3 = DESIGN.ComponentTextColor
-    expandBtn.Font = Enum.Font.Roboto
-    expandBtn.TextScaled = true
-    expandBtn.Parent = self.FloatButton
+    -- Gradiente de fundo
+    local grad = Instance.new("UIGradient")
+    grad.Color = ColorSequence.new(
+        DESIGN.FloatButtonColor,
+        DESIGN.WindowColor2
+    )
+    grad.Rotation = 45
+    grad.Parent = float
 
-    addHoverEffect(expandBtn, expandBtn.BackgroundColor3, DESIGN.ComponentHoverColor)
+    -- Botão de texto
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(1, 0, 1, 0)
+    btn.BackgroundTransparency = 1
+    btn.Text = text
+    btn.TextColor3 = DESIGN.ComponentTextColor
+    btn.Font = Enum.Font.Roboto
+    btn.TextScaled = true
+    btn.Parent = float
 
-    self.Connections.ExpandBtn = expandBtn.MouseButton1Click:Connect(function()
-        if self.Blocked then return end
-        self:Expand()
-    end)
+    addHoverEffect(btn, nil, DESIGN.ComponentHoverColor)
 
-    local floatDragStart = nil
-    local floatStartPos = nil
-    local floatIsDragging = false
-
-    self.Connections.FloatDragBegin = expandBtn.InputBegan:Connect(function(input)
-        if self.Blocked then return end
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            floatIsDragging = true
-            floatDragStart = UserInputService:GetMouseLocation()
-            floatStartPos = self.FloatButton.Position
+    conns.FloatExpand = btn.MouseButton1Click:Connect(function()
+        if not self.Blocked then
+            self:Expand()
         end
     end)
 
-    self.Connections.FloatDragChanged = UserInputService.InputChanged:Connect(function(input)
+    -- Sistema de arraste otimizado
+    local dragging = false
+    local dragStart, startPos
+
+    local function beginDrag(input)
         if self.Blocked then return end
-        if floatIsDragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
-            local delta = UserInputService:GetMouseLocation() - floatDragStart
-            local newPos = UDim2.new(
-                floatStartPos.X.Scale,
-                floatStartPos.X.Offset + delta.X,
-                floatStartPos.Y.Scale,
-                floatStartPos.Y.Offset + delta.Y
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = true
+            dragStart = UIS:GetMouseLocation()
+            startPos = float.Position
+        end
+    end
+
+    local function updateDrag(input)
+        if not dragging or self.Blocked then return end
+        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+            local delta = UIS:GetMouseLocation() - dragStart
+            float.Position = UDim2.new(
+                startPos.X.Scale, startPos.X.Offset + delta.X,
+                startPos.Y.Scale, startPos.Y.Offset + delta.Y
             )
-            self.FloatButton.Position = newPos
         end
-    end)
+    end
 
-    self.Connections.FloatDragEnded = UserInputService.InputEnded:Connect(function(input)
-        if self.Blocked then return end
+    local function endDrag(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            floatIsDragging = false
+            dragging = false
         end
-    end)
-end
+    end
 
+    -- Conexões locais e seguras
+    conns.FloatBegin = btn.InputBegan:Connect(beginDrag)
+    conns.FloatChange = btn.InputChanged:Connect(updateDrag)
+    conns.FloatEnd = btn.InputEnded:Connect(endDrag)
+end
 ---
 -- Lógica de Abas
 ---
 function Tekscripts:CreateTab(options: { Title: string })
-    assert(type(options) == "table" and type(options.Title) == "string", "Invalid arguments for CreateTab")
-    local tabTitle = options.Title
-    local tab = Tab.new(tabTitle, self.TabContentContainer)
-    self.Tabs[tabTitle] = tab
+    local DESIGN = DESIGN
+    local title = options and options.Title
+    assert(type(title) == "string", "Invalid arguments for CreateTab")
 
-    local tabButton = Instance.new("TextButton")
-    tabButton.Text = tabTitle
-    tabButton.Size = UDim2.new(1, 0, 0, DESIGN.TabButtonHeight)
-    tabButton.BackgroundColor3 = DESIGN.TabInactiveColor
-    tabButton.TextColor3 = DESIGN.ComponentTextColor
-    tabButton.Font = Enum.Font.Roboto
-    tabButton.TextScaled = true
-    tabButton.BorderSizePixel = 0
-    tabButton.Parent = self.TabContainer
-    tab.Button = tabButton
+    -- Cria a aba e armazena
+    local tab = Tab.new(title, self.TabContentContainer)
+    self.Tabs[title] = tab
 
-    addRoundedCorners(tabButton, DESIGN.CornerRadius)
+    -- Cria botão da aba
+    local button = Instance.new("TextButton")
+    button.Name = title
+    button.Text = title
+    button.Size = UDim2.new(1, 0, 0, DESIGN.TabButtonHeight)
+    button.BackgroundColor3 = DESIGN.TabInactiveColor
+    button.TextColor3 = DESIGN.ComponentTextColor
+    button.Font = Enum.Font.Roboto
+    button.TextScaled = true
+    button.BorderSizePixel = 0
+    button.Parent = self.TabContainer
+    tab.Button = button
 
-    addHoverEffect(tabButton, DESIGN.TabInactiveColor, DESIGN.ComponentHoverColor, function()
+    addRoundedCorners(button, DESIGN.CornerRadius)
+    addHoverEffect(button, DESIGN.TabInactiveColor, DESIGN.ComponentHoverColor, function()
         return self.CurrentTab ~= tab
     end)
 
-    tabButton.MouseButton1Click:Connect(function()
-        if self.Blocked then return end
-        self:SetActiveTab(tab)
+    -- Clique da aba
+    button.MouseButton1Click:Connect(function()
+        if not self.Blocked then
+            self:SetActiveTab(tab)
+        end
     end)
 
     tab.Container.Visible = false
 
-    if self.startTab and self.startTab == tabTitle then
-        self:SetActiveTab(tab)
-    elseif not self.CurrentTab then
+    -- Aba inicial
+    if (self.startTab and self.startTab == title) or not self.CurrentTab then
         self:SetActiveTab(tab)
     end
 
-    -- Atualiza visibilidade da mensagem de "sem abas"
     self.NoTabsLabel.Visible = next(self.Tabs) == nil
-    
-    function tab.Destroy()
-        for _, componentApi in pairs(tab.Components) do
-            if componentApi and componentApi.Destroy then
-                componentApi:Destroy()
+
+    -- Função de destruição da aba
+    function tab:Destroy()
+        -- Destrói componentes internos
+        for _, comp in pairs(self.Components) do
+            if comp.Destroy then
+                pcall(comp.Destroy, comp)
             end
         end
-        if tab.Container then tab.Container:Destroy() end
-        if tabButton then tabButton:Destroy() end
-        self.Tabs[tabTitle] = nil
-        if self.CurrentTab == tab then
-            self.CurrentTab = nil
-            local firstTab = next(self.Tabs)
-            if firstTab then
-                self:SetActiveTab(self.Tabs[firstTab])
-            else
-                self.NoTabsLabel.Visible = true
+
+        -- Remove container e botão
+        if self.Container then self.Container:Destroy() end
+        if self.Button then self.Button:Destroy() end
+
+        -- Atualiza tabela de abas
+        self.Tabs[title] = nil
+
+        -- Atualiza aba ativa
+        if self.CurrentTab == self then
+            local nextName = next(self.Tabs)
+            self.CurrentTab = nextName and self.Tabs[nextName] or nil
+            self.NoTabsLabel.Visible = not nextName
+            if nextName then
+                self:SetActiveTab(self.Tabs[nextName])
             end
         end
     end
@@ -1244,7 +1233,8 @@ function Tekscripts:CreateTab(options: { Title: string })
     return tab
 end
 
-function Tekscripts:SetActiveTab(tab: any)
+function Tekscripts:SetActiveTab(tab)
+    local DESIGN = DESIGN
     if self.CurrentTab then
         self.CurrentTab.Container.Visible = false
         self.CurrentTab.Button.BackgroundColor3 = DESIGN.TabInactiveColor
@@ -1339,158 +1329,6 @@ end
 ---
 -- Funções Públicas para criar componentes
 ---
-function Tekscripts:CreateButton(tab: any, options: { Text: string, Callback: () -> () })
-    assert(type(tab) == "table" and tab.Container, "Invalid Tab object provided to CreateButton")
-    assert(type(options) == "table" and type(options.Text) == "string", "Invalid arguments for CreateButton")
-    local btn = createButton(options.Text, nil, tab.Container)
-    local connections = {}
-
-    local publicApi = {
-        _instance = btn,
-        _connections = connections
-    }
-
-    connections.Click = btn.MouseButton1Click:Connect(function()
-        if self.Blocked then return end
-        local feedbackTween = TweenService:Create(btn, TweenInfo.new(0.1, Enum.EasingStyle.Quad), {
-            Size = UDim2.new(0.95, 0, 0, DESIGN.ComponentHeight * 0.9)
-        })
-        feedbackTween:Play()
-
-        feedbackTween.Completed:Connect(function()
-            local returnTween = TweenService:Create(btn, TweenInfo.new(0.1, Enum.EasingStyle.Quad), {
-                Size = UDim2.new(1, 0, 0, DESIGN.ComponentHeight)
-            })
-            returnTween:Play()
-        end)
-
-        if options.Callback then options.Callback() end
-    end)
-
-    function publicApi.Update(newOptions: { Text: string? })
-        if newOptions.Text then
-            btn.Text = newOptions.Text
-        end
-    end
-
-    function publicApi.Destroy()
-        if publicApi._instance then
-            for _, conn in pairs(publicApi._connections) do
-                if conn and conn.Connected then
-                    conn:Disconnect()
-                end
-            end
-            publicApi._instance:Destroy()
-            publicApi._instance = nil
-            publicApi._connections = nil
-        end
-    end
-
-    table.insert(tab.Components, publicApi)
-    return publicApi
-end
-
-function Tekscripts:CreateHR(tab: any, options: { Text: string? })
-    assert(type(tab) == "table" and tab.Container, "Invalid Tab object provided to CreateHR")
-
-    local hrContainer = Instance.new("Frame")
-    hrContainer.Size = UDim2.new(1, 0, 0, DESIGN.HRHeight)
-    hrContainer.BackgroundTransparency = 1
-    hrContainer.Parent = tab.Container
-
-    local line1 = Instance.new("Frame")
-    line1.BackgroundColor3 = DESIGN.HRColor
-    line1.BorderSizePixel = 0
-    line1.Parent = hrContainer
-
-    local line2 = Instance.new("Frame")
-    line2.BackgroundColor3 = DESIGN.HRColor
-    line2.BorderSizePixel = 0
-    line2.Parent = hrContainer
-
-    local textLabel
-    local textBoundsConnection
-
-    local function updateHRLayout()
-        local parentWidth = hrContainer.AbsoluteSize.X
-        if textLabel then
-            local textWidth = textLabel.TextBounds.X
-            local padding = DESIGN.HRTextPadding
-            local lineWidth = (parentWidth - textWidth - padding * 2) / 2
-
-            line1.Size = UDim2.new(0, math.max(0, lineWidth), 0, 1)
-            line1.Position = UDim2.new(0, 0, 0.5, 0)
-
-            line2.Size = UDim2.new(0, math.max(0, lineWidth), 0, 1)
-            line2.Position = UDim2.new(1, -lineWidth, 0.5, 0)
-
-            textLabel.Position = UDim2.new(0.5, -textWidth / 2, 0.5, -textLabel.TextBounds.Y/2)
-            textLabel.Size = UDim2.new(0, textWidth, 0, textLabel.TextBounds.Y)
-        else
-            line1.Size = UDim2.new(1, 0, 0, 1)
-            line1.Position = UDim2.new(0, 0, 0.5, 0)
-
-            line2.Size = UDim2.new(0, 0, 0, 1)
-        end
-    end
-
-    local function setupText()
-        if options and options.Text and options.Text ~= "" then
-            textLabel = Instance.new("TextLabel")
-            textLabel.Text = options.Text
-            textLabel.BackgroundTransparency = 1
-            textLabel.TextColor3 = DESIGN.ComponentTextColor
-            textLabel.Font = Enum.Font.Roboto
-            textLabel.TextScaled = true
-            textLabel.TextXAlignment = Enum.TextXAlignment.Center
-            textLabel.TextYAlignment = Enum.TextYAlignment.Center
-            textLabel.Parent = hrContainer
-
-            -- garante limites de tamanho pro texto
-            local sizeConstraint = Instance.new("UITextSizeConstraint")
-            sizeConstraint.MinTextSize = DESIGN.HRMinTextSize
-            sizeConstraint.MaxTextSize = DESIGN.HRMaxTextSize
-            sizeConstraint.Parent = textLabel
-
-            textBoundsConnection = textLabel:GetPropertyChangedSignal("TextBounds"):Connect(updateHRLayout)
-            updateHRLayout()
-        else
-            if textLabel then textLabel:Destroy() end
-            textLabel = nil
-            updateHRLayout()
-        end
-    end
-
-    setupText()
-
-    local publicApi = {
-        _instance = hrContainer,
-        _connections = {}
-    }
-
-    function publicApi.Update(newOptions: { Text: string? })
-        if textBoundsConnection and textBoundsConnection.Connected then
-            textBoundsConnection:Disconnect()
-        end
-        if textLabel then textLabel:Destroy() end
-        options = newOptions
-        setupText()
-    end
-
-    function publicApi.Destroy()
-        if publicApi._instance then
-            if textBoundsConnection and textBoundsConnection.Connected then
-                textBoundsConnection:Disconnect()
-            end
-            publicApi._instance:Destroy()
-            publicApi._instance = nil
-        end
-    end
-
-    table.insert(tab.Components, publicApi)
-    return publicApi
-end
-
 function Tekscripts:Notify(options: { 
     Title: string?, 
     Desc: string?, 
@@ -1811,499 +1649,6 @@ function Tekscripts:CreateFloatingButton(options: {
     return publicApi
 end
 
-function Tekscripts:CreateColorPicker(tab: any, options: {
-    Title: string?,
-    Color: Color3?,
-    Blocked: boolean?,
-    Callback: ((Color3) -> ())?
-})
-    -- Validação inicial
-    assert(tab and tab.Container, "CreateColorPicker: 'tab' e 'tab.Container' válidos são necessários.")
-
-    -- // DEPENDÊNCIAS E SERVIÇOS //
-    local UserInputService = game:GetService("UserInputService")
-    local TweenService = game:GetService("TweenService")
-
-    -- // CONFIGURAÇÃO INICIAL //
-    local defaultOptions = {
-        Title = "Color",
-        Color = Color3.new(1, 1, 1),
-        Blocked = false,
-        Callback = function() end
-    }
-    options = options or {}
-    for key, value in pairs(defaultOptions) do
-        if options[key] == nil then
-            options[key] = value
-        end
-    end
-
-    if typeof(options.Color) ~= "Color3" then
-        warn("CreateColorPicker: 'options.Color' inválido. Esperado Color3, recebido " .. typeof(options.Color) .. ". Usando cor padrão.")
-        options.Color = defaultOptions.Color
-    end
-
-    -- // ESTADO DO COMPONENTE //
-    local state = {
-        isExpanded = false,
-        isBlocked = options.Blocked,
-        isDraggingHue = false,
-        isDraggingSV = false,
-        h = 0, s = 1, v = 1,
-        confirmedColor = options.Color
-    }
-    state.h, state.s, state.v = options.Color:ToHSV()
-
-    local connections = {}
-
-    -- // FUNÇÕES AUXILIARES //
-    local function createInstance(className, properties)
-        local inst = Instance.new(className)
-        for prop, value in pairs(properties) do
-            inst[prop] = value
-        end
-        return inst
-    end
-
-    local function addHoverEffect(button, originalColor, hoverColor)
-        local isHovering = false
-        local isDown = false
-
-        table.insert(connections, button.MouseEnter:Connect(function()
-            isHovering = true
-            if not isDown and not state.isBlocked then
-                TweenService:Create(button, TweenInfo.new(DESIGN.AnimationSpeed, Enum.EasingStyle.Quad), { BackgroundColor3 = hoverColor }):Play()
-            end
-        end))
-        table.insert(connections, button.MouseLeave:Connect(function()
-            isHovering = false
-            if not isDown and not state.isBlocked then
-                TweenService:Create(button, TweenInfo.new(DESIGN.AnimationSpeed, Enum.EasingStyle.Quad), { BackgroundColor3 = originalColor }):Play()
-            end
-        end))
-        table.insert(connections, button.MouseButton1Down:Connect(function()
-            isDown = true
-        end))
-        table.insert(connections, button.MouseButton1Up:Connect(function()
-            isDown = false
-            if not isHovering and not state.isBlocked then
-                TweenService:Create(button, TweenInfo.new(DESIGN.AnimationSpeed, Enum.EasingStyle.Quad), { BackgroundColor3 = originalColor }):Play()
-            end
-        end))
-    end
-
-    -- // CRIAÇÃO DA UI //
-    local box = createInstance("Frame", {
-        Size = UDim2.new(1, 0, 0, DESIGN.ComponentHeight),
-        BackgroundColor3 = DESIGN.ComponentBackground,
-        BorderSizePixel = 0,
-        ClipsDescendants = true, -- 🔑 IMPEDIR VAZAMENTO VISUAL
-        Parent = tab.Container,
-        LayoutOrder = #tab.Components + 1
-    })
-
-    createInstance("UICorner", { CornerRadius = UDim.new(0, DESIGN.CornerRadius), Parent = box })
-    createInstance("UIPadding", {
-        PaddingLeft = UDim.new(0, DESIGN.ComponentPadding),
-        PaddingRight = UDim.new(0, DESIGN.ComponentPadding),
-        PaddingTop = UDim.new(0, 5),
-        PaddingBottom = UDim.new(0, 5),
-        Parent = box
-    })
-
-    -- Botão principal (título + cor)
-    local mainFrame = createInstance("TextButton", {
-        Size = UDim2.new(1, 0, 0, DESIGN.ComponentHeight),
-        BackgroundColor3 = DESIGN.ComponentBackground,
-        Text = "",
-        BorderSizePixel = 0,
-        Parent = box
-    })
-    createInstance("UICorner", { CornerRadius = UDim.new(0, DESIGN.CornerRadius), Parent = mainFrame })
-
-    local mainLayout = createInstance("UIListLayout", {
-        FillDirection = Enum.FillDirection.Horizontal,
-        VerticalAlignment = Enum.VerticalAlignment.Center,
-        Padding = UDim.new(0, 10),
-        Parent = mainFrame
-    })
-
-    local titleLabel = createInstance("TextLabel", {
-        Size = UDim2.new(0, 0, 1, 0),
-        AutomaticSize = Enum.AutomaticSize.X,
-        Font = Enum.Font.Roboto,
-        TextSize = 15,
-        TextColor3 = DESIGN.ComponentTextColor,
-        TextXAlignment = Enum.TextXAlignment.Left,
-        BackgroundTransparency = 1,
-        Text = options.Title,
-        Parent = mainFrame
-    })
-
-    local colorBox = createInstance("Frame", {
-        Size = UDim2.new(0, 40, 0, DESIGN.ComponentHeight - 10),
-        BackgroundColor3 = options.Color,
-        BorderSizePixel = 1,
-        BorderColor3 = DESIGN.ThumbOutlineColor,
-        Parent = mainFrame
-    })
-    createInstance("UICorner", { CornerRadius = UDim.new(0, DESIGN.CornerRadius / 2), Parent = colorBox })
-
-    -- Container do picker (oculto inicialmente)
-    local pickerContainer = createInstance("Frame", {
-        Size = UDim2.new(1, 0, 0, 220),
-        BackgroundColor3 = DESIGN.ComponentBackground,
-        BorderSizePixel = 0,
-        Visible = false, -- Mantém oculto até expansão
-        Parent = box,
-        LayoutOrder = 1
-    })
-    createInstance("UICorner", { CornerRadius = UDim.new(0, DESIGN.CornerRadius), Parent = pickerContainer })
-    createInstance("UIListLayout", {
-        FillDirection = Enum.FillDirection.Vertical,
-        Padding = UDim.new(0, 10),
-        Parent = pickerContainer
-    })
-    createInstance("UIPadding", {
-        PaddingTop = UDim.new(0, 10),
-        PaddingBottom = UDim.new(0, 10),
-        PaddingLeft = UDim.new(0, 10),
-        PaddingRight = UDim.new(0, 10),
-        Parent = pickerContainer
-    })
-
-    -- Paleta SV
-    local svPalette = createInstance("Frame", {
-        Size = UDim2.new(1, 0, 0, 150),
-        BackgroundColor3 = Color3.fromHSV(state.h, 1, 1),
-        Parent = pickerContainer
-    })
-    createInstance("UICorner", { CornerRadius = UDim.new(0, 5), Parent = svPalette })
-
-    local svWhiteGradient = createInstance("UIGradient", {
-        Color = ColorSequence.new({
-            ColorSequenceKeypoint.new(0, Color3.new(1, 1, 1)),
-            ColorSequenceKeypoint.new(1, Color3.fromHSV(state.h, 1, 1))
-        }),
-        Parent = svPalette
-    })
-
-    local svBlackOverlay = createInstance("Frame", {
-        Size = UDim2.new(1, 0, 1, 0),
-        BackgroundTransparency = 1,
-        Parent = svPalette
-    })
-    createInstance("UIGradient", {
-        Rotation = 90,
-        Color = ColorSequence.new({
-            ColorSequenceKeypoint.new(0, Color3.new(0, 0, 0, 0)),
-            ColorSequenceKeypoint.new(1, Color3.new(0, 0, 0, 1))
-        }),
-        Parent = svBlackOverlay
-    })
-
-    local svThumb = createInstance("Frame", {
-        Size = UDim2.new(0, 12, 0, 12),
-        AnchorPoint = Vector2.new(0.5, 0.5),
-        BackgroundColor3 = DESIGN.ThumbColor,
-        BorderSizePixel = 1,
-        BorderColor3 = DESIGN.ThumbOutlineColor,
-        Parent = svPalette
-    })
-    createInstance("UICorner", { CornerRadius = UDim.new(0.5, 0), Parent = svThumb })
-
-    -- Seletor de matiz
-    local hueTrack = createInstance("Frame", {
-        Size = UDim2.new(1, 0, 0, 20),
-        BackgroundColor3 = DESIGN.SliderTrackColor,
-        Parent = pickerContainer
-    })
-    createInstance("UICorner", { CornerRadius = UDim.new(0, 5), Parent = hueTrack })
-    createInstance("UIGradient", {
-        Color = ColorSequence.new({
-            ColorSequenceKeypoint.new(0, Color3.new(1, 0, 0)),
-            ColorSequenceKeypoint.new(0.17, Color3.new(1, 1, 0)),
-            ColorSequenceKeypoint.new(0.33, Color3.new(0, 1, 0)),
-            ColorSequenceKeypoint.new(0.5, Color3.new(0, 1, 1)),
-            ColorSequenceKeypoint.new(0.67, Color3.new(0, 0, 1)),
-            ColorSequenceKeypoint.new(0.83, Color3.new(1, 0, 1)),
-            ColorSequenceKeypoint.new(1, Color3.new(1, 0, 0))
-        }),
-        Parent = hueTrack
-    })
-    local hueThumb = createInstance("Frame", {
-        Size = UDim2.new(0, 12, 1, 0),
-        BackgroundColor3 = DESIGN.ThumbColor,
-        BorderSizePixel = 1,
-        BorderColor3 = DESIGN.ThumbOutlineColor,
-        Parent = hueTrack
-    })
-    createInstance("UICorner", { CornerRadius = UDim.new(0.5, 0), Parent = hueThumb })
-
-    -- Input e botão
-    local inputConfirmContainer = createInstance("Frame", {
-        Size = UDim2.new(1, 0, 0, 30),
-        BackgroundTransparency = 1,
-        Parent = pickerContainer
-    })
-    createInstance("UIListLayout", {
-        FillDirection = Enum.FillDirection.Horizontal,
-        VerticalAlignment = Enum.VerticalAlignment.Center,
-        HorizontalAlignment = Enum.HorizontalAlignment.Right,
-        Padding = UDim.new(0, 10),
-        Parent = inputConfirmContainer
-    })
-
-    local colorInput = createInstance("TextBox", {
-        Size = UDim2.new(0, 100, 0, 25),
-        Font = Enum.Font.Roboto,
-        TextSize = 14,
-        TextColor3 = DESIGN.ComponentTextColor,
-        BackgroundColor3 = DESIGN.InputBackground,
-        BorderSizePixel = 1,
-        BorderColor3 = DESIGN.ThumbOutlineColor,
-        Text = string.format("%d, %d, %d", math.floor(options.Color.R * 255), math.floor(options.Color.G * 255), math.floor(options.Color.B * 255)),
-        Parent = inputConfirmContainer
-    })
-    createInstance("UICorner", { CornerRadius = UDim.new(0, 5), Parent = colorInput })
-    createInstance("UIPadding", { PaddingLeft = UDim.new(0, 5), PaddingRight = UDim.new(0, 5), Parent = colorInput })
-
-    local confirmButton = createInstance("TextButton", {
-        Size = UDim2.new(0, 80, 0, 25),
-        Font = Enum.Font.Roboto,
-        TextSize = 14,
-        TextColor3 = DESIGN.ComponentTextColor,
-        BackgroundColor3 = DESIGN.ButtonBackground,
-        Text = "Confirm",
-        Parent = inputConfirmContainer
-    })
-    createInstance("UICorner", { CornerRadius = UDim.new(0, 5), Parent = confirmButton })
-
-    -- Overlay de bloqueio
-    local blockedOverlay = createInstance("Frame", {
-        Size = UDim2.new(1, 0, 1, 0),
-        BackgroundTransparency = 0.5,
-        BackgroundColor3 = DESIGN.BlockScreenColor,
-        Visible = state.isBlocked,
-        ZIndex = 10,
-        Parent = box
-    })
-
-    -- // LÓGICA //
-    local function updateColorVisuals(useTween: boolean)
-        local newColor = Color3.fromHSV(state.h, state.s, state.v)
-        if useTween then
-            TweenService:Create(colorBox, TweenInfo.new(DESIGN.AnimationSpeed, Enum.EasingStyle.Quad), { BackgroundColor3 = newColor }):Play()
-        else
-            colorBox.BackgroundColor3 = newColor
-        end
-
-        svPalette.BackgroundColor3 = Color3.fromHSV(state.h, 1, 1)
-        svWhiteGradient.Color = ColorSequence.new({
-            ColorSequenceKeypoint.new(0, Color3.new(1, 1, 1)),
-            ColorSequenceKeypoint.new(1, Color3.fromHSV(state.h, 1, 1))
-        })
-        colorInput.Text = string.format("%d, %d, %d", math.floor(newColor.R * 255), math.floor(newColor.G * 255), math.floor(newColor.B * 255))
-    end
-
-    local function updateThumbs()
-        hueThumb.Position = UDim2.fromScale(state.h, 0.5)
-        svThumb.Position = UDim2.fromScale(state.s, 1 - state.v)
-        updateColorVisuals(false)
-    end
-
-    local function handleHueDrag(inputPos: Vector2)
-        local relX = math.clamp(inputPos.X - hueTrack.AbsolutePosition.X, 0, hueTrack.AbsoluteSize.X)
-        state.h = relX / hueTrack.AbsoluteSize.X
-        hueThumb.Position = UDim2.fromScale(state.h, 0.5)
-        updateColorVisuals(true)
-    end
-
-    local function handleSVDrag(inputPos: Vector2)
-        local relX = math.clamp(inputPos.X - svPalette.AbsolutePosition.X, 0, svPalette.AbsoluteSize.X)
-        local relY = math.clamp(inputPos.Y - svPalette.AbsolutePosition.Y, 0, svPalette.AbsoluteSize.Y)
-        state.s = relX / svPalette.AbsoluteSize.X
-        state.v = 1 - (relY / svPalette.AbsoluteSize.Y)
-        svThumb.Position = UDim2.fromScale(state.s, 1 - state.v)
-        updateColorVisuals(true)
-    end
-
-    local function parseRGBInput(text: string): Color3?
-        local r, g, b = text:match("^(%d+)%s*,%s*(%d+)%s*,%s*(%d+)$")
-        if r and g and b then
-            local rNum, gNum, bNum = tonumber(r), tonumber(g), tonumber(b)
-            if rNum and gNum and bNum and rNum >= 0 and rNum <= 255 and gNum >= 0 and gNum <= 255 and bNum >= 0 and bNum <= 255 then
-                return Color3.fromRGB(rNum, gNum, bNum)
-            end
-        end
-        return nil
-    end
-
-    local function expand()
-        if state.isExpanded or state.isBlocked then return end
-        state.isExpanded = true
-
-        local h, s, v = state.confirmedColor:ToHSV()
-        state.h, state.s, state.v = h, s, v
-        updateThumbs()
-
-        -- 👇 Torna visível APENAS após garantir que o box vai crescer
-        pickerContainer.Visible = true
-
-        local finalHeight = DESIGN.ComponentHeight + 220 + 10
-        local finalSize = UDim2.new(1, 0, 0, finalHeight)
-        TweenService:Create(box, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Size = finalSize }):Play()
-
-        tab.EmptyLabel.Visible = false
-    end
-
-    local function collapse()
-        if not state.isExpanded or state.isBlocked then return end
-        state.isExpanded = false
-
-        local finalSize = UDim2.new(1, 0, 0, DESIGN.ComponentHeight)
-        local closeTween = TweenService:Create(box, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Size = finalSize })
-        closeTween:Play()
-        closeTween.Completed:Once(function()
-            if not state.isExpanded then
-                pickerContainer.Visible = false -- 👈 Oculta após animação
-            end
-            tab.EmptyLabel.Visible = #tab.Components == 0
-        end)
-    end
-
-    local function onMainFrameClick()
-        if state.isBlocked then
-            local originalPos = box.Position
-            TweenService:Create(box, TweenInfo.new(0.3, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out, 1, true), { Position = originalPos + UDim2.new(0, 10, 0, 0) }):Play()
-            return
-        end
-        if state.isExpanded then
-            collapse()
-        else
-            expand()
-        end
-    end
-
-    local function onConfirmClick()
-        if state.isBlocked then return end
-        state.confirmedColor = Color3.fromHSV(state.h, state.s, state.v)
-        pcall(options.Callback, state.confirmedColor)
-        colorBox.BackgroundColor3 = state.confirmedColor
-        collapse()
-    end
-
-    local function onColorInputChanged()
-        if state.isBlocked then return end
-        local newColor = parseRGBInput(colorInput.Text)
-        if newColor then
-            state.confirmedColor = newColor
-            state.h, state.s, state.v = newColor:ToHSV()
-            updateThumbs()
-        end
-    end
-
-    -- // EVENTOS //
-    addHoverEffect(mainFrame, DESIGN.ComponentBackground, DESIGN.ComponentHoverColor)
-    addHoverEffect(confirmButton, DESIGN.ButtonBackground, DESIGN.ComponentHoverColor)
-    table.insert(connections, mainFrame.MouseButton1Click:Connect(onMainFrameClick))
-    table.insert(connections, confirmButton.MouseButton1Click:Connect(onConfirmClick))
-    table.insert(connections, colorInput.FocusLost:Connect(onColorInputChanged))
-
-    table.insert(connections, hueTrack.InputBegan:Connect(function(input)
-        if state.isExpanded and not state.isBlocked and (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) then
-            state.isDraggingHue = true
-            handleHueDrag(input.Position)
-        end
-    end))
-
-    table.insert(connections, svPalette.InputBegan:Connect(function(input)
-        if state.isExpanded and not state.isBlocked and (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) then
-            state.isDraggingSV = true
-            handleSVDrag(input.Position)
-        end
-    end))
-
-    table.insert(connections, UserInputService.InputChanged:Connect(function(input)
-        if not state.isExpanded or state.isBlocked then return end
-        if state.isDraggingHue and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
-            handleHueDrag(input.Position)
-        elseif state.isDraggingSV and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
-            handleSVDrag(input.Position)
-        end
-    end))
-
-    table.insert(connections, UserInputService.InputEnded:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            state.isDraggingHue = false
-            state.isDraggingSV = false
-        end
-    end))
-
-    updateThumbs()
-
-    -- // API PÚBLICA //
-    local publicApi = {}
-
-    function publicApi.SetColor(newColor: Color3)
-        if typeof(newColor) ~= "Color3" then
-            warn("SetColor: Cor inválida. Esperado Color3, recebido " .. typeof(newColor))
-            return
-        end
-        state.confirmedColor = newColor
-        colorBox.BackgroundColor3 = newColor
-        local h, s, v = newColor:ToHSV()
-        state.h, state.s, state.v = h, s, v
-        if state.isExpanded then
-            updateThumbs()
-        end
-        pcall(options.Callback, newColor)
-    end
-
-    function publicApi.GetColor(): Color3
-        return state.confirmedColor
-    end
-
-    function publicApi.SetBlocked(isBlocked: boolean)
-        state.isBlocked = isBlocked
-        blockedOverlay.Visible = isBlocked
-    end
-
-    function publicApi.Destroy()
-        for _, conn in ipairs(connections) do
-            conn:Disconnect()
-        end
-        table.clear(connections)
-        if box and box.Parent then
-            box:Destroy()
-        end
-        for k in pairs(publicApi) do
-            publicApi[k] = nil
-        end
-        for i, comp in ipairs(tab.Components) do
-            if comp == publicApi then
-                table.remove(tab.Components, i)
-                break
-            end
-        end
-        tab.EmptyLabel.Visible = #tab.Components == 0
-        local listLayout = tab.Container:FindFirstChildOfClass("UIListLayout")
-        if listLayout then
-            tab.Container.CanvasSize = UDim2.new(0, 0, 0, listLayout.AbsoluteContentSize.Y + DESIGN.ContainerPadding * 2)
-        end
-    end
-
-    publicApi._instance = box
-    publicApi._connections = connections
-    table.insert(tab.Components, publicApi)
-
-    local listLayout = tab.Container:FindFirstChildOfClass("UIListLayout")
-    if listLayout then
-        tab.Container.CanvasSize = UDim2.new(0, 0, 0, listLayout.AbsoluteContentSize.Y + DESIGN.ContainerPadding * 2)
-    end
-
-    return publicApi
-end
 
 function Tekscripts:CreateLabel(tab, options)
     assert(type(tab) == "table" and tab.Container, "Invalid Tab object provided to CreateLabel")
@@ -3117,9 +2462,6 @@ function Tekscripts:CreateToggle(tab: any, options: { Text: string, Desc: string
     return publicApi
 end
 
--- Nota: As variáveis DESIGN, TweenService, UserInputService, createButton e addRoundedCorners
--- não estão definidas neste snippet, mas são assumidas como existentes no escopo global/módulo.
-
 function Tekscripts:CreateDropdown(tab: any, options: {
     Title: string,
     Values: { { Name: string, Image: string? } },
@@ -3874,5 +3216,1201 @@ function Tekscripts:CreateInput(tab, options)
 	return publicApi
 end
 
+function Tekscripts:CreateSection(tab: any, options: { Title: string?, Open: boolean?, Fixed: boolean? })
+    assert(type(tab) == "table" and tab.Container, "Invalid Tab object provided to CreateSection")
+
+    local DESIGN = DESIGN or {}
+    local minClosedHeight = 30 
+    local titleHeight = 30
+    local contentPadding = 10 
+
+    local TweenService = game:GetService("TweenService")
+
+    -- Container principal da section
+    local sectionContainer = Instance.new("Frame")
+    sectionContainer.BackgroundColor3 = DESIGN.SectionColor or Color3.fromRGB(30, 30, 30)
+    sectionContainer.BorderSizePixel = 0
+    sectionContainer.ClipsDescendants = true
+    sectionContainer.Parent = tab.Container
+
+    local uicorner = Instance.new("UICorner")
+    uicorner.CornerRadius = UDim.new(0, 8)
+    uicorner.Parent = sectionContainer
+
+    -- Frame do título com fundo interativo
+    local titleFrame = Instance.new("Frame")
+    titleFrame.BackgroundColor3 = DESIGN.TitleBackgroundColor or Color3.fromRGB(40, 40, 40)
+    titleFrame.BackgroundTransparency = 0.2
+    titleFrame.Size = UDim2.new(1, 0, 0, titleHeight)
+    titleFrame.Position = UDim2.new(0, 0, 0, 0)
+    titleFrame.ZIndex = 2
+    titleFrame.Active = true
+    titleFrame.Parent = sectionContainer
+
+    local titleCorner = Instance.new("UICorner")
+    titleCorner.CornerRadius = UDim.new(0, 8)
+    titleCorner.Parent = titleFrame
+
+    -- Título
+    local titleLabel = Instance.new("TextLabel")
+    titleLabel.Text = options.Title or ""
+    titleLabel.Font = Enum.Font.GothamBold
+    titleLabel.TextSize = 18 -- Aumentado para destaque
+    titleLabel.TextColor3 = DESIGN.SectionTitleColor or Color3.fromRGB(230, 230, 230) -- Cor mais clara para destaque
+    titleLabel.TextXAlignment = Enum.TextXAlignment.Left
+    titleLabel.BackgroundTransparency = 1
+    titleLabel.Size = UDim2.new(1, -30, 0, 20)
+    titleLabel.Position = UDim2.new(0, 10, 0, 5)
+    titleLabel.ZIndex = 3
+    titleLabel.Parent = titleFrame
+
+    -- Indicador de seta
+    local arrowLabel = Instance.new("TextLabel")
+    arrowLabel.Text = "▼"
+    arrowLabel.Font = Enum.Font.GothamBold
+    arrowLabel.TextSize = 14
+    arrowLabel.TextColor3 = DESIGN.SectionTitleColor or Color3.fromRGB(230, 230, 230)
+    arrowLabel.BackgroundTransparency = 1
+    arrowLabel.Size = UDim2.new(0, 20, 0, 20)
+    arrowLabel.Position = UDim2.new(1, -25, 0, 5)
+    arrowLabel.ZIndex = 3
+    arrowLabel.Parent = titleFrame
+    arrowLabel.TextYAlignment = Enum.TextYAlignment.Center
+
+    -- Linha separadora
+    local separatorLine = Instance.new("Frame")
+    separatorLine.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
+    separatorLine.Size = UDim2.new(1, -20, 0, 1)
+    separatorLine.Position = UDim2.new(0, 10, 0, titleHeight - 1)
+    separatorLine.BorderSizePixel = 0
+    separatorLine.ZIndex = 2
+    separatorLine.Parent = sectionContainer
+
+    local function setHover(state)
+        local targetTransparency = state and 0 or 0.2
+        local targetTextSize = state and 20 or 18 -- Ajustado para corresponder ao novo tamanho do título
+        local targetColor = state and (DESIGN.SectionTitleHoverColor or Color3.fromRGB(200, 200, 200))
+                            or (DESIGN.SectionTitleColor or Color3.fromRGB(230, 230, 230))
+        
+        TweenService:Create(
+            titleFrame,
+            TweenInfo.new(0.15, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out),
+            { BackgroundTransparency = targetTransparency }
+        ):Play()
+        TweenService:Create(
+            titleLabel,
+            TweenInfo.new(0.15, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out),
+            { TextSize = targetTextSize, TextColor3 = targetColor }
+        ):Play()
+        TweenService:Create(
+            arrowLabel,
+            TweenInfo.new(0.15, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out),
+            { TextColor3 = targetColor }
+        ):Play()
+    end
+
+    -- Conexões de Input para Hover (otimizadas)
+    local isMouseOver = false
+    titleFrame.MouseEnter:Connect(function()
+        isMouseOver = true
+        setHover(true)
+    end)
+    titleFrame.MouseLeave:Connect(function()
+        isMouseOver = false
+        setHover(false)
+    end)
+    
+    -- Container interno dos componentes
+    local contentContainer = Instance.new("Frame")
+    contentContainer.BackgroundTransparency = 1
+    contentContainer.Size = UDim2.new(1, -20, 1, -titleHeight)
+    contentContainer.Position = UDim2.new(0, 10, 0, titleHeight)
+    contentContainer.Parent = sectionContainer
+    
+    local layout = Instance.new("UIListLayout")
+    layout.SortOrder = Enum.SortOrder.LayoutOrder
+    layout.Padding = UDim.new(0, 5)
+    layout.Parent = contentContainer
+    
+    -- Overlay de bloqueio
+    local blockOverlay = Instance.new("Frame")
+    blockOverlay.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+    blockOverlay.BackgroundTransparency = 0.6
+    blockOverlay.Size = UDim2.new(1, 0, 0, 0)
+    blockOverlay.Position = UDim2.new(0, 0, 0, titleHeight)
+    blockOverlay.Visible = false
+    blockOverlay.ZIndex = 5
+    blockOverlay.Active = true
+    blockOverlay.Parent = sectionContainer
+    
+    local overlayCorner = Instance.new("UICorner")
+    overlayCorner.CornerRadius = UDim.new(0, 8)
+    overlayCorner.Parent = blockOverlay
+    
+    local blockLabel = Instance.new("TextLabel")
+    blockLabel.Text = "Bloqueado"
+    blockLabel.Font = Enum.Font.GothamBold
+    blockLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    blockLabel.TextSize = 24
+    blockLabel.TextScaled = false
+    blockLabel.BackgroundTransparency = 1
+    blockLabel.Size = UDim2.new(1, 0, 1, 0)
+    blockLabel.TextXAlignment = Enum.TextXAlignment.Center
+    blockLabel.TextYAlignment = Enum.TextYAlignment.Center
+    blockLabel.TextWrapped = true
+    blockLabel.ZIndex = 6
+    blockLabel.Parent = blockOverlay
+    
+    -- Conexão para atualizar tamanho do overlay
+    local sizeConnection = contentContainer:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
+        if blockOverlay.Visible then
+            blockOverlay.Size = UDim2.new(1, 0, 0, contentContainer.AbsoluteSize.Y)
+        end
+    end)
+    
+    -- Estados
+    local open = options.Open ~= false
+    local fixed = options.Fixed == true
+    
+    local function updateHeight()
+        local contentHeight = layout.AbsoluteContentSize.Y
+        local targetOpenHeight = titleHeight + contentHeight + contentPadding
+        local targetHeight = open and targetOpenHeight or minClosedHeight
+        
+        local tweenInfo = TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
+        
+        TweenService:Create(
+            sectionContainer,
+            tweenInfo,
+            { Size = UDim2.new(1, 0, 0, targetHeight) }
+        ):Play()
+        
+        -- Animação da Rotação da Seta
+        local targetRotation = open and 180 or 0 
+        TweenService:Create(
+            arrowLabel,
+            TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out),
+            { Rotation = targetRotation }
+        ):Play()
+
+        -- Atualiza o tamanho do overlay
+        if blockOverlay.Visible and open then
+            blockOverlay.Size = UDim2.new(1, 0, 0, contentHeight)
+        elseif not open then
+             TweenService:Create(
+                blockOverlay,
+                tweenInfo,
+                { Size = UDim2.new(1, 0, 0, 0) }
+            ):Play()
+        end
+    end
+    
+    layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(updateHeight)
+    task.defer(updateHeight)
+    
+    local publicApi = {
+        _instance = sectionContainer,
+        _content = contentContainer,
+        Components = {},
+        _blocked = false
+    }
+    
+    function publicApi:AddComponent(component)
+        if component._instance then
+            component._instance.Parent = contentContainer
+            table.insert(publicApi.Components, component)
+            task.defer(updateHeight)
+        else
+            warn("Componente inválido para Section:AddComponent")
+        end
+    end
+    
+    function publicApi:SetTitle(text)
+        titleLabel.Text = text or ""
+    end
+    
+    function publicApi:Toggle()
+        if fixed then return end
+        open = not open
+        blockOverlay.Visible = publicApi._blocked and open
+        updateHeight()
+    end
+    
+    titleFrame.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or
+           input.UserInputType == Enum.UserInputType.Touch then
+            publicApi:Toggle()
+        end
+    end)
+    
+    function publicApi:Block(state: boolean, message: string?)
+        publicApi._blocked = state
+        blockLabel.Text = message or "Bloqueado"
+        blockOverlay.Visible = state and open
+        if state and open then
+            blockOverlay.Size = UDim2.new(1, 0, 0, contentContainer.AbsoluteSize.Y)
+        elseif not state and not open then
+             blockOverlay.Visible = false
+        end
+    end
+    
+    function publicApi:Destroy()
+        if sizeConnection then
+            sizeConnection:Disconnect()
+        end
+        for _, comp in ipairs(publicApi.Components) do
+            if comp.Destroy then comp:Destroy() end
+        end
+        sectionContainer:Destroy()
+    end
+    
+    table.insert(tab.Components, publicApi)
+    return publicApi
+end
+
+function Tekscripts:CreateBind(tab, options)
+    assert(type(tab) == "table" and tab.Container, "Invalid Tab object provided to CreateBind")
+    assert(type(options) == "table" and type(options.Text) == "string", "Invalid arguments for CreateBind")
+
+    local title = options.Text or "Keybind"
+    local desc = options.Desc
+    local defaultKey = options.Default or Enum.KeyCode.F
+    local callback = options.Callback or function() end
+
+    -- BOX EXTERNO
+    local box = Instance.new("Frame")
+    box.Name = "BindBox"
+    box.BackgroundColor3 = DESIGN.ComponentBackground
+    box.Size = UDim2.new(1, 0, 0, desc and DESIGN.ComponentHeight + 10 or DESIGN.ComponentHeight)
+    box.ClipsDescendants = true
+
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, DESIGN.CornerRadius)
+    corner.Parent = box
+
+    local stroke = Instance.new("UIStroke")
+    stroke.Color = DESIGN.HRColor
+    stroke.Thickness = 1
+    stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    stroke.Parent = box
+
+    local padding = Instance.new("UIPadding")
+    padding.PaddingTop = UDim.new(0, DESIGN.ComponentPadding / 2)
+    padding.PaddingBottom = UDim.new(0, DESIGN.ComponentPadding / 2)
+    padding.PaddingLeft = UDim.new(0, DESIGN.ComponentPadding)
+    padding.PaddingRight = UDim.new(0, DESIGN.ComponentPadding)
+    padding.Parent = box
+
+    -- CONTEÚDO
+    local holder = Instance.new("Frame")
+    holder.BackgroundTransparency = 1
+    holder.Size = UDim2.new(1, 0, 1, 0)
+    holder.Parent = box
+
+    local label = Instance.new("TextLabel")
+    label.BackgroundTransparency = 1
+    label.Text = title
+    label.Font = Enum.Font.Gotham
+    label.TextColor3 = DESIGN.ComponentTextColor
+    label.TextSize = 14
+    label.TextXAlignment = Enum.TextXAlignment.Left
+    label.Size = UDim2.new(1, -80, 1, 0)
+    label.Parent = holder
+
+    if desc then
+        label.TextYAlignment = Enum.TextYAlignment.Top
+        local sub = Instance.new("TextLabel")
+        sub.BackgroundTransparency = 1
+        sub.Text = desc
+        sub.Font = Enum.Font.GothamSemibold
+        sub.TextColor3 = DESIGN.EmptyStateTextColor
+        sub.TextSize = 12
+        sub.TextXAlignment = Enum.TextXAlignment.Left
+        sub.TextYAlignment = Enum.TextYAlignment.Bottom
+        sub.Size = UDim2.new(1, -80, 1, 0)
+        sub.Parent = holder
+    end
+
+    -- BOTÃO
+    local button = Instance.new("TextButton")
+    button.AnchorPoint = Vector2.new(1, 0.5)
+    button.Position = UDim2.new(1, -DESIGN.ComponentPadding, 0.5, 0)
+    button.Size = UDim2.new(0, 80, 0, DESIGN.ComponentHeight * 0.5)
+    button.BackgroundColor3 = DESIGN.InputBackgroundColor
+    button.Text = defaultKey.Name
+    button.TextColor3 = DESIGN.InputTextColor
+    button.Font = Enum.Font.Gotham
+    button.TextSize = 13
+    button.AutoButtonColor = false
+    button.Parent = holder
+
+    local btnStroke = Instance.new("UIStroke")
+    btnStroke.Color = DESIGN.HRColor
+    btnStroke.Thickness = 1
+    btnStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    btnStroke.Parent = button
+
+    local btnCorner = Instance.new("UICorner")
+    btnCorner.CornerRadius = UDim.new(0, DESIGN.CornerRadius / 2)
+    btnCorner.Parent = button
+
+    -- HOVER FEEDBACK
+    button.MouseEnter:Connect(function()
+        button.BackgroundColor3 = DESIGN.ItemHoverColor
+    end)
+    button.MouseLeave:Connect(function()
+        button.BackgroundColor3 = DESIGN.InputBackgroundColor
+    end)
+
+    -- ESTADO
+    local listening = false
+    local currentKey = defaultKey
+    local connections = {}
+
+    -- LÓGICA DE ESCUTA
+    local function listenForKey()
+        if listening then return end
+        listening = true
+        button.Text = "Pressione..."
+        local inputConn
+        inputConn = game:GetService("UserInputService").InputBegan:Connect(function(input, processed)
+            if processed then return end
+            if input.UserInputType == Enum.UserInputType.Keyboard then
+                currentKey = input.KeyCode
+                button.Text = currentKey.Name
+                listening = false
+                inputConn:Disconnect()
+            end
+        end)
+    end
+
+    table.insert(connections, button.MouseButton1Click:Connect(listenForKey))
+    table.insert(connections, game:GetService("UserInputService").InputBegan:Connect(function(input, processed)
+        if not processed and input.KeyCode == currentKey then
+            if not self.Blocked then
+                callback(currentKey)
+            end
+        end
+    end))
+
+    -- API PÚBLICA
+    local publicApi = {
+        _instance = box,
+        _connections = connections
+    }
+
+    function publicApi:GetKey()
+        return currentKey
+    end
+
+    function publicApi:SetKey(newKey)
+        if typeof(newKey) == "EnumItem" and newKey.EnumType == Enum.KeyCode then
+            currentKey = newKey
+            button.Text = newKey.Name
+        end
+    end
+
+    function publicApi:Listen()
+        listenForKey()
+    end
+
+    function publicApi:Update(newOptions)
+        if newOptions.Text then label.Text = newOptions.Text end
+        if newOptions.Desc then desc = newOptions.Desc end
+        if newOptions.Default then
+            currentKey = newOptions.Default
+            button.Text = newOptions.Default.Name
+        end
+    end
+
+    function publicApi:Destroy()
+        if publicApi._instance then
+            for _, conn in pairs(publicApi._connections) do
+                if conn and conn.Connected then conn:Disconnect() end
+            end
+            publicApi._instance:Destroy()
+            publicApi._instance = nil
+            publicApi._connections = nil
+        end
+    end
+
+    table.insert(tab.Components, publicApi)
+    box.Parent = tab.Container
+    return publicApi
+end
+
+function Tekscripts:CreateTextBox(tab, options)
+    assert(type(tab) == "table" and tab.Container, "Invalid Tab object provided to CreateTextBox")
+    assert(type(options) == "table" and type(options.Text) == "string", "Invalid arguments for CreateTextBox")
+
+    local title = options.Text or "Log"
+    local desc = options.Desc
+    local defaultText = options.Default or ""
+    local readonly = options.ReadOnly or true
+
+    -- // CONTAINER BASE
+    local boxHolder = Instance.new("Frame")
+    boxHolder.Name = "TextBox"
+    boxHolder.BackgroundColor3 = DESIGN.ComponentBackground
+    boxHolder.Size = UDim2.new(1, 0, 0, desc and 140 or 120)
+
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, DESIGN.CornerRadius)
+    corner.Parent = boxHolder
+
+    local stroke = Instance.new("UIStroke")
+    stroke.Color = DESIGN.HRColor
+    stroke.Thickness = 1
+    stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    stroke.Parent = boxHolder
+
+    -- // LAYOUT BASE
+    local padding = Instance.new("UIPadding")
+    padding.PaddingTop = UDim.new(0, DESIGN.ComponentPadding)
+    padding.PaddingBottom = UDim.new(0, DESIGN.ComponentPadding)
+    padding.PaddingLeft = UDim.new(0, DESIGN.ComponentPadding)
+    padding.PaddingRight = UDim.new(0, DESIGN.ComponentPadding)
+    padding.Parent = boxHolder
+
+    -- // TÍTULO
+    local titleLabel = Instance.new("TextLabel")
+    titleLabel.BackgroundTransparency = 1
+    titleLabel.Text = title
+    titleLabel.Font = Enum.Font.Gotham
+    titleLabel.TextColor3 = DESIGN.ComponentTextColor
+    titleLabel.TextSize = 15
+    titleLabel.TextXAlignment = Enum.TextXAlignment.Left
+    titleLabel.Size = UDim2.new(1, -10, 0, 18)
+    titleLabel.Parent = boxHolder
+
+    -- // SUBTÍTULO
+    local currentY = 22
+    if desc then
+        local sub = Instance.new("TextLabel")
+        sub.BackgroundTransparency = 1
+        sub.Text = desc
+        sub.Font = Enum.Font.GothamSemibold
+        sub.TextColor3 = Color3.fromRGB(150, 150, 150)
+        sub.TextSize = 12
+        sub.TextXAlignment = Enum.TextXAlignment.Left
+        sub.Position = UDim2.new(0, 0, 0, currentY)
+        sub.Size = UDim2.new(1, -10, 0, 16)
+        sub.Parent = boxHolder
+        currentY += 20
+    end
+
+    -- // CONTAINER DO TEXTO (com scroll)
+    local scroll = Instance.new("ScrollingFrame")
+    scroll.Name = "Scroll"
+    scroll.BackgroundColor3 = DESIGN.InputBackgroundColor
+    scroll.BorderSizePixel = 0
+    scroll.Position = UDim2.new(0, 0, 0, currentY + 6)
+    scroll.Size = UDim2.new(1, 0, 1, desc and -currentY - 14 or -28)
+    scroll.ScrollBarThickness = 4
+    scroll.ScrollBarImageColor3 = DESIGN.SliderTrackColor
+    scroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
+    scroll.CanvasSize = UDim2.new(0, 0, 0, 0)
+    scroll.ClipsDescendants = true
+    scroll.Active = true
+    scroll.Parent = boxHolder
+
+    local innerPadding = Instance.new("UIPadding")
+    innerPadding.PaddingTop = UDim.new(0, 6)
+    innerPadding.PaddingLeft = UDim.new(0, 6)
+    innerPadding.PaddingRight = UDim.new(0, 6)
+    innerPadding.PaddingBottom = UDim.new(0, 6)
+    innerPadding.Parent = scroll
+
+    local scrollCorner = Instance.new("UICorner")
+    scrollCorner.CornerRadius = UDim.new(0, 6)
+    scrollCorner.Parent = scroll
+
+    local scrollStroke = Instance.new("UIStroke")
+    scrollStroke.Color = DESIGN.SliderTrackColor
+    scrollStroke.Thickness = 1
+    scrollStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    scrollStroke.Parent = scroll
+
+    -- // TEXTO PRINCIPAL
+    local textLabel = Instance.new("TextLabel")
+    textLabel.BackgroundTransparency = 1
+    textLabel.TextColor3 = DESIGN.InputTextColor
+    textLabel.Font = Enum.Font.Code
+    textLabel.TextSize = 13
+    textLabel.TextXAlignment = Enum.TextXAlignment.Left
+    textLabel.TextYAlignment = Enum.TextYAlignment.Top
+    textLabel.TextWrapped = true
+    textLabel.Text = defaultText
+    textLabel.Size = UDim2.new(1, -8, 0, 0)
+    textLabel.AutomaticSize = Enum.AutomaticSize.Y
+    textLabel.Parent = scroll
+
+    -- // INTERAÇÃO
+    local function updateInteractivity()
+        local blocked = self.Blocked or readonly
+        scroll.Active = not blocked
+        textLabel.TextTransparency = blocked and 0.5 or 0
+        scroll.BackgroundColor3 = blocked and DESIGN.WindowColor2 or DESIGN.InputBackgroundColor
+        scrollStroke.Color = blocked and DESIGN.HRColor or DESIGN.SliderTrackColor
+    end
+
+    updateInteractivity()
+
+    -- // API PÚBLICA
+    local publicApi = {
+        _instance = boxHolder,
+        _scroll = scroll,
+        _label = textLabel,
+        _readonly = readonly
+    }
+
+    function publicApi:SetText(newText)
+        textLabel.Text = tostring(newText)
+        task.wait()
+        scroll.CanvasPosition = Vector2.new(0, math.huge)
+    end
+
+    function publicApi:GetText()
+        return textLabel.Text
+    end
+
+    function publicApi:Append(line)
+        textLabel.Text = textLabel.Text .. "\n" .. tostring(line)
+        task.wait()
+        scroll.CanvasPosition = Vector2.new(0, math.huge)
+    end
+
+    function publicApi:Clear()
+        textLabel.Text = ""
+    end
+
+    function publicApi:SetBlocked(state)
+        self._blocked = state
+        updateInteractivity()
+    end
+
+    function publicApi:Destroy()
+        if publicApi._instance then
+            publicApi._instance:Destroy()
+            publicApi._instance = nil
+        end
+    end
+
+    table.insert(tab.Components, publicApi)
+    boxHolder.Parent = tab.Container
+
+    if self.BlockChanged then
+        self.BlockChanged:Connect(updateInteractivity)
+    end
+
+    return publicApi
+end
+
+function Tekscripts:CreateButton(tab, options)
+    assert(type(tab) == "table" and tab.Container, "Invalid Tab object provided to CreateButton")
+    assert(type(options) == "table" and type(options.Text) == "string", "Invalid arguments for CreateButton")
+
+    -- // BOTÃO BASE
+    local btn = Instance.new("TextButton")
+    btn.Name = "Button"
+    btn.Size = UDim2.new(1, 0, 0, DESIGN.ComponentHeight)
+    btn.BackgroundColor3 = DESIGN.ComponentBackground
+    btn.TextColor3 = DESIGN.ComponentTextColor
+    btn.Font = Enum.Font.Gotham
+    btn.TextSize = 14
+    btn.Text = options.Text
+    btn.AutoButtonColor = false
+    btn.Parent = tab.Container
+
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, DESIGN.CornerRadius)
+    corner.Parent = btn
+
+    local stroke = Instance.new("UIStroke")
+    stroke.Color = DESIGN.HRColor
+    stroke.Thickness = 1
+    stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    stroke.Parent = btn
+
+    -- // HOVER
+    local function updateHover()
+        if self.Blocked then
+            btn.BackgroundColor3 = DESIGN.ComponentBackground
+        else
+            btn.BackgroundColor3 = DESIGN.ComponentHoverColor
+        end
+    end
+
+    local hoverConn, leaveConn
+    hoverConn = btn.MouseEnter:Connect(function()
+        if not self.Blocked then
+            btn.BackgroundColor3 = DESIGN.ComponentHoverColor
+        end
+    end)
+    leaveConn = btn.MouseLeave:Connect(function()
+        if not self.Blocked then
+            btn.BackgroundColor3 = DESIGN.ComponentBackground
+        end
+    end)
+
+    -- // CLIQUE
+    local clickConn
+    clickConn = btn.MouseButton1Click:Connect(function()
+        if self.Blocked then return end
+
+        local feedbackTween = TweenService:Create(btn, TweenInfo.new(0.1, Enum.EasingStyle.Quad), {
+            Size = UDim2.new(0.95, 0, 0, DESIGN.ComponentHeight * 0.9)
+        })
+        feedbackTween:Play()
+
+        feedbackTween.Completed:Connect(function()
+            local returnTween = TweenService:Create(btn, TweenInfo.new(0.1, Enum.EasingStyle.Quad), {
+                Size = UDim2.new(1, 0, 0, DESIGN.ComponentHeight)
+            })
+            returnTween:Play()
+        end)
+
+        if options.Callback then
+            options.Callback()
+        end
+    end)
+
+    -- // API PÚBLICA
+    local publicApi = {
+        _instance = btn,
+        _connections = {Click = clickConn, MouseEnter = hoverConn, MouseLeave = leaveConn}
+    }
+
+    function publicApi:Update(newOptions)
+        if newOptions.Text then
+            btn.Text = newOptions.Text
+        end
+    end
+
+    function publicApi:Destroy()
+        if publicApi._instance then
+            for _, conn in pairs(publicApi._connections) do
+                if conn and conn.Connected then
+                    conn:Disconnect()
+                end
+            end
+            publicApi._instance:Destroy()
+            publicApi._instance = nil
+            publicApi._connections = nil
+        end
+    end
+
+    table.insert(tab.Components, publicApi)
+    return publicApi
+end
+
+function Tekscripts:CreateColorPicker(tab: any, options: {
+    Title: string?,
+    Color: Color3?,
+    Blocked: boolean?,
+    Callback: ((Color3) -> ())?
+})
+    -- Validação inicial
+    assert(tab and tab.Container, "CreateColorPicker: 'tab' e 'tab.Container' válidos são necessários.")
+
+    -- // DEPENDÊNCIAS E SERVIÇOS //
+    local UserInputService = game:GetService("UserInputService")
+    local TweenService = game:GetService("TweenService")
+
+    -- // CONFIGURAÇÃO INICIAL //
+    local defaultOptions = {
+        Title = "Color",
+        Color = Color3.new(1, 1, 1),
+        Blocked = false,
+        Callback = function() end
+    }
+    options = options or {}
+    for key, value in pairs(defaultOptions) do
+        if options[key] == nil then
+            options[key] = value
+        end
+    end
+
+    if typeof(options.Color) ~= "Color3" then
+        warn("CreateColorPicker: 'options.Color' inválido. Esperado Color3, recebido " .. typeof(options.Color) .. ". Usando cor padrão.")
+        options.Color = defaultOptions.Color
+    end
+
+    -- // ESTADO DO COMPONENTE //
+    local state = {
+        isExpanded = false,
+        isBlocked = options.Blocked,
+        isDraggingHue = false,
+        isDraggingSV = false,
+        h = 0, s = 1, v = 1,
+        confirmedColor = options.Color
+    }
+    state.h, state.s, state.v = options.Color:ToHSV()
+
+    local connections = {}
+
+    -- // FUNÇÕES AUXILIARES //
+    local function createInstance(className, properties)
+        local inst = Instance.new(className)
+        for prop, value in pairs(properties) do
+            inst[prop] = value
+        end
+        return inst
+    end
+
+    local function addHoverEffect(button, originalColor, hoverColor)
+        local isHovering = false
+        local isDown = false
+
+        table.insert(connections, button.MouseEnter:Connect(function()
+            isHovering = true
+            if not isDown and not state.isBlocked then
+                TweenService:Create(button, TweenInfo.new(DESIGN.AnimationSpeed, Enum.EasingStyle.Quad), { BackgroundColor3 = hoverColor }):Play()
+            end
+        end))
+        table.insert(connections, button.MouseLeave:Connect(function()
+            isHovering = false
+            if not isDown and not state.isBlocked then
+                TweenService:Create(button, TweenInfo.new(DESIGN.AnimationSpeed, Enum.EasingStyle.Quad), { BackgroundColor3 = originalColor }):Play()
+            end
+        end))
+        table.insert(connections, button.MouseButton1Down:Connect(function()
+            isDown = true
+        end))
+        table.insert(connections, button.MouseButton1Up:Connect(function()
+            isDown = false
+            if isHovering and not state.isBlocked then
+                TweenService:Create(button, TweenInfo.new(DESIGN.AnimationSpeed, Enum.EasingStyle.Quad), { BackgroundColor3 = hoverColor }):Play()
+            else
+                TweenService:Create(button, TweenInfo.new(DESIGN.AnimationSpeed, Enum.EasingStyle.Quad), { BackgroundColor3 = originalColor }):Play()
+            end
+        end))
+    end
+
+    -- // CRIAÇÃO DA UI //
+    local box = createInstance("Frame", {
+        Size = UDim2.new(1, 0, 0, DESIGN.ComponentHeight),
+        BackgroundColor3 = DESIGN.ComponentBackground,
+        BorderSizePixel = 0,
+        ClipsDescendants = true,
+        Parent = tab.Container,
+        LayoutOrder = #tab.Components + 1
+    })
+
+    createInstance("UICorner", { CornerRadius = UDim.new(0, DESIGN.CornerRadius), Parent = box })
+    createInstance("UIPadding", {
+        PaddingLeft = UDim.new(0, DESIGN.ComponentPadding),
+        PaddingRight = UDim.new(0, DESIGN.ComponentPadding),
+        PaddingTop = UDim.new(0, 0),
+        PaddingBottom = UDim.new(0, 0),
+        Parent = box
+    })
+
+    -- Botão principal (título + cor)
+    local mainFrame = createInstance("TextButton", {
+        Position = UDim2.new(0, 0, 0, 0),
+        Size = UDim2.new(1, 0, 0, DESIGN.ComponentHeight),
+        BackgroundColor3 = DESIGN.ComponentBackground,
+        Text = "",
+        BorderSizePixel = 0,
+        Parent = box
+    })
+    createInstance("UICorner", { CornerRadius = UDim.new(0, DESIGN.CornerRadius), Parent = mainFrame })
+    createInstance("UIPadding", {
+        PaddingLeft = UDim.new(0, DESIGN.ComponentPadding),
+        PaddingRight = UDim.new(0, DESIGN.ComponentPadding),
+        Parent = mainFrame
+    })
+
+    local mainLayout = createInstance("UIListLayout", {
+        FillDirection = Enum.FillDirection.Horizontal,
+        VerticalAlignment = Enum.VerticalAlignment.Center,
+        Padding = UDim.new(0, DESIGN.ComponentPadding),
+        Parent = mainFrame
+    })
+
+    local titleLabel = createInstance("TextLabel", {
+        Size = UDim2.new(0, 0, 1, 0),
+        AutomaticSize = Enum.AutomaticSize.X,
+        Font = Enum.Font.Roboto,
+        TextSize = 15,
+        TextColor3 = DESIGN.ComponentTextColor,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        BackgroundTransparency = 1,
+        Text = options.Title,
+        Parent = mainFrame
+    })
+
+    local colorBox = createInstance("Frame", {
+        Size = UDim2.new(0, DESIGN.IconSize, 0, DESIGN.ComponentHeight),
+        BackgroundColor3 = options.Color,
+        BorderSizePixel = 1,
+        BorderColor3 = DESIGN.ThumbOutlineColor,
+        Parent = mainFrame
+    })
+    createInstance("UICorner", { CornerRadius = UDim.new(0, DESIGN.CornerRadius / 2), Parent = colorBox })
+
+    -- Container do picker (oculto inicialmente)
+    local svHeight = 150
+    local pickerInnerHeight = svHeight + 2 * DESIGN.ComponentHeight + 2 * DESIGN.ComponentPadding
+    local pickerHeight = pickerInnerHeight + 2 * DESIGN.ComponentPadding
+    local pickerContainer = createInstance("Frame", {
+        Position = UDim2.new(0, 0, 0, DESIGN.ComponentHeight),
+        Size = UDim2.new(1, 0, 0, pickerHeight),
+        BackgroundColor3 = DESIGN.ComponentBackground,
+        BorderSizePixel = 0,
+        Visible = false,
+        Parent = box
+    })
+    createInstance("UICorner", { CornerRadius = UDim.new(0, DESIGN.CornerRadius), Parent = pickerContainer })
+    createInstance("UIListLayout", {
+        FillDirection = Enum.FillDirection.Vertical,
+        Padding = UDim.new(0, DESIGN.ComponentPadding),
+        Parent = pickerContainer
+    })
+    createInstance("UIPadding", {
+        PaddingTop = UDim.new(0, DESIGN.ComponentPadding),
+        PaddingBottom = UDim.new(0, DESIGN.ComponentPadding),
+        PaddingLeft = UDim.new(0, DESIGN.ComponentPadding),
+        PaddingRight = UDim.new(0, DESIGN.ComponentPadding),
+        Parent = pickerContainer
+    })
+
+    -- Paleta SV
+    local svPalette = createInstance("Frame", {
+        Size = UDim2.new(1, 0, 0, svHeight),
+        BackgroundColor3 = Color3.fromHSV(state.h, 1, 1),
+        Parent = pickerContainer
+    })
+    createInstance("UICorner", { CornerRadius = UDim.new(0, DESIGN.CornerRadius), Parent = svPalette })
+
+    local svWhiteGradient = createInstance("UIGradient", {
+        Color = ColorSequence.new({
+            ColorSequenceKeypoint.new(0, Color3.new(1, 1, 1)),
+            ColorSequenceKeypoint.new(1, Color3.fromHSV(state.h, 1, 1))
+        }),
+        Parent = svPalette
+    })
+
+    local svBlackOverlay = createInstance("Frame", {
+        Size = UDim2.new(1, 0, 1, 0),
+        BackgroundTransparency = 1,
+        Parent = svPalette
+    })
+    createInstance("UIGradient", {
+        Rotation = 90,
+        Color = ColorSequence.new({
+            ColorSequenceKeypoint.new(0, Color3.new(0, 0, 0, 0)),
+            ColorSequenceKeypoint.new(1, Color3.new(0, 0, 0, 1))
+        }),
+        Parent = svBlackOverlay
+    })
+
+    local svThumb = createInstance("Frame", {
+        Size = UDim2.new(0, DESIGN.ResizeHandleSize, 0, DESIGN.ResizeHandleSize),
+        AnchorPoint = Vector2.new(0.5, 0.5),
+        BackgroundColor3 = DESIGN.ThumbColor,
+        BorderSizePixel = 1,
+        BorderColor3 = DESIGN.ThumbOutlineColor,
+        Parent = svPalette
+    })
+    createInstance("UICorner", { CornerRadius = UDim.new(0.5, 0), Parent = svThumb })
+
+    -- Seletor de matiz
+    local hueTrack = createInstance("Frame", {
+        Size = UDim2.new(1, 0, 0, DESIGN.ComponentHeight),
+        BackgroundColor3 = DESIGN.SliderTrackColor,
+        Parent = pickerContainer
+    })
+    createInstance("UICorner", { CornerRadius = UDim.new(0, DESIGN.CornerRadius), Parent = hueTrack })
+    createInstance("UIGradient", {
+        Color = ColorSequence.new({
+            ColorSequenceKeypoint.new(0, Color3.new(1, 0, 0)),
+            ColorSequenceKeypoint.new(0.17, Color3.new(1, 1, 0)),
+            ColorSequenceKeypoint.new(0.33, Color3.new(0, 1, 0)),
+            ColorSequenceKeypoint.new(0.5, Color3.new(0, 1, 1)),
+            ColorSequenceKeypoint.new(0.67, Color3.new(0, 0, 1)),
+            ColorSequenceKeypoint.new(0.83, Color3.new(1, 0, 1)),
+            ColorSequenceKeypoint.new(1, Color3.new(1, 0, 0))
+        }),
+        Parent = hueTrack
+    })
+    local hueThumb = createInstance("Frame", {
+        Size = UDim2.new(0, DESIGN.ResizeHandleSize, 1, 0),
+        BackgroundColor3 = DESIGN.ThumbColor,
+        BorderSizePixel = 1,
+        BorderColor3 = DESIGN.ThumbOutlineColor,
+        Parent = hueTrack
+    })
+    createInstance("UICorner", { CornerRadius = UDim.new(0.5, 0), Parent = hueThumb })
+
+    -- Input e botão
+    local inputConfirmContainer = createInstance("Frame", {
+        Size = UDim2.new(1, 0, 0, DESIGN.ComponentHeight),
+        BackgroundTransparency = 1,
+        Parent = pickerContainer
+    })
+    createInstance("UIListLayout", {
+        FillDirection = Enum.FillDirection.Horizontal,
+        VerticalAlignment = Enum.VerticalAlignment.Center,
+        HorizontalAlignment = Enum.HorizontalAlignment.Right,
+        Padding = UDim.new(0, DESIGN.ComponentPadding),
+        Parent = inputConfirmContainer
+    })
+
+    local colorInput = createInstance("TextBox", {
+        Size = UDim2.new(0, DESIGN.DropdownWidth, 0, DESIGN.ComponentHeight),
+        Font = Enum.Font.Roboto,
+        TextSize = 14,
+        TextColor3 = DESIGN.InputTextColor,
+        BackgroundColor3 = DESIGN.InputBackgroundColor,
+        BorderSizePixel = 1,
+        BorderColor3 = DESIGN.ThumbOutlineColor,
+        Text = string.format("%d, %d, %d", math.floor(options.Color.R * 255), math.floor(options.Color.G * 255), math.floor(options.Color.B * 255)),
+        Parent = inputConfirmContainer
+    })
+    createInstance("UICorner", { CornerRadius = UDim.new(0, DESIGN.CornerRadius), Parent = colorInput })
+    createInstance("UIPadding", {
+        PaddingLeft = UDim.new(0, DESIGN.ComponentPadding),
+        PaddingRight = UDim.new(0, DESIGN.ComponentPadding),
+        Parent = colorInput
+    })
+
+    local confirmButton = createInstance("TextButton", {
+        Size = UDim2.new(0, DESIGN.TagWidth, 0, DESIGN.ComponentHeight),
+        Font = Enum.Font.Roboto,
+        TextSize = 14,
+        TextColor3 = DESIGN.ComponentTextColor,
+        BackgroundColor3 = DESIGN.ComponentBackground,
+        Text = "Confirm",
+        Parent = inputConfirmContainer
+    })
+    createInstance("UICorner", { CornerRadius = UDim.new(0, DESIGN.CornerRadius), Parent = confirmButton })
+
+    -- Overlay de bloqueio
+    local blockedOverlay = createInstance("Frame", {
+        Size = UDim2.new(1, 0, 1, 0),
+        BackgroundTransparency = 0.5,
+        BackgroundColor3 = DESIGN.BlockScreenColor,
+        Visible = state.isBlocked,
+        ZIndex = 10,
+        Parent = box
+    })
+
+    -- // LÓGICA //
+    local function updateColorVisuals(useTween: boolean)
+        local newColor = Color3.fromHSV(state.h, state.s, state.v)
+        if useTween then
+            TweenService:Create(colorBox, TweenInfo.new(DESIGN.AnimationSpeed, Enum.EasingStyle.Quad), { BackgroundColor3 = newColor }):Play()
+        else
+            colorBox.BackgroundColor3 = newColor
+        end
+
+        svPalette.BackgroundColor3 = Color3.fromHSV(state.h, 1, 1)
+        svWhiteGradient.Color = ColorSequence.new({
+            ColorSequenceKeypoint.new(0, Color3.new(1, 1, 1)),
+            ColorSequenceKeypoint.new(1, Color3.fromHSV(state.h, 1, 1))
+        })
+        colorInput.Text = string.format("%d, %d, %d", math.floor(newColor.R * 255), math.floor(newColor.G * 255), math.floor(newColor.B * 255))
+    end
+
+    local function updateThumbs()
+        hueThumb.Position = UDim2.fromScale(state.h, 0.5)
+        svThumb.Position = UDim2.fromScale(state.s, 1 - state.v)
+        updateColorVisuals(false)
+    end
+
+    local function handleHueDrag(inputPos: Vector2)
+        local relX = math.clamp(inputPos.X - hueTrack.AbsolutePosition.X, 0, hueTrack.AbsoluteSize.X)
+        state.h = relX / hueTrack.AbsoluteSize.X
+        hueThumb.Position = UDim2.fromScale(state.h, 0.5)
+        updateColorVisuals(true)
+    end
+
+    local function handleSVDrag(inputPos: Vector2)
+        local relX = math.clamp(inputPos.X - svPalette.AbsolutePosition.X, 0, svPalette.AbsoluteSize.X)
+        local relY = math.clamp(inputPos.Y - svPalette.AbsolutePosition.Y, 0, svPalette.AbsoluteSize.Y)
+        state.s = relX / svPalette.AbsoluteSize.X
+        state.v = 1 - (relY / svPalette.AbsoluteSize.Y)
+        svThumb.Position = UDim2.fromScale(state.s, 1 - state.v)
+        updateColorVisuals(true)
+    end
+
+    local function parseRGBInput(text: string): Color3?
+        local r, g, b = text:match("^(%d+)%s*,%s*(%d+)%s*,%s*(%d+)$")
+        if r and g and b then
+            local rNum, gNum, bNum = tonumber(r), tonumber(g), tonumber(b)
+            if rNum and gNum and bNum and rNum >= 0 and rNum <= 255 and gNum >= 0 and gNum <= 255 and bNum >= 0 and bNum <= 255 then
+                return Color3.fromRGB(rNum, gNum, bNum)
+            end
+        end
+        return nil
+    end
+
+    local function expand()
+        if state.isExpanded or state.isBlocked then return end
+        state.isExpanded = true
+
+        local h, s, v = state.confirmedColor:ToHSV()
+        state.h, state.s, state.v = h, s, v
+        updateThumbs()
+
+        pickerContainer.Visible = true
+        local finalHeight = DESIGN.ComponentHeight + pickerHeight
+        local finalSize = UDim2.new(1, 0, 0, finalHeight)
+        TweenService:Create(box, TweenInfo.new(DESIGN.AnimationSpeed, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Size = finalSize }):Play()
+
+        tab.EmptyLabel.Visible = false
+    end
+
+    local function collapse()
+        if not state.isExpanded or state.isBlocked then return end
+        state.isExpanded = false
+
+        local finalSize = UDim2.new(1, 0, 0, DESIGN.ComponentHeight)
+        local closeTween = TweenService:Create(box, TweenInfo.new(DESIGN.AnimationSpeed, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Size = finalSize })
+        closeTween:Play()
+        closeTween.Completed:Once(function()
+            if not state.isExpanded then
+                pickerContainer.Visible = false
+            end
+            tab.EmptyLabel.Visible = #tab.Components == 0
+        end)
+    end
+
+    local function onMainFrameClick()
+        if state.isBlocked then
+            local originalPos = box.Position
+            TweenService:Create(box, TweenInfo.new(DESIGN.AnimationSpeed, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out, 1, true), { Position = originalPos + UDim2.new(0, DESIGN.ComponentPadding, 0, 0) }):Play()
+            return
+        end
+        if state.isExpanded then
+            collapse()
+        else
+            expand()
+        end
+    end
+
+    local function onConfirmClick()
+        if state.isBlocked then return end
+        state.confirmedColor = Color3.fromHSV(state.h, state.s, state.v)
+        pcall(options.Callback, state.confirmedColor)
+        colorBox.BackgroundColor3 = state.confirmedColor
+        collapse()
+    end
+
+    local function onColorInputChanged()
+        if state.isBlocked then return end
+        local newColor = parseRGBInput(colorInput.Text)
+        if newColor then
+            state.h, state.s, state.v = newColor:ToHSV()
+            updateThumbs()
+        else
+            -- Reverter para o valor atual se inválido
+            updateColorVisuals(false)
+        end
+    end
+
+    -- // EVENTOS //
+    addHoverEffect(mainFrame, DESIGN.ComponentBackground, DESIGN.ComponentHoverColor)
+    addHoverEffect(confirmButton, DESIGN.ComponentBackground, DESIGN.ComponentHoverColor)
+    table.insert(connections, mainFrame.MouseButton1Click:Connect(onMainFrameClick))
+    table.insert(connections, confirmButton.MouseButton1Click:Connect(onConfirmClick))
+    table.insert(connections, colorInput.FocusLost:Connect(onColorInputChanged))
+
+    table.insert(connections, hueTrack.InputBegan:Connect(function(input)
+        if state.isExpanded and not state.isBlocked and (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) then
+            state.isDraggingHue = true
+            handleHueDrag(input.Position)
+        end
+    end))
+
+    table.insert(connections, svPalette.InputBegan:Connect(function(input)
+        if state.isExpanded and not state.isBlocked and (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) then
+            state.isDraggingSV = true
+            handleSVDrag(input.Position)
+        end
+    end))
+
+    table.insert(connections, UserInputService.InputChanged:Connect(function(input)
+        if not state.isExpanded or state.isBlocked then return end
+        if state.isDraggingHue and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+            handleHueDrag(input.Position)
+        elseif state.isDraggingSV and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+            handleSVDrag(input.Position)
+        end
+    end))
+
+    table.insert(connections, UserInputService.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            state.isDraggingHue = false
+            state.isDraggingSV = false
+        end
+    end))
+
+    updateThumbs()
+
+    -- // API PÚBLICA //
+    local publicApi = {}
+
+    function publicApi.SetColor(newColor: Color3)
+        if typeof(newColor) ~= "Color3" then
+            warn("SetColor: Cor inválida. Esperado Color3, recebido " .. typeof(newColor))
+            return
+        end
+        state.confirmedColor = newColor
+        colorBox.BackgroundColor3 = newColor
+        local h, s, v = newColor:ToHSV()
+        state.h, state.s, state.v = h, s, v
+        if state.isExpanded then
+            updateThumbs()
+        end
+        pcall(options.Callback, newColor)
+    end
+
+    function publicApi.GetColor(): Color3
+        return state.confirmedColor
+    end
+
+    function publicApi.SetBlocked(isBlocked: boolean)
+        state.isBlocked = isBlocked
+        blockedOverlay.Visible = isBlocked
+    end
+
+    function publicApi.Destroy()
+        for _, conn in ipairs(connections) do
+            conn:Disconnect()
+        end
+        table.clear(connections)
+        if box and box.Parent then
+            box:Destroy()
+        end
+        for k in pairs(publicApi) do
+            publicApi[k] = nil
+        end
+        for i, comp in ipairs(tab.Components) do
+            if comp == publicApi then
+                table.remove(tab.Components, i)
+                break
+            end
+        end
+        tab.EmptyLabel.Visible = #tab.Components == 0
+        local listLayout = tab.Container:FindFirstChildOfClass("UIListLayout")
+        if listLayout then
+            tab.Container.CanvasSize = UDim2.new(0, 0, 0, listLayout.AbsoluteContentSize.Y + DESIGN.ContainerPadding * 2)
+        end
+    end
+
+    publicApi._instance = box
+    publicApi._connections = connections
+    table.insert(tab.Components, publicApi)
+
+    local listLayout = tab.Container:FindFirstChildOfClass("UIListLayout")
+    if listLayout then
+        tab.Container.CanvasSize = UDim2.new(0, 0, 0, listLayout.AbsoluteContentSize.Y + DESIGN.ContainerPadding * 2)
+    end
+
+    return publicApi
+end
 
 return Tekscripts
