@@ -1163,13 +1163,13 @@ end
 function Tekscripts:CreateTab(options: { Title: string })
     local DESIGN = DESIGN
     local title = options and options.Title
-    assert(type(title) == "string", "Invalid arguments for CreateTab")
+    assert(type(title) == "string", "CreateTab: argumento 'Title' inválido")
 
-    -- Cria a aba e armazena
+    -- Criação da aba e registro
     local tab = Tab.new(title, self.TabContentContainer)
     self.Tabs[title] = tab
 
-    -- Cria botão da aba
+    -- Criação do botão da aba
     local button = Instance.new("TextButton")
     button.Name = title
     button.Text = title
@@ -1179,6 +1179,8 @@ function Tekscripts:CreateTab(options: { Title: string })
     button.Font = Enum.Font.Roboto
     button.TextScaled = true
     button.BorderSizePixel = 0
+    button.AutoButtonColor = false
+    button.ZIndex = 3
     button.Parent = self.TabContainer
     tab.Button = button
 
@@ -1187,8 +1189,8 @@ function Tekscripts:CreateTab(options: { Title: string })
         return self.CurrentTab ~= tab
     end)
 
-    -- Clique da aba
-    button.MouseButton1Click:Connect(function()
+    -- Evento de clique
+    local clickConn = button.MouseButton1Click:Connect(function()
         if not self.Blocked then
             self:SetActiveTab(tab)
         end
@@ -1196,30 +1198,49 @@ function Tekscripts:CreateTab(options: { Title: string })
 
     tab.Container.Visible = false
 
-    -- Aba inicial
+    -- Define aba inicial
     if (self.startTab and self.startTab == title) or not self.CurrentTab then
         self:SetActiveTab(tab)
     end
 
     self.NoTabsLabel.Visible = next(self.Tabs) == nil
 
-    -- Função de destruição da aba
+    -- Referências para limpeza
+    tab._connections = { clickConn }
+
+    -- Destruição completa e segura
     function tab:Destroy()
+        if self._destroyed then return end
+        self._destroyed = true
+
+        -- Desconecta eventos
+        for _, conn in ipairs(self._connections or {}) do
+            if conn and conn.Connected then conn:Disconnect() end
+        end
+
         -- Destrói componentes internos
-        for _, comp in pairs(self.Components) do
-            if comp.Destroy then
+        for _, comp in pairs(self.Components or {}) do
+            if typeof(comp) == "table" and comp.Destroy then
                 pcall(comp.Destroy, comp)
             end
         end
 
-        -- Remove container e botão
-        if self.Container then self.Container:Destroy() end
-        if self.Button then self.Button:Destroy() end
+        -- Remove elementos visuais
+        if self.Container then
+            self.Container:Destroy()
+            self.Container = nil
+        end
+        if self.Button then
+            self.Button:Destroy()
+            self.Button = nil
+        end
 
-        -- Atualiza tabela de abas
-        self.Tabs[title] = nil
+        -- Remove da lista de abas
+        if self.Tabs then
+            self.Tabs[title] = nil
+        end
 
-        -- Atualiza aba ativa
+        -- Atualiza a aba ativa
         if self.CurrentTab == self then
             local nextName = next(self.Tabs)
             self.CurrentTab = nextName and self.Tabs[nextName] or nil
@@ -1228,7 +1249,25 @@ function Tekscripts:CreateTab(options: { Title: string })
                 self:SetActiveTab(self.Tabs[nextName])
             end
         end
+
+        -- Limpa referências
+        self._connections = nil
+        self.Components = nil
+        self.Tabs = nil
+        setmetatable(self, nil)
+        table.clear(self)
     end
+
+    -- Auto-clean: destrói automaticamente se o botão for removido
+    button.AncestryChanged:Connect(function(_, parent)
+        if not parent and not tab._destroyed then
+            task.defer(function()
+                if tab and not tab._destroyed then
+                    tab:Destroy()
+                end
+            end)
+        end
+    end)
 
     return tab
 end
@@ -1249,38 +1288,73 @@ end
 -- Funções de Estado (Minimizar/Expandir)
 ---
 function Tekscripts:Minimize()
-    if self.MinimizedState or self.Blocked then return end
+    if self.Blocked or self.MinimizedState ~= nil then return end
+    if not self.Window or not self.FloatButton then return warn("[Tekscripts:Minimize] Window ou FloatButton inválidos") end
+    if not self.Window.Parent then return end
+
     self.MinimizedState = "float"
 
-    -- Salva estado atual
-    self.LastWindowPosition = self.Window.Position
-    self.LastWindowSize = self.Window.Size
-    
-    local minimizeTween = TweenService:Create(self.Window, TweenInfo.new(0.3, Enum.EasingStyle.Quad), {
+    -- Salva estado atual com fallback
+    self.LastWindowPosition = self.Window.Position or UDim2.new(0.5, 0, 0.5, 0)
+    self.LastWindowSize = self.Window.Size or UDim2.new(0, 300, 0, 200)
+
+    -- Proteção: cancela tweens anteriores
+    if self._activeTween and self._activeTween.PlaybackState == Enum.PlaybackState.Playing then
+        self._activeTween:Cancel()
+    end
+
+    local minimizeTween = TweenService:Create(self.Window, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
         Size = UDim2.new(0, 0, 0, 0),
         Position = UDim2.new(0.5, 0, 0.5, 0)
     })
+    self._activeTween = minimizeTween
+
+    local connection
+    connection = minimizeTween.Completed:Connect(function()
+        if not self.Window then return end
+        self.Window.Visible = false
+        if self.FloatButton then
+            self.FloatButton.Visible = true
+
+            local floatTween = TweenService:Create(self.FloatButton, TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+                Size = DESIGN.FloatButtonSize or UDim2.new(0, 45, 0, 45)
+            })
+            floatTween:Play()
+        end
+        if connection then connection:Disconnect() end
+    end)
 
     minimizeTween:Play()
-    minimizeTween.Completed:Connect(function()
-        self.Window.Visible = false
-        self.FloatButton.Visible = true
-
-        local floatTween = TweenService:Create(self.FloatButton, TweenInfo.new(0.2, Enum.EasingStyle.Back), {
-            Size = DESIGN.FloatButtonSize
-        })
-        floatTween:Play()
-    end)
 end
 
 function Tekscripts:Expand()
-    if not self.MinimizedState or self.Blocked then return end
-    
-    if self.MinimizedState == "float" then
-        self:ExpandFromFloat()
-    else
-        self:ExpandFromEdge(self.MinimizedState)
+    if self.Blocked or not self.MinimizedState then return end
+    if not self.Window or not self.FloatButton then return warn("[Tekscripts:Expand] Window ou FloatButton inválidos") end
+    if not self.Window.Parent then return end
+
+    local mode = self.MinimizedState
+    self.MinimizedState = nil
+
+    -- Garante que botão flutuante desapareça
+    self.FloatButton.Visible = false
+    self.Window.Visible = true
+
+    -- Cancela tweens anteriores
+    if self._activeTween and self._activeTween.PlaybackState == Enum.PlaybackState.Playing then
+        self._activeTween:Cancel()
     end
+
+    local expandTween = TweenService:Create(self.Window, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+        Size = self.LastWindowSize or UDim2.new(0, 300, 0, 200),
+        Position = self.LastWindowPosition or UDim2.new(0.5, 0, 0.5, 0)
+    })
+    self._activeTween = expandTween
+
+    expandTween.Completed:Connect(function()
+        self._activeTween = nil
+    end)
+
+    expandTween:Play()
 end
 
 function Tekscripts:ExpandFromFloat()
@@ -1329,151 +1403,6 @@ end
 ---
 -- Funções Públicas para criar componentes
 ---
-function Tekscripts:Notify(options: { 
-    Title: string?, 
-    Desc: string?, 
-    Duration: number?, 
-    Callback: (() -> ())?, 
-    ButtonText: string?, 
-    Persistent: boolean?, 
-    ImageId: string?,
-    BackgroundColor: Color3?, 
-    TitleColor: Color3?, 
-    DescColor: Color3?, 
-    FontTitle: Enum.Font?,
-    FontDesc: Enum.Font?
-})
-    assert(type(options) == "table" and (options.Title or options.Desc), "Title or Desc required")
-
-    local notifyFrame = Instance.new("Frame")
-    notifyFrame.Size = UDim2.new(1, 0, 0, DESIGN.NotifyHeight)
-    notifyFrame.BackgroundColor3 = options.BackgroundColor or DESIGN.NotifyBackground
-    notifyFrame.BackgroundTransparency = 1
-    notifyFrame.BorderSizePixel = 0
-    addRoundedCorners(notifyFrame, DESIGN.CornerRadius)
-    notifyFrame.Parent = self.NotifyContainer
-    notifyFrame.ClipsDescendants = true
-
-    local paddingRight = 10
-    local notifyImage
-    if options.ImageId then
-        notifyImage = Instance.new("ImageLabel")
-        notifyImage.Size = UDim2.new(0, DESIGN.NotifyHeight - 8, 0, DESIGN.NotifyHeight - 8)
-        notifyImage.Position = UDim2.new(1, -(DESIGN.NotifyHeight - 8) - 5, 0.5, -(DESIGN.NotifyHeight - 8)/2)
-        notifyImage.BackgroundTransparency = 1
-        notifyImage.Image = options.ImageId
-        addRoundedCorners(notifyImage, DESIGN.CornerRadius)
-        notifyImage.Parent = notifyFrame
-        notifyImage.ImageTransparency = 1
-        paddingRight = paddingRight + DESIGN.NotifyHeight + 5
-    end
-
-    local actionButton
-    if options.ButtonText then
-        actionButton = Instance.new("TextButton")
-        actionButton.Text = options.ButtonText
-        actionButton.Size = UDim2.new(0, 80, 0, 24)
-        actionButton.Position = UDim2.new(1, -85, 0.5, -12)
-        actionButton.BackgroundColor3 = DESIGN.ActiveToggleColor
-        actionButton.TextColor3 = Color3.new(1,1,1)
-        addRoundedCorners(actionButton, DESIGN.CornerRadius)
-        actionButton.Parent = notifyFrame
-        actionButton.AutoButtonColor = true
-        actionButton.TextScaled = true
-        actionButton.TextWrapped = true
-        paddingRight = paddingRight + 85 + 5
-    end
-
-    -- Garante largura mínima para o texto
-    local minTextWidth = 100
-    local textContainerWidth = math.max(UDim2.new(1, -paddingRight, 1, 0).X.Offset, minTextWidth)
-
-    local textContainer = Instance.new("Frame")
-    textContainer.Size = UDim2.new(0, textContainerWidth, 1, 0)
-    textContainer.Position = UDim2.new(0, 5, 0, 0)
-    textContainer.BackgroundTransparency = 1
-    textContainer.Parent = notifyFrame
-
-    if options.Title then
-        local titleLabel = Instance.new("TextLabel")
-        titleLabel.Text = options.Title
-        titleLabel.Size = UDim2.new(1,0,0.5,0)
-        titleLabel.BackgroundTransparency = 1
-        titleLabel.TextColor3 = options.TitleColor or DESIGN.NotifyTextColor
-        titleLabel.Font = options.FontTitle or Enum.Font.SourceSansBold
-        titleLabel.TextScaled = true
-        titleLabel.TextXAlignment = Enum.TextXAlignment.Left
-        titleLabel.TextYAlignment = Enum.TextYAlignment.Top
-        titleLabel.TextTransparency = 1
-        titleLabel.Parent = textContainer
-    end
-
-    if options.Desc then
-        local descLabel = Instance.new("TextLabel")
-        descLabel.Text = options.Desc
-        descLabel.Size = UDim2.new(1,0,0.5,0)
-        descLabel.Position = UDim2.new(0,0,0.5,0)
-        descLabel.BackgroundTransparency = 1
-        descLabel.TextColor3 = options.DescColor or Color3.new(0.8,0.8,0.8)
-        descLabel.Font = options.FontDesc or Enum.Font.SourceSans
-        descLabel.TextScaled = true
-        descLabel.TextXAlignment = Enum.TextXAlignment.Left
-        descLabel.TextYAlignment = Enum.TextYAlignment.Top
-        descLabel.TextTransparency = 1
-        descLabel.TextWrapped = true
-        descLabel.Parent = textContainer
-    end
-
-    local function playTween(obj, props, duration)
-        local tween = TweenService:Create(obj, TweenInfo.new(duration or 0.4, Enum.EasingStyle.Quad), props)
-        tween:Play()
-        return tween
-    end
-
-    local function closeNotification()
-        local tweens = { playTween(notifyFrame, {BackgroundTransparency = 1}) }
-        for _, child in pairs(textContainer:GetChildren()) do
-            if child:IsA("TextLabel") then
-                table.insert(tweens, playTween(child, {TextTransparency = 1}))
-            end
-        end
-        if notifyImage then table.insert(tweens, playTween(notifyImage, {ImageTransparency = 1})) end
-        if actionButton then table.insert(tweens, playTween(actionButton, {BackgroundTransparency = 1, TextTransparency = 1})) end
-        tweens[1].Completed:Wait()
-        notifyFrame:Destroy()
-    end
-
-    local function triggerCallback()
-        if options.Callback then options.Callback() end
-        closeNotification()
-    end
-
-    if actionButton then
-        actionButton.MouseButton1Click:Connect(triggerCallback)
-        actionButton.TouchTap:Connect(triggerCallback)
-    else
-        notifyFrame.InputBegan:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-                triggerCallback()
-            end
-        end)
-    end
-
-    -- Tween de entrada
-    playTween(notifyFrame, {BackgroundTransparency = 0})
-    for _, child in pairs(textContainer:GetChildren()) do
-        if child:IsA("TextLabel") then playTween(child, {TextTransparency = 0}) end
-    end
-    if notifyImage then playTween(notifyImage, {ImageTransparency = 0}) end
-    if actionButton then playTween(actionButton, {BackgroundTransparency = 0, TextTransparency = 0}) end
-
-    if not options.Persistent then
-        spawn(function()
-            task.wait(options.Duration or 5)
-            closeNotification()
-        end)
-    end
-end
 
 function Tekscripts:CreateFloatingButton(options: {
     BorderRadius: number?,
@@ -2328,140 +2257,6 @@ function Tekscripts:CreateSlider(tab: any, options: {
     return publicApi
 end
 
-function Tekscripts:CreateToggle(tab: any, options: { Text: string, Desc: string?, Callback: (state: boolean) -> () })
-    assert(type(tab) == "table" and tab.Container, "Invalid Tab object provided to CreateToggle")
-    assert(type(options) == "table" and type(options.Text) == "string", "Invalid arguments for CreateToggle")
-
-    local descHeight = options.Desc and 16 or 0
-    local padding = 6
-    local totalHeight = DESIGN.ComponentHeight + descHeight + padding
-
-    -- Box externo
-    local outerBox = Instance.new("Frame")
-    outerBox.Size = UDim2.new(1, 0, 0, totalHeight)
-    outerBox.BackgroundColor3 = DESIGN.ComponentBackground
-    outerBox.BorderSizePixel = 0
-    outerBox.Parent = tab.Container
-    addRoundedCorners(outerBox, DESIGN.CornerRadius)
-
-    -- Container interno
-    local container = Instance.new("Frame")
-    container.Size = UDim2.new(1, -DESIGN.ComponentPadding*2, 1, 0)
-    container.Position = UDim2.new(0, DESIGN.ComponentPadding, 0, 0)
-    container.BackgroundTransparency = 1
-    container.Parent = outerBox
-
-    -- Label principal
-    local label = Instance.new("TextLabel")
-    label.Text = options.Text
-    label.Size = UDim2.new(0.7, -10, 0, DESIGN.ComponentHeight)
-    label.Position = UDim2.new(0, 0, 0, 0)
-    label.BackgroundTransparency = 1
-    label.TextColor3 = DESIGN.ComponentTextColor
-    label.Font = Enum.Font.Roboto
-    label.TextScaled = false
-    label.TextSize = 16
-    label.TextXAlignment = Enum.TextXAlignment.Left
-    label.Parent = container
-
-    -- Label de descrição
-    local descLabel
-    if options.Desc then
-        descLabel = Instance.new("TextLabel")
-        descLabel.Text = options.Desc
-        descLabel.Size = UDim2.new(0.7, -10, 0, descHeight)
-        descLabel.Position = UDim2.new(0, 0, 0, DESIGN.ComponentHeight)
-        descLabel.BackgroundTransparency = 1
-        descLabel.TextColor3 = Color3.fromRGB(160, 160, 160)
-        descLabel.Font = Enum.Font.Roboto
-        descLabel.TextScaled = false
-        descLabel.TextSize = 14
-        descLabel.TextXAlignment = Enum.TextXAlignment.Left
-        descLabel.Parent = container
-    end
-
-    -- Switch
-    local switch = Instance.new("TextButton")
-    switch.Size = UDim2.new(0, 50, 0, 24)
-    switch.Position = UDim2.new(0.85, 0, 0, (totalHeight - 24)/2) -- movido mais para a direita
-    switch.BackgroundColor3 = DESIGN.InactiveToggleColor
-    switch.Text = ""
-    switch.AutoButtonColor = false
-    switch.ClipsDescendants = true
-    switch.Parent = container
-    addRoundedCorners(switch, 100)
-
-    -- Knob
-    local knob = Instance.new("Frame")
-    knob.Size = UDim2.new(0, 20, 0, 20)
-    knob.Position = UDim2.new(0, 2, 0, 2) -- centralizado dentro do switch
-    knob.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    knob.Parent = switch
-    addRoundedCorners(knob, 100)
-
-    -- Estado interno
-    local state = false
-    local locked = false
-    local connections = {}
-    local publicApi = { _instance = outerBox, _connections = connections }
-
-    local function animateToggle(newState: boolean)
-        TweenService:Create(switch, TweenInfo.new(0.25, Enum.EasingStyle.Quad), {
-            BackgroundColor3 = newState and DESIGN.ActiveToggleColor or DESIGN.InactiveToggleColor
-        }):Play()
-        TweenService:Create(knob, TweenInfo.new(0.25, Enum.EasingStyle.Quad), {
-            Position = newState and UDim2.new(1, -22, 0, 2) or UDim2.new(0, 2, 0, 2)
-        }):Play()
-    end
-
-    local function toggle(newState: boolean, skipCallback: boolean?)
-        if locked then return end
-        state = newState
-        animateToggle(state)
-        if not skipCallback and options.Callback then
-            options.Callback(state)
-        end
-    end
-
-    connections.Click = switch.MouseButton1Click:Connect(function()
-        if locked then return end
-        toggle(not state)
-    end)
-
-    -- Public API
-    function publicApi.SetState(newState: boolean) toggle(newState, true) end
-    function publicApi.GetState(): boolean return state end
-    function publicApi.Toggle() toggle(not state) end
-    function publicApi.SetText(newText: string) label.Text = newText end
-    function publicApi.SetDesc(newDesc: string) if descLabel then descLabel.Text = newDesc end end
-    function publicApi.SetCallback(newCallback) options.Callback = newCallback end
-    function publicApi.SetLocked(isLocked: boolean)
-        locked = isLocked
-        switch.AutoButtonColor = not locked
-        local color = locked and (DESIGN.LockedColor or Color3.fromRGB(90,90,90))
-            or (state and DESIGN.ActiveToggleColor or DESIGN.InactiveToggleColor)
-        switch.BackgroundColor3 = color
-    end
-    function publicApi.Update(newOptions: { Text: string?, Desc: string?, State: boolean? })
-        if newOptions.Text then label.Text = newOptions.Text end
-        if newOptions.Desc and descLabel then descLabel.Text = newOptions.Desc end
-        if newOptions.State ~= nil and newOptions.State ~= state then toggle(newOptions.State) end
-    end
-    function publicApi.Destroy()
-        if publicApi._instance then
-            for _, conn in pairs(publicApi._connections) do
-                if conn and conn.Connected then conn:Disconnect() end
-            end
-            publicApi._instance:Destroy()
-            publicApi._instance = nil
-            publicApi._connections = nil
-        end
-    end
-
-    table.insert(tab.Components, publicApi)
-    return publicApi
-end
-
 function Tekscripts:CreateDropdown(tab: any, options: {
     Title: string,
     Values: { { Name: string, Image: string? } },
@@ -3029,191 +2824,6 @@ local function addHoverEffect(element, normalColor, hoverColor)
 			tweenService:Create(element, TweenInfo.new(0.15), {BackgroundColor3 = normalColor}):Play()
 		end
 	end)
-end
-
-function Tekscripts:CreateInput(tab, options)
-	assert(type(tab) == "table" and tab.Container, "Invalid Tab object provided to CreateInput")
-	assert(type(options) == "table" and type(options.Text) == "string", "Invalid arguments for CreateInput")
-
-	local box = Instance.new("Frame")
-	box.Size = UDim2.new(1, 0, 0, DESIGN.ComponentHeight + 30)
-	box.BackgroundColor3 = DESIGN.ComponentBackground
-	box.BackgroundTransparency = 0.05
-	box.Parent = tab.Container
-	addRoundedCorners(box, DESIGN.CornerRadius)
-
-	local padding = Instance.new("UIPadding")
-	padding.PaddingTop = UDim.new(0, 8)
-	padding.PaddingBottom = UDim.new(0, 8)
-	padding.PaddingLeft = UDim.new(0, 10)
-	padding.PaddingRight = UDim.new(0, 10)
-	padding.Parent = box
-
-	local layout = Instance.new("UIListLayout")
-	layout.FillDirection = Enum.FillDirection.Vertical
-	layout.Padding = UDim.new(0, 4)
-	layout.SortOrder = Enum.SortOrder.LayoutOrder
-	layout.Parent = box
-
-	local topRow = Instance.new("Frame")
-	topRow.Size = UDim2.new(1, 0, 0, 28)
-	topRow.BackgroundTransparency = 1
-	topRow.Parent = box
-
-	local rowLayout = Instance.new("UIListLayout")
-	rowLayout.FillDirection = Enum.FillDirection.Horizontal
-	rowLayout.Padding = UDim.new(0, 6)
-	rowLayout.VerticalAlignment = Enum.VerticalAlignment.Center
-	rowLayout.SortOrder = Enum.SortOrder.LayoutOrder
-	rowLayout.Parent = topRow
-
-	local title = Instance.new("TextLabel")
-	title.Size = UDim2.new(0.4, 0, 1, 0)
-	title.BackgroundTransparency = 1
-	title.Text = options.Text
-	title.Font = Enum.Font.GothamBold
-	title.TextScaled = true
-	title.TextXAlignment = Enum.TextXAlignment.Left
-	title.TextColor3 = DESIGN.ComponentTextColor
-	title.Parent = topRow
-
-	local textbox = Instance.new("TextBox")
-	textbox.Size = UDim2.new(0.6, 0, 1, 0)
-	textbox.BackgroundColor3 = DESIGN.InputBackgroundColor
-	textbox.PlaceholderText = options.Placeholder or ""
-	textbox.PlaceholderColor3 = Color3.fromRGB(140, 140, 140)
-	textbox.TextColor3 = DESIGN.InputTextColor
-	textbox.TextScaled = true
-	textbox.Font = Enum.Font.Roboto
-	textbox.TextXAlignment = Enum.TextXAlignment.Left
-	textbox.TextYAlignment = Enum.TextYAlignment.Center
-	textbox.BorderSizePixel = 0
-	textbox.Text = ""
-	textbox.ClipsDescendants = true
-	textbox.Parent = topRow
-	addRoundedCorners(textbox, DESIGN.CornerRadius)
-	addHoverEffect(textbox, DESIGN.InputBackgroundColor, DESIGN.InputHoverColor)
-
-	local blockOverlay = Instance.new("Frame")
-	blockOverlay.Size = UDim2.new(1, 0, 1, 0)
-	blockOverlay.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-	blockOverlay.BackgroundTransparency = 0.35
-	blockOverlay.Visible = false
-	blockOverlay.ZIndex = textbox.ZIndex + 2
-	addRoundedCorners(blockOverlay, DESIGN.CornerRadius)
-	blockOverlay.Parent = textbox
-
-	local blockText = Instance.new("TextLabel")
-	blockText.AnchorPoint = Vector2.new(0.5, 0.5)
-	blockText.Position = UDim2.new(0.5, 0, 0.5, 0)
-	blockText.Size = UDim2.new(1, -8, 1, -8)
-	blockText.BackgroundTransparency = 1
-	blockText.Text = options.BlockText or "🔒 BLOQUEADO"
-	blockText.Font = Enum.Font.GothamBold
-	blockText.TextScaled = true
-	blockText.TextColor3 = Color3.fromRGB(255, 85, 85)
-	blockText.ZIndex = blockOverlay.ZIndex + 1
-	blockText.Parent = blockOverlay
-
-	-- === DESC (opcional) ===
-	local desc
-	if options.Desc then
-		desc = Instance.new("TextLabel")
-		desc.Size = UDim2.new(1, 0, 0, 14)
-		desc.BackgroundTransparency = 1
-		desc.Text = options.Desc
-		desc.Font = Enum.Font.Gotham
-		desc.TextScaled = true
-		desc.TextWrapped = true
-		desc.TextXAlignment = Enum.TextXAlignment.Left
-		desc.TextColor3 = DESIGN.ComponentTextColor:lerp(Color3.new(0.7, 0.7, 0.7), 0.6)
-		desc.Parent = box
-	end
-
-	local connections = {}
-	local publicApi = {
-		_instance = box,
-		_connections = connections,
-		Blocked = false,
-	}
-
-	local function runCallback(value)
-		if publicApi.Blocked then return end
-		if options.Callback then
-			options.Callback(value)
-		end
-	end
-
-	if options.Type and options.Type:lower() == "number" then
-		connections.Changed = textbox:GetPropertyChangedSignal("Text"):Connect(function()
-			if publicApi.Blocked then return end
-			local newText = textbox.Text
-			if tonumber(newText) or newText == "" or newText == "-" then
-				runCallback(tonumber(newText) or 0)
-			else
-				textbox.Text = newText:sub(1, #newText - 1)
-			end
-		end)
-	else
-		connections.FocusLost = textbox.FocusLost:Connect(function(enterPressed)
-			if publicApi.Blocked then return end
-			if enterPressed then
-				runCallback(textbox.Text)
-			end
-		end)
-	end
-
-	function publicApi:SetBlocked(state, text)
-		self.Blocked = state
-		textbox.Active = not state
-		textbox.TextEditable = not state
-		blockOverlay.Visible = state
-		if text then blockText.Text = tostring(text) end
-	end
-
-	function publicApi:Update(newOptions)
-		if not newOptions then return end
-		if newOptions.Text then title.Text = newOptions.Text end
-		if newOptions.Placeholder then textbox.PlaceholderText = newOptions.Placeholder end
-		if newOptions.Desc then
-			if desc then
-				desc.Text = newOptions.Desc
-			elseif newOptions.Desc ~= "" then
-				desc = Instance.new("TextLabel")
-				desc.Size = UDim2.new(1, 0, 0, 14)
-				desc.BackgroundTransparency = 1
-				desc.TextColor3 = DESIGN.ComponentTextColor:lerp(Color3.new(0.7, 0.7, 0.7), 0.6)
-				desc.Font = Enum.Font.Gotham
-				desc.TextScaled = true
-				desc.TextWrapped = true
-				desc.TextXAlignment = Enum.TextXAlignment.Left
-				desc.Text = newOptions.Desc
-				desc.Parent = box
-			end
-		end
-		if newOptions.Value ~= nil then
-			textbox.Text = tostring(newOptions.Value)
-		end
-		if newOptions.BlockText then
-			blockText.Text = tostring(newOptions.BlockText)
-		end
-	end
-
-	function publicApi:Destroy()
-		if self._connections then
-			for _, conn in pairs(self._connections) do
-				if conn and conn.Connected then conn:Disconnect() end
-			end
-			self._connections = nil
-		end
-		if self._instance then
-			self._instance:Destroy()
-			self._instance = nil
-		end
-	end
-
-	table.insert(tab.Components, publicApi)
-	return publicApi
 end
 
 function Tekscripts:CreateSection(tab: any, options: { Title: string?, Open: boolean?, Fixed: boolean? })
@@ -3806,104 +3416,6 @@ function Tekscripts:CreateTextBox(tab, options)
     return publicApi
 end
 
-function Tekscripts:CreateButton(tab, options)
-    assert(type(tab) == "table" and tab.Container, "Invalid Tab object provided to CreateButton")
-    assert(type(options) == "table" and type(options.Text) == "string", "Invalid arguments for CreateButton")
-
-    -- // BOTÃO BASE
-    local btn = Instance.new("TextButton")
-    btn.Name = "Button"
-    btn.Size = UDim2.new(1, 0, 0, DESIGN.ComponentHeight)
-    btn.BackgroundColor3 = DESIGN.ComponentBackground
-    btn.TextColor3 = DESIGN.ComponentTextColor
-    btn.Font = Enum.Font.Gotham
-    btn.TextSize = 14
-    btn.Text = options.Text
-    btn.AutoButtonColor = false
-    btn.Parent = tab.Container
-
-    local corner = Instance.new("UICorner")
-    corner.CornerRadius = UDim.new(0, DESIGN.CornerRadius)
-    corner.Parent = btn
-
-    local stroke = Instance.new("UIStroke")
-    stroke.Color = DESIGN.HRColor
-    stroke.Thickness = 1
-    stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-    stroke.Parent = btn
-
-    -- // HOVER
-    local function updateHover()
-        if self.Blocked then
-            btn.BackgroundColor3 = DESIGN.ComponentBackground
-        else
-            btn.BackgroundColor3 = DESIGN.ComponentHoverColor
-        end
-    end
-
-    local hoverConn, leaveConn
-    hoverConn = btn.MouseEnter:Connect(function()
-        if not self.Blocked then
-            btn.BackgroundColor3 = DESIGN.ComponentHoverColor
-        end
-    end)
-    leaveConn = btn.MouseLeave:Connect(function()
-        if not self.Blocked then
-            btn.BackgroundColor3 = DESIGN.ComponentBackground
-        end
-    end)
-
-    -- // CLIQUE
-    local clickConn
-    clickConn = btn.MouseButton1Click:Connect(function()
-        if self.Blocked then return end
-
-        local feedbackTween = TweenService:Create(btn, TweenInfo.new(0.1, Enum.EasingStyle.Quad), {
-            Size = UDim2.new(0.95, 0, 0, DESIGN.ComponentHeight * 0.9)
-        })
-        feedbackTween:Play()
-
-        feedbackTween.Completed:Connect(function()
-            local returnTween = TweenService:Create(btn, TweenInfo.new(0.1, Enum.EasingStyle.Quad), {
-                Size = UDim2.new(1, 0, 0, DESIGN.ComponentHeight)
-            })
-            returnTween:Play()
-        end)
-
-        if options.Callback then
-            options.Callback()
-        end
-    end)
-
-    -- // API PÚBLICA
-    local publicApi = {
-        _instance = btn,
-        _connections = {Click = clickConn, MouseEnter = hoverConn, MouseLeave = leaveConn}
-    }
-
-    function publicApi:Update(newOptions)
-        if newOptions.Text then
-            btn.Text = newOptions.Text
-        end
-    end
-
-    function publicApi:Destroy()
-        if publicApi._instance then
-            for _, conn in pairs(publicApi._connections) do
-                if conn and conn.Connected then
-                    conn:Disconnect()
-                end
-            end
-            publicApi._instance:Destroy()
-            publicApi._instance = nil
-            publicApi._connections = nil
-        end
-    end
-
-    table.insert(tab.Components, publicApi)
-    return publicApi
-end
-
 function Tekscripts:CreateColorPicker(tab: any, options: {
     Title: string?,
     Color: Color3?,
@@ -4413,4 +3925,520 @@ function Tekscripts:CreateColorPicker(tab: any, options: {
     return publicApi
 end
 
+function Tekscripts:CreateButton(tab, options)
+    -- // VALIDAÇÃO
+    assert(typeof(tab) == "table" and tab.Container, "CreateButton: 'tab' inválido ou sem Container.")
+    assert(typeof(options) == "table" and typeof(options.Text) == "string", "CreateButton: 'options' inválido.")
+
+    -- // SERVIÇOS
+    local TweenService = game:GetService("TweenService")
+
+    -- // CONFIG
+    local callback = typeof(options.Callback) == "function" and options.Callback or function() end
+    local debounceTime = tonumber(options.Debounce or 0.25)
+    local lastClick = 0
+    local btnColor = DESIGN.ComponentBackground
+    local hoverColor = DESIGN.ComponentHoverColor
+    local errorColor = Color3.fromRGB(255, 60, 60)
+
+    -- // INSTÂNCIA
+    local btn = Instance.new("TextButton")
+    btn.Name = "Button"
+    btn.Size = UDim2.new(1, 0, 0, DESIGN.ComponentHeight)
+    btn.BackgroundColor3 = btnColor
+    btn.TextColor3 = DESIGN.ComponentTextColor
+    btn.Font = Enum.Font.Gotham
+    btn.TextSize = 14
+    btn.Text = options.Text
+    btn.AutoButtonColor = false
+    btn.ClipsDescendants = true
+    btn.Parent = tab.Container
+
+    -- // VISUAL
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, DESIGN.CornerRadius)
+    corner.Parent = btn
+
+    local stroke = Instance.new("UIStroke")
+    stroke.Color = DESIGN.HRColor
+    stroke.Thickness = 1
+    stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    stroke.Parent = btn
+
+    -- // ANIMAÇÕES
+    local function tweenTo(props, duration)
+        if not btn or not btn.Parent then return end
+        local tween = TweenService:Create(btn, TweenInfo.new(duration or 0.15, Enum.EasingStyle.Quad), props)
+        tween:Play()
+        return tween
+    end
+
+    local function pulseError()
+        tweenTo({BackgroundColor3 = errorColor}, 0.1)
+        task.delay(0.2, function()
+            tweenTo({BackgroundColor3 = btnColor}, 0.2)
+        end)
+    end
+
+    -- // EVENTOS
+    local hoverConn = btn.MouseEnter:Connect(function()
+        if not self.Blocked then tweenTo({BackgroundColor3 = hoverColor}) end
+    end)
+
+    local leaveConn = btn.MouseLeave:Connect(function()
+        if not self.Blocked then tweenTo({BackgroundColor3 = btnColor}) end
+    end)
+
+    local clickConn = btn.MouseButton1Click:Connect(function()
+        if self.Blocked then return end
+        if tick() - lastClick < debounceTime then return end
+        lastClick = tick()
+
+        tweenTo({Size = UDim2.new(0.95, 0, 0, DESIGN.ComponentHeight * 0.9)}, 0.1)
+        task.delay(0.1, function()
+            tweenTo({Size = UDim2.new(1, 0, 0, DESIGN.ComponentHeight)}, 0.1)
+        end)
+
+        task.spawn(function()
+            local ok, err = pcall(callback)
+            if not ok then
+                warn("[CreateButton] Callback error:", err)
+                pulseError()
+                if Tekscripts.Log then
+                    Tekscripts.Log("[Button Error] " .. tostring(err))
+                end
+            end
+        end)
+    end)
+
+    -- // API PÚBLICA
+    local publicApi = {
+        _instance = btn,
+        _connections = {clickConn, hoverConn, leaveConn},
+        _blocked = false,
+        _callback = callback
+    }
+
+    function publicApi:SetBlocked(state)
+        self._blocked = state
+        self._instance.Active = not state
+        local color = state and Color3.fromRGB(60, 60, 60) or btnColor
+        tweenTo({BackgroundColor3 = color}, 0.15)
+    end
+
+    function publicApi:Update(newOptions)
+        if typeof(newOptions) ~= "table" then return end
+        if newOptions.Text then btn.Text = tostring(newOptions.Text) end
+        if typeof(newOptions.Callback) == "function" then
+            callback = newOptions.Callback
+            self._callback = callback
+        end
+        if newOptions.Debounce then
+            debounceTime = tonumber(newOptions.Debounce)
+        end
+    end
+
+    function publicApi:Destroy()
+        for _, c in ipairs(self._connections) do
+            if c.Connected then c:Disconnect() end
+        end
+        if self._instance then
+            self._instance:Destroy()
+        end
+        self._connections = nil
+        self._instance = nil
+        self._callback = nil
+        setmetatable(self, nil)
+        table.clear(self)
+    end
+
+    table.insert(tab.Components, publicApi)
+    return publicApi
+end
+
+function Tekscripts:CreateToggle(tab: any, options: { Text: string, Desc: string?, Callback: (state: boolean) -> () })
+    assert(type(tab) == "table" and tab.Container, "Invalid Tab object provided to CreateToggle")
+    assert(type(options) == "table" and type(options.Text) == "string", "Invalid arguments for CreateToggle")
+
+    local TweenService = game:GetService("TweenService")
+    local descHeight = options.Desc and 16 or 0
+    local padding = 6
+    local totalHeight = DESIGN.ComponentHeight + descHeight + padding
+
+    -- Outer box
+    local outerBox = Instance.new("Frame")
+    outerBox.Size = UDim2.new(1, 0, 0, totalHeight)
+    outerBox.BackgroundColor3 = DESIGN.ComponentBackground
+    outerBox.BorderSizePixel = 0
+    outerBox.Parent = tab.Container
+    addRoundedCorners(outerBox, DESIGN.CornerRadius)
+
+    -- Internal container
+    local container = Instance.new("Frame")
+    container.Size = UDim2.new(1, -DESIGN.ComponentPadding*2, 1, 0)
+    container.Position = UDim2.new(0, DESIGN.ComponentPadding, 0, 0)
+    container.BackgroundTransparency = 1
+    container.Parent = outerBox
+
+    -- Label
+    local label = Instance.new("TextLabel")
+    label.Text = options.Text
+    label.Size = UDim2.new(0.7, -10, 0, DESIGN.ComponentHeight)
+    label.Position = UDim2.new(0, 0, 0, 0)
+    label.BackgroundTransparency = 1
+    label.TextColor3 = DESIGN.ComponentTextColor
+    label.Font = Enum.Font.Roboto
+    label.TextScaled = false
+    label.TextSize = 16
+    label.TextXAlignment = Enum.TextXAlignment.Left
+    label.Parent = container
+
+    -- Description
+    local descLabel
+    if options.Desc then
+        descLabel = Instance.new("TextLabel")
+        descLabel.Text = options.Desc
+        descLabel.Size = UDim2.new(0.7, -10, 0, descHeight)
+        descLabel.Position = UDim2.new(0, 0, 0, DESIGN.ComponentHeight)
+        descLabel.BackgroundTransparency = 1
+        descLabel.TextColor3 = Color3.fromRGB(160, 160, 160)
+        descLabel.Font = Enum.Font.Roboto
+        descLabel.TextScaled = false
+        descLabel.TextSize = 14
+        descLabel.TextXAlignment = Enum.TextXAlignment.Left
+        descLabel.Parent = container
+    end
+
+    -- Switch
+    local switch = Instance.new("TextButton")
+    switch.Size = UDim2.new(0, 50, 0, 24)
+    switch.Position = UDim2.new(0.85, 0, 0, (totalHeight - 24)/2)
+    switch.BackgroundColor3 = DESIGN.InactiveToggleColor
+    switch.Text = ""
+    switch.AutoButtonColor = false
+    switch.ClipsDescendants = true
+    switch.Parent = container
+    addRoundedCorners(switch, 100)
+
+    -- Knob
+    local knob = Instance.new("Frame")
+    knob.Size = UDim2.new(0, 20, 0, 20)
+    knob.Position = UDim2.new(0, 2, 0, 2)
+    knob.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    knob.Parent = switch
+    addRoundedCorners(knob, 100)
+
+    -- Error indicator
+    local errorIndicator = Instance.new("Frame")
+    errorIndicator.Size = UDim2.new(0, 8, 0, 8)
+    errorIndicator.Position = UDim2.new(1, -10, 0, 2)
+    errorIndicator.BackgroundColor3 = Color3.fromRGB(255, 60, 60)
+    errorIndicator.Visible = false
+    errorIndicator.Parent = switch
+    addRoundedCorners(errorIndicator, 100)
+
+    -- Internal state
+    local state = false
+    local locked = false
+    local inError = false
+    local connections = {}
+
+    local function animateToggle(newState)
+        if not switch or not knob then return end
+        TweenService:Create(switch, TweenInfo.new(0.25, Enum.EasingStyle.Quad), {
+            BackgroundColor3 = inError and Color3.fromRGB(255,60,60)
+                                or (newState and DESIGN.ActiveToggleColor or DESIGN.InactiveToggleColor)
+        }):Play()
+        TweenService:Create(knob, TweenInfo.new(0.25, Enum.EasingStyle.Quad), {
+            Position = newState and UDim2.new(1, -22, 0, 2) or UDim2.new(0, 2, 0, 2)
+        }):Play()
+    end
+
+    local function setError(state)
+        inError = state
+        errorIndicator.Visible = state
+        animateToggle(state or state)
+    end
+
+    local function pulseError()
+        setError(true)
+        task.delay(0.5, function()
+            setError(false)
+        end)
+    end
+
+    local function toggle(newState, skipCallback)
+        if locked then return end
+        state = newState
+        animateToggle(state)
+        if not skipCallback and typeof(options.Callback) == "function" then
+            local ok, err = pcall(function() options.Callback(state) end)
+            if not ok then
+                warn("[Toggle Error] ", err)
+                pulseError()
+            end
+        end
+    end
+
+    connections.Click = switch.MouseButton1Click:Connect(function()
+        toggle(not state)
+    end)
+
+    -- Hover logic respecting error
+    connections.Enter = switch.MouseEnter:Connect(function()
+        if not locked then
+            TweenService:Create(switch, TweenInfo.new(0.15, Enum.EasingStyle.Quad), {
+                BackgroundColor3 = inError and Color3.fromRGB(255,60,60)
+                                    or (state and DESIGN.ActiveToggleColor or DESIGN.ComponentHoverColor)
+            }):Play()
+        end
+    end)
+    connections.Leave = switch.MouseLeave:Connect(function()
+        if not locked then
+            animateToggle(state)
+        end
+    end)
+
+    -- Public API
+    local publicApi = {
+        _instance = outerBox,
+        _connections = connections
+    }
+
+    function publicApi:SetState(newState: boolean) toggle(newState, true) end
+    function publicApi:GetState(): boolean return state end
+    function publicApi:Toggle() toggle(not state) end
+    function publicApi:SetText(newText: string) if label then label.Text = newText end end
+    function publicApi:SetDesc(newDesc: string) if descLabel then descLabel.Text = newDesc end end
+    function publicApi:SetCallback(newCallback)
+        if typeof(newCallback) == "function" then options.Callback = newCallback end
+    end
+    function publicApi:SetLocked(isLocked: boolean)
+        locked = isLocked
+        switch.AutoButtonColor = not locked
+        animateToggle(state)
+    end
+    function publicApi:Update(newOptions: { Text: string?, Desc: string?, State: boolean? })
+        if newOptions.Text then publicApi:SetText(newOptions.Text) end
+        if newOptions.Desc then publicApi:SetDesc(newOptions.Desc) end
+        if newOptions.State ~= nil then toggle(newOptions.State) end
+    end
+    function publicApi:Destroy()
+        for _, c in pairs(publicApi._connections) do
+            if c and c.Connected then c:Disconnect() end
+        end
+        if publicApi._instance then
+            publicApi._instance:Destroy()
+            publicApi._instance = nil
+        end
+        publicApi._connections = nil
+    end
+
+    table.insert(tab.Components, publicApi)
+    return publicApi
+end
+
+function Tekscripts:CreateInput(tab, options)
+	assert(type(tab) == "table" and tab.Container, "Invalid Tab object provided to CreateInput")
+	assert(type(options) == "table" and type(options.Text) == "string", "Invalid arguments for CreateInput")
+
+	local TweenService = game:GetService("TweenService")
+
+	local box = Instance.new("Frame")
+	box.Size = UDim2.new(1, 0, 0, DESIGN.ComponentHeight + 30)
+	box.BackgroundColor3 = DESIGN.ComponentBackground
+	box.BackgroundTransparency = 0.05
+	box.Parent = tab.Container
+	addRoundedCorners(box, DESIGN.CornerRadius)
+
+	local padding = Instance.new("UIPadding")
+	padding.PaddingTop = UDim.new(0, 8)
+	padding.PaddingBottom = UDim.new(0, 8)
+	padding.PaddingLeft = UDim.new(0, 10)
+	padding.PaddingRight = UDim.new(0, 10)
+	padding.Parent = box
+
+	local layout = Instance.new("UIListLayout")
+	layout.FillDirection = Enum.FillDirection.Vertical
+	layout.Padding = UDim.new(0, 4)
+	layout.SortOrder = Enum.SortOrder.LayoutOrder
+	layout.Parent = box
+
+	local topRow = Instance.new("Frame")
+	topRow.Size = UDim2.new(1, 0, 0, 28)
+	topRow.BackgroundTransparency = 1
+	topRow.Parent = box
+
+	local rowLayout = Instance.new("UIListLayout")
+	rowLayout.FillDirection = Enum.FillDirection.Horizontal
+	rowLayout.Padding = UDim.new(0, 6)
+	rowLayout.VerticalAlignment = Enum.VerticalAlignment.Center
+	rowLayout.SortOrder = Enum.SortOrder.LayoutOrder
+	rowLayout.Parent = topRow
+
+	local title = Instance.new("TextLabel")
+	title.Size = UDim2.new(0.4, 0, 1, 0)
+	title.BackgroundTransparency = 1
+	title.Text = options.Text
+	title.Font = Enum.Font.GothamBold
+	title.TextScaled = true
+	title.TextXAlignment = Enum.TextXAlignment.Left
+	title.TextColor3 = DESIGN.ComponentTextColor
+	title.Parent = topRow
+
+	local textbox = Instance.new("TextBox")
+	textbox.Size = UDim2.new(0.6, 0, 1, 0)
+	textbox.BackgroundColor3 = DESIGN.InputBackgroundColor
+	textbox.PlaceholderText = options.Placeholder or ""
+	textbox.PlaceholderColor3 = Color3.fromRGB(140, 140, 140)
+	textbox.TextColor3 = DESIGN.InputTextColor
+	textbox.TextScaled = true
+	textbox.Font = Enum.Font.Roboto
+	textbox.TextXAlignment = Enum.TextXAlignment.Left
+	textbox.TextYAlignment = Enum.TextYAlignment.Center
+	textbox.BorderSizePixel = 0
+	textbox.Text = ""
+	textbox.ClipsDescendants = true
+	textbox.Parent = topRow
+	addRoundedCorners(textbox, DESIGN.CornerRadius)
+	addHoverEffect(textbox, DESIGN.InputBackgroundColor, DESIGN.InputHoverColor)
+
+	-- Bloqueio visual
+	local blockOverlay = Instance.new("Frame")
+	blockOverlay.Size = UDim2.new(1, 0, 1, 0)
+	blockOverlay.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+	blockOverlay.BackgroundTransparency = 0.35
+	blockOverlay.Visible = false
+	blockOverlay.ZIndex = textbox.ZIndex + 2
+	addRoundedCorners(blockOverlay, DESIGN.CornerRadius)
+	blockOverlay.Parent = textbox
+
+	local blockText = Instance.new("TextLabel")
+	blockText.AnchorPoint = Vector2.new(0.5, 0.5)
+	blockText.Position = UDim2.new(0.5, 0, 0.5, 0)
+	blockText.Size = UDim2.new(1, -8, 1, -8)
+	blockText.BackgroundTransparency = 1
+	blockText.Text = options.BlockText or "🔒 BLOQUEADO"
+	blockText.Font = Enum.Font.GothamBold
+	blockText.TextScaled = true
+	blockText.TextColor3 = Color3.fromRGB(255, 85, 85)
+	blockText.ZIndex = blockOverlay.ZIndex + 1
+	blockText.Parent = blockOverlay
+
+	-- Indicador de erro
+	local errorIndicator = Instance.new("Frame")
+	errorIndicator.Size = UDim2.new(0, 8, 0, 8)
+	errorIndicator.Position = UDim2.new(1, -10, 0, 2)
+	errorIndicator.BackgroundColor3 = Color3.fromRGB(255, 60, 60)
+	errorIndicator.Visible = false
+	errorIndicator.ZIndex = textbox.ZIndex + 3
+	addRoundedCorners(errorIndicator, 100)
+	errorIndicator.Parent = textbox
+
+	-- Desc
+	local desc
+	if options.Desc then
+		desc = Instance.new("TextLabel")
+		desc.Size = UDim2.new(1, 0, 0, 14)
+		desc.BackgroundTransparency = 1
+		desc.Text = options.Desc
+		desc.Font = Enum.Font.Gotham
+		desc.TextScaled = true
+		desc.TextWrapped = true
+		desc.TextXAlignment = Enum.TextXAlignment.Left
+		desc.TextColor3 = DESIGN.ComponentTextColor:lerp(Color3.new(0.7, 0.7, 0.7), 0.6)
+		desc.Parent = box
+	end
+
+	local connections = {}
+	local publicApi = { _instance = box, _connections = connections, Blocked = false }
+	local inError = false
+
+	local function pulseError()
+		if not textbox then return end
+		inError = true
+		errorIndicator.Visible = true
+		TweenService:Create(textbox, TweenInfo.new(0.2), { BackgroundColor3 = Color3.fromRGB(255, 60, 60) }):Play()
+		task.delay(0.5, function()
+			if textbox and not publicApi.Blocked then
+				inError = false
+				errorIndicator.Visible = false
+				TweenService:Create(textbox, TweenInfo.new(0.2), { BackgroundColor3 = DESIGN.InputBackgroundColor }):Play()
+			end
+		end)
+	end
+
+	local function safeCallback(value)
+		if publicApi.Blocked or not options.Callback then return end
+		local ok, err = pcall(function() options.Callback(value) end)
+		if not ok then
+			warn("[Input Error]:", err)
+			pulseError()
+		end
+	end
+
+	if options.Type and options.Type:lower() == "number" then
+		connections.Changed = textbox:GetPropertyChangedSignal("Text"):Connect(function()
+			if publicApi.Blocked then return end
+			local newText = textbox.Text
+			if tonumber(newText) or newText == "" or newText == "-" then
+				safeCallback(tonumber(newText) or 0)
+			else
+				textbox.Text = newText:sub(1, #newText - 1)
+			end
+		end)
+	else
+		connections.FocusLost = textbox.FocusLost:Connect(function(enterPressed)
+			if publicApi.Blocked then return end
+			if enterPressed then safeCallback(textbox.Text) end
+		end)
+	end
+
+	function publicApi:SetBlocked(state, text)
+		self.Blocked = state
+		textbox.Active = not state
+		textbox.TextEditable = not state
+		blockOverlay.Visible = state
+		if text then blockText.Text = tostring(text) end
+	end
+
+	function publicApi:Update(newOptions)
+		if not newOptions then return end
+		if newOptions.Text then title.Text = newOptions.Text end
+		if newOptions.Placeholder then textbox.PlaceholderText = newOptions.Placeholder end
+		if newOptions.Desc then
+			if desc then desc.Text = newOptions.Desc
+			elseif newOptions.Desc ~= "" then
+				desc = Instance.new("TextLabel")
+				desc.Size = UDim2.new(1, 0, 0, 14)
+				desc.BackgroundTransparency = 1
+				desc.TextColor3 = DESIGN.ComponentTextColor:lerp(Color3.new(0.7, 0.7, 0.7), 0.6)
+				desc.Font = Enum.Font.Gotham
+				desc.TextScaled = true
+				desc.TextWrapped = true
+				desc.TextXAlignment = Enum.TextXAlignment.Left
+				desc.Text = newOptions.Desc
+				desc.Parent = box
+			end
+		end
+		if newOptions.Value ~= nil then textbox.Text = tostring(newOptions.Value) end
+		if newOptions.BlockText then blockText.Text = tostring(newOptions.BlockText) end
+	end
+
+	function publicApi:Destroy()
+		if self._connections then
+			for _, conn in pairs(self._connections) do
+				if conn and conn.Connected then conn:Disconnect() end
+			end
+			self._connections = nil
+		end
+		if self._instance then
+			self._instance:Destroy()
+			self._instance = nil
+		end
+	end
+
+	table.insert(tab.Components, publicApi)
+	return publicApi
+end
 return Tekscripts
