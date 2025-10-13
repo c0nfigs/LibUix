@@ -234,11 +234,7 @@ local espBind = Tekscripts:CreateBind(tabPrincipal, {
 Exibe notificações temporárias na tela para informar o usuário sobre ações concluídas ou eventos importantes.
 
 ```lua
-gui:Notify({
-    Title = "Ação Concluída",
-    Desc = "A função foi executada com sucesso.",
-    Duration = 5 -- em segundos
-})
+Em breve.
 ```
 
 ---
