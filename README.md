@@ -160,13 +160,7 @@ gui:CreateInput(tabPlayer, {
 Linhas divisórias são usadas para separar visualmente os componentes, com ou sem um texto central.
 
 ```lua
--- Linha simples
-gui:CreateHR(tabPrincipal, {})
-
--- Linha com texto
-gui:CreateHR(tabPrincipal, {
-    Text = "Funções de Combate"
-})
+Em breve.
 ```
 
 ### 8. Botão Flutuante (Float Button)
