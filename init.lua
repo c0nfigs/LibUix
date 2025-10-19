@@ -51,6 +51,8 @@ local DESIGN = {
     TagBackground = Color3.fromRGB(120, 180, 220),
 
     EmptyStateTextColor = Color3.fromRGB(170, 170, 170),
+    EmptyStateBoxColor = Color3.fromRGB(30, 30, 30),
+    EmptyStateBorderColor = Color3.fromRGB(80, 80, 80),
 
     WindowSize = UDim2.new(0, 500, 0, 470),
     MinWindowSize = Vector2.new(500, 370),
@@ -91,197 +93,127 @@ local DESIGN = {
     EdgeButtonPadding = 5,
     EdgeButtonCornerRadius = 6,
 }
+
 ---
 -- Funções de Criação de Componentes
 ---
 
--- cache de TweenInfo (evita recriar o mesmo objeto várias vezes)
-local tweenInfo = TweenInfo.new(DESIGN.AnimationSpeed, Enum.EasingStyle.Quad)
+-- Cache global para objetos reutilizáveis
+local CACHE = {
+    TweenInfo = TweenInfo.new(DESIGN.AnimationSpeed, Enum.EasingStyle.Quad),
+    CornerInstances = {},  -- Cache de UICorner
+    GradientInstances = {}, -- Cache de UIGradient
+}
 
--- utilitário para criar cantos arredondados (reutilizável e limpo)
+-- Função para obter UICorner do cache ou criar novo
+local function getUICorner(radius: number?): UICorner
+    local key = tostring(radius or DESIGN.CornerRadius)
+    if not CACHE.CornerInstances[key] then
+        local corner = Instance.new("UICorner")
+        corner.CornerRadius = UDim.new(0, radius or DESIGN.CornerRadius)
+        CACHE.CornerInstances[key] = corner
+    end
+    return CACHE.CornerInstances[key]:Clone()
+end
+
+-- Função para obter UIGradient do cache ou criar novo
+local function getUIGradient(color1: Color3, color2: Color3, rotation: number?): UIGradient
+    local key = tostring(color1) .. "_" .. tostring(color2) .. "_" .. tostring(rotation or 0)
+    if not CACHE.GradientInstances[key] then
+        local grad = Instance.new("UIGradient")
+        grad.Color = ColorSequence.new(color1, color2)
+        grad.Rotation = rotation or 0
+        CACHE.GradientInstances[key] = grad
+    end
+    return CACHE.GradientInstances[key]:Clone()
+end
+
+-- utilitário para criar cantos arredondados (usando cache)
 local function addRoundedCorners(instance: Instance, radius: number?)
-	if not instance or not instance:IsA("GuiObject") then return end
+    if not instance or not instance:IsA("GuiObject") then return end
 
-	local corner = instance:FindFirstChildOfClass("UICorner")
-	if not corner then
-		corner = Instance.new("UICorner")
-		corner.Name = "Corner"
-		corner.Parent = instance
-	end
+    local corner = instance:FindFirstChildOfClass("UICorner")
+    if not corner then
+        corner = getUICorner(radius)
+        corner.Name = "Corner"
+        corner.Parent = instance
+    end
 
-	corner.CornerRadius = UDim.new(0, radius or DESIGN.CornerRadius)
-	return corner
+    return corner
 end
 
 -- efeito de hover otimizado e com cleanup
 local function addHoverEffect(button: GuiObject, originalColor: Color3, hoverColor: Color3, condition: (() -> boolean)?)
-	if not button or not button:IsA("GuiObject") then return end
+    if not button or not button:IsA("GuiObject") then return end
 
-	local isHovering, isDown = false, false
-	local activeTween
+    local isHovering, isDown = false, false
+    local activeTween
 
-	local function safeTween(targetColor)
-		if activeTween then
-			activeTween:Cancel()
-			activeTween = nil
-		end
-		if not condition or condition() then
-			activeTween = TweenService:Create(button, tweenInfo, { BackgroundColor3 = targetColor })
-			activeTween:Play()
-		end
-	end
+    local function safeTween(targetColor)
+        if activeTween then
+            activeTween:Cancel()
+            activeTween = nil
+        end
+        if not condition or condition() then
+            activeTween = TweenService:Create(button, CACHE.TweenInfo, { BackgroundColor3 = targetColor })
+            activeTween:Play()
+        end
+    end
 
-	-- Conexões armazenadas para facilitar desconexão no Destroy
-	local connections = {}
+    -- Conexões armazenadas para facilitar desconexão no Destroy
+    local connections = {}
 
-	table.insert(connections, button.MouseEnter:Connect(function()
-		isHovering = true
-		if not isDown then safeTween(hoverColor) end
-	end))
+    table.insert(connections, button.MouseEnter:Connect(function()
+        isHovering = true
+        if not isDown then safeTween(hoverColor) end
+    end))
 
-	table.insert(connections, button.MouseLeave:Connect(function()
-		isHovering = false
-		if not isDown then safeTween(originalColor) end
-	end))
+    table.insert(connections, button.MouseLeave:Connect(function()
+        isHovering = false
+        if not isDown then safeTween(originalColor) end
+    end))
 
-	table.insert(connections, button.MouseButton1Down:Connect(function()
-		isDown = true
-	end))
+    table.insert(connections, button.MouseButton1Down:Connect(function()
+        isDown = true
+    end))
 
-	table.insert(connections, button.MouseButton1Up:Connect(function()
-		isDown = false
-		if not isHovering then safeTween(originalColor) end
-	end))
+    table.insert(connections, button.MouseButton1Up:Connect(function()
+        isDown = false
+        if not isHovering then safeTween(originalColor) end
+    end))
 
-	-- Cleanup automático ao destruir o botão
-	button.AncestryChanged:Connect(function(_, parent)
-		if not parent then
-			for _, conn in ipairs(connections) do
-				conn:Disconnect()
-			end
-			connections = {}
-			activeTween = nil
-		end
-	end)
+    -- Cleanup automático ao destruir o botão
+    button.AncestryChanged:Connect(function(_, parent)
+        if not parent then
+            for _, conn in ipairs(connections) do
+                conn:Disconnect()
+            end
+            connections = {}
+            if activeTween then
+                activeTween:Cancel()
+                activeTween = nil
+            end
+        end
+    end)
 end
 
 -- criação do botão
 local function createButton(text: string, size: UDim2?, parent: Instance)
-	local btn = Instance.new("TextButton")
-	btn.Text = text
-	btn.Size = size or UDim2.new(1, 0, 0, DESIGN.ComponentHeight)
-	btn.BackgroundColor3 = DESIGN.ComponentBackground
-	btn.TextColor3 = DESIGN.ComponentTextColor
-	btn.BorderSizePixel = 0
-	btn.Font = Enum.Font.Roboto
-	btn.TextScaled = true
-	btn.AutoButtonColor = false -- desativa o hover padrão
-	btn.Parent = parent
+    local btn = Instance.new("TextButton")
+    btn.Text = text
+    btn.Size = size or UDim2.new(1, 0, 0, DESIGN.ComponentHeight)
+    btn.BackgroundColor3 = DESIGN.ComponentBackground
+    btn.TextColor3 = DESIGN.ComponentTextColor
+    btn.BorderSizePixel = 0
+    btn.Font = Enum.Font.Roboto
+    btn.TextScaled = true
+    btn.AutoButtonColor = false -- desativa o hover padrão
+    btn.Parent = parent
 
-	addRoundedCorners(btn, DESIGN.CornerRadius)
-	addHoverEffect(btn, DESIGN.ComponentBackground, DESIGN.ComponentHoverColor)
+    addRoundedCorners(btn, DESIGN.CornerRadius)
+    addHoverEffect(btn, DESIGN.ComponentBackground, DESIGN.ComponentHoverColor)
 
-	return btn
-end
-
----
--- Lógica do Tab
----
-local Tab = {}
-Tab.__index = Tab
-
-function Tab.new(name: string, parent: Instance)
-    local self = setmetatable({}, Tab)
-
-    self.Name = name
-
-    -- Container principal
-    local c = Instance.new("ScrollingFrame")
-    self.Container = c
-    c.Size = UDim2.new(1, 0, 1, 0)
-    c.BackgroundTransparency = 1
-    c.BorderSizePixel = 0
-    c.ScrollBarThickness = 6
-    c.ScrollBarImageColor3 = DESIGN.ComponentHoverColor
-    c.AutomaticCanvasSize = Enum.AutomaticSize.Y
-    c.CanvasSize = UDim2.new(0, 0, 0, 0)
-    c.ScrollingDirection = Enum.ScrollingDirection.Y
-    c.ClipsDescendants = true
-    c.Parent = parent
-
-    -- Padding interno
-    local padding = Instance.new("UIPadding")
-    padding.PaddingTop = UDim.new(0, DESIGN.ContainerPadding)
-    padding.PaddingLeft = UDim.new(0, DESIGN.ContainerPadding)
-    padding.PaddingRight = UDim.new(0, DESIGN.ContainerPadding)
-    padding.PaddingBottom = UDim.new(0, DESIGN.ContainerPadding)
-    padding.Parent = c
-
-    -- Layout dos componentes
-    local listLayout = Instance.new("UIListLayout")
-    listLayout.Padding = UDim.new(0, DESIGN.ComponentPadding)
-    listLayout.SortOrder = Enum.SortOrder.LayoutOrder
-    listLayout.Parent = c
-
-    self.Components = {}
-
-    -- 🧱 Camada fixa acima do conteúdo para o box vazio
-    local overlay = Instance.new("Frame")
-    overlay.Size = UDim2.new(1, 0, 1, 0)
-    overlay.Position = UDim2.new(0, 0, 0, 0)
-    overlay.BackgroundTransparency = 1
-    overlay.ZIndex = 5
-    overlay.Parent = c
-
-    -- Box centralizado
-    local emptyBox = Instance.new("Frame")
-    emptyBox.Size = UDim2.new(0.6, 0, 0.2, 0)
-    emptyBox.AnchorPoint = Vector2.new(0.5, 0.5)
-    emptyBox.Position = UDim2.new(0.5, 0, 0.5, 0)
-    emptyBox.BackgroundColor3 = DESIGN.EmptyStateBoxColor or Color3.fromRGB(30, 30, 30)
-    emptyBox.BackgroundTransparency = 0.2
-    emptyBox.BorderSizePixel = 0
-    emptyBox.Visible = true
-    emptyBox.ZIndex = 6
-    emptyBox.Parent = overlay
-
-    local corner = Instance.new("UICorner")
-    corner.CornerRadius = UDim.new(0, DESIGN.CornerRadius or 10)
-    corner.Parent = emptyBox
-
-    local stroke = Instance.new("UIStroke")
-    stroke.Thickness = 1
-    stroke.Color = DESIGN.EmptyStateBorderColor or Color3.fromRGB(80, 80, 80)
-    stroke.Transparency = 0.3
-    stroke.Parent = emptyBox
-
-    local emptyText = Instance.new("TextLabel")
-    emptyText.Size = UDim2.new(1, -10, 1, -10)
-    emptyText.AnchorPoint = Vector2.new(0.5, 0.5)
-    emptyText.Position = UDim2.new(0.5, 0, 0.5, 0)
-    emptyText.BackgroundTransparency = 1
-    emptyText.Text = "Parece que ainda não há nada aqui."
-    emptyText.TextColor3 = DESIGN.EmptyStateTextColor or Color3.fromRGB(180, 180, 180)
-    emptyText.Font = Enum.Font.Roboto
-    emptyText.TextScaled = true
-    emptyText.TextWrapped = true
-    emptyText.ZIndex = 7
-    emptyText.Parent = emptyBox
-
-    self.EmptyBox = emptyBox
-    self._overlay = overlay
-
-    -- Controle automático de visibilidade
-    listLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-        local hasComponents = #self.Components > 0
-        overlay.Visible = not hasComponents
-
-        local totalContentHeight = listLayout.AbsoluteContentSize.Y + (DESIGN.ContainerPadding * 2)
-        local containerHeight = c.AbsoluteSize.Y
-        c.ScrollBarImageTransparency = totalContentHeight > containerHeight and 0 or 1
-    end)
-
-    return self
+    return btn
 end
 
 ---
@@ -293,18 +225,18 @@ function Tekscripts.new(options: { Name: string?, Parent: Instance?, FloatText: 
     -- // ESTRUTURA E ESTADOS INICIAIS
     
     local self = setmetatable({} :: {
-        ScreenGui: ScreenGui,
+        ScreenGui: ScreenGui?,
         MinimizedState: string?, -- nil, "float", "left", "right", "top", "bottom"
         Tabs: { [string]: any },
         CurrentTab: any?,
         IsDragging: boolean,
         IsResizing: boolean,
-        Window: Frame,
-        TitleBar: Frame,
-        TabContainer: Frame,
-        TabContentContainer: Frame,
-        ResizeHandle: Frame,
-        FloatButton: Frame,
+        Window: Frame?,
+        TitleBar: Frame?,
+        TabContainer: Frame?,
+        TabContentContainer: Frame?,
+        ResizeHandle: Frame?,
+        FloatButton: Frame?,
         EdgeButtons: { [string]: { Button: TextButton, Frame: Frame, Arrow: TextLabel } },
         Connections: { any },
         BlockScreen: Frame?,
@@ -317,7 +249,10 @@ function Tekscripts.new(options: { Name: string?, Parent: Instance?, FloatText: 
         TitleScrollConnection: any?,
         BlurEffect: BlurEffect?,
         LastWindowPosition: UDim2?,
-        LastWindowSize: UDim2?
+        LastWindowSize: UDim2?,
+        LastWindowPos: Vector2?,
+        _activeTween: Tween?,
+        _destroyed: boolean
     }, Tekscripts)
 
     self.MinimizedState = nil
@@ -329,6 +264,7 @@ function Tekscripts.new(options: { Name: string?, Parent: Instance?, FloatText: 
     self.startTab = options.startTab
     self.Blocked = false
     self.EdgeButtons = {}
+    self._destroyed = false
     
     -- Variáveis de Ambiente
     local viewSize = workspace.CurrentCamera.ViewportSize -- Tamanho da tela atual
@@ -382,12 +318,7 @@ function Tekscripts.new(options: { Name: string?, Parent: Instance?, FloatText: 
 
     addRoundedCorners(self.Window, DESIGN.CornerRadius)
 
-    local windowGradient = Instance.new("UIGradient")
-    windowGradient.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, DESIGN.WindowColor1),
-        ColorSequenceKeypoint.new(1, DESIGN.WindowColor2)
-    })
-    windowGradient.Rotation = 90
+    local windowGradient = getUIGradient(DESIGN.WindowColor1, DESIGN.WindowColor2, 90)
     windowGradient.Parent = self.Window
     
     -- // BARRA DE TÍTULO (TITLE BAR) E CABEÇALHO
@@ -429,8 +360,7 @@ function Tekscripts.new(options: { Name: string?, Parent: Instance?, FloatText: 
 	icon.Parent = iconFrame
 	
 	-- Aplica cantos arredondados no frame pai
-	local corner = Instance.new("UICorner")
-	corner.CornerRadius = UDim.new(0, 5)
+	local corner = getUICorner(5)
 	corner.Parent = iconFrame
 
     -- Título
@@ -539,14 +469,17 @@ function Tekscripts.new(options: { Name: string?, Parent: Instance?, FloatText: 
     addRoundedCorners(closeOption, 5)
     addHoverEffect(closeOption, DESIGN.DropdownBackground, DESIGN.DropdownItemHover)
 
-    closeOption.MouseButton1Click:Connect(function()
-        self:Destroy()
-        self.DropdownMenu.Visible = false
-    end)
-
-    -- Ajusta o tamanho do dropdown
-    self.DropdownMenu.Size = UDim2.new(0, DESIGN.DropdownWidth, 0, dropdownLayout.AbsoluteContentSize.Y + 10)
-
+	closeOption.MouseButton1Click:Connect(function()
+	    self:Destroy()
+	    if self.DropdownMenu then
+	        self.DropdownMenu.Visible = false
+	    end
+	end)
+	
+	-- Ajusta o tamanho do dropdown
+	if self.DropdownMenu then
+	    self.DropdownMenu.Size = UDim2.new(0, DESIGN.DropdownWidth, 0, dropdownLayout.AbsoluteContentSize.Y + 10)
+	end
     -- Conexões do Dropdown
     self.Connections.ControlBtn = controlBtn.MouseButton1Click:Connect(function()
         self.DropdownMenu.Visible = not self.DropdownMenu.Visible
@@ -652,18 +585,80 @@ function Tekscripts.new(options: { Name: string?, Parent: Instance?, FloatText: 
 end
 
 function Tekscripts:Destroy()
+    if self._destroyed then return end
+    self._destroyed = true
+
+    -- Desconecta conexões
     if self.TitleScrollConnection then
         self.TitleScrollConnection:Disconnect()
+        self.TitleScrollConnection = nil
     end
-    if self.ScreenGui then
-        self.ScreenGui:Destroy()
+
+    if self._activeTween then
+        self._activeTween:Cancel()
+        self._activeTween = nil
     end
-    for _, connection in pairs(self.Connections) do
+
+    if self.TitleScrollTween then
+        self.TitleScrollTween:Cancel()
+        self.TitleScrollTween = nil
+    end
+
+    for _, connection in pairs(self.Connections or {}) do
         if connection and connection.Connected then
             connection:Disconnect()
         end
     end
     self.Connections = {}
+
+    -- Destrói GUIs com segurança
+    local guiObjects = {
+        self.ScreenGui, self.Window, self.TitleBar, self.TabContainer,
+        self.TabContentContainer, self.ResizeHandle, self.FloatButton,
+        self.BlockScreen, self.BlurEffect, self.DropdownMenu, self.NoTabsLabel
+    }
+
+    for i, obj in ipairs(guiObjects) do
+        if obj and obj:IsDescendantOf(game) then
+            obj:Destroy()
+        end
+    end
+
+    -- Limpa referências
+    self.ScreenGui = nil
+    self.Window = nil
+    self.TitleBar = nil
+    self.TabContainer = nil
+    self.TabContentContainer = nil
+    self.ResizeHandle = nil
+    self.FloatButton = nil
+    self.BlockScreen = nil
+    self.BlurEffect = nil
+    self.DropdownMenu = nil
+    self.NoTabsLabel = nil
+    self.Title = nil
+
+    -- Destroi abas
+    for _, tab in pairs(self.Tabs or {}) do
+        if tab.Destroy then
+            tab:Destroy()
+        end
+    end
+    self.Tabs = {}
+    self.CurrentTab = nil
+
+    -- Destroi edge buttons
+    for _, edge in pairs(self.EdgeButtons or {}) do
+        if edge.Frame and edge.Frame:IsDescendantOf(game) then
+            edge.Frame:Destroy()
+        end
+    end
+    self.EdgeButtons = {}
+
+    -- Limpa variáveis auxiliares
+    self.LastWindowPosition = nil
+    self.LastWindowSize = nil
+    self.LastWindowPos = nil
 end
 
 ---
@@ -779,6 +774,9 @@ end
 -- Verifica proximidade das bordas da tela
 ---
 function Tekscripts:CheckEdgeProximity()
+    if not self.Window then return end -- evita erro se Window não existir
+    if not self.Window:IsDescendantOf(game) then return end -- evita erro se Window foi removido
+
     local screen = workspace.CurrentCamera.ViewportSize
     local windowPos = self.Window.AbsolutePosition
     local windowSize = self.Window.AbsoluteSize
@@ -1104,7 +1102,7 @@ function Tekscripts:SetupResizeSystem()
             local newHeight = math.clamp(startSize.Y.Offset + delta.Y, DESIGN.MinWindowSize.Y, maxH)
 
             local newSize = UDim2.new(0, newWidth, 0, newHeight)
-            local tween = TweenService:Create(self.Window, TweenInfo.new(DESIGN.AnimationSpeed, Enum.EasingStyle.Quad), { Size = newSize })
+            local tween = TweenService:Create(self.Window, CACHE.TweenInfo, { Size = newSize })
             tween:Play()
 
             self:UpdateContainersSize()
@@ -1170,12 +1168,7 @@ function Tekscripts:SetupFloatButton(text: string)
     addRoundedCorners(float, DESIGN.CornerRadius)
 
     -- Gradiente de fundo
-    local grad = Instance.new("UIGradient")
-    grad.Color = ColorSequence.new(
-        DESIGN.FloatButtonColor,
-        DESIGN.WindowColor2
-    )
-    grad.Rotation = 45
+    local grad = getUIGradient(DESIGN.FloatButtonColor, DESIGN.WindowColor2, 45)
     grad.Parent = float
 
     -- Botão de texto
@@ -1192,7 +1185,7 @@ function Tekscripts:SetupFloatButton(text: string)
 
     conns.FloatExpand = btn.MouseButton1Click:Connect(function()
         if not self.Blocked then
-            self:Expand()
+            self:ExpandFromFloat()
         end
     end)
 
@@ -1231,21 +1224,28 @@ function Tekscripts:SetupFloatButton(text: string)
     conns.FloatChange = btn.InputChanged:Connect(updateDrag)
     conns.FloatEnd = btn.InputEnded:Connect(endDrag)
 end
+
 ---
 -- Lógica de Abas
 ---
+
 function Tekscripts:CreateTab(options: { Title: string })
     local DESIGN = DESIGN
     local title = assert(options and options.Title, "CreateTab: argumento 'Title' inválido")
     assert(type(title) == "string", "CreateTab: argumento 'Title' deve ser string")
 
-    -- Cria aba
-    local tab = Tab.new(title, self.TabContentContainer)
-    tab._connections = {}
-    self.Tabs[title] = tab
-    tab._parentRef = self -- referência fraca para o container
+    self.Tabs = self.Tabs or {}
 
-    -- Cria botão
+    local tab = {
+        _connections = {},
+        Components = {},
+        _parentRef = self,
+        _destroyed = false
+    }
+
+    self.Tabs[title] = tab
+
+    -- Botão da aba
     local button = Instance.new("TextButton")
     button.Name = title
     button.Text = title
@@ -1265,57 +1265,154 @@ function Tekscripts:CreateTab(options: { Title: string })
         return self.CurrentTab ~= tab
     end)
 
-    -- Clique
     table.insert(tab._connections, button.MouseButton1Click:Connect(function()
-        if not self.Blocked then
+        if not self.Blocked and self.CurrentTab ~= tab then
             self:SetActiveTab(tab)
         end
     end))
 
-    tab.Container.Visible = false
+    -- Container da aba
+    local container = Instance.new("ScrollingFrame")
+    container.Visible = false
+    container.Size = UDim2.new(1, 0, 1, 0)
+    container.BackgroundTransparency = 1
+    container.BorderSizePixel = 0
+    container.ScrollBarThickness = 6
+    container.ScrollBarImageColor3 = DESIGN.ComponentHoverColor
+    container.AutomaticCanvasSize = Enum.AutomaticSize.Y
+    container.CanvasSize = UDim2.new(0, 0, 0, 0)
+    container.ScrollingDirection = Enum.ScrollingDirection.Y
+    container.ClipsDescendants = true
+    container.Parent = self.TabContentContainer
+    tab.Container = container
+
+    -- Padding interno
+    local padding = Instance.new("UIPadding")
+    padding.PaddingTop = UDim.new(0, DESIGN.ContainerPadding)
+    padding.PaddingLeft = UDim.new(0, DESIGN.ContainerPadding)
+    padding.PaddingRight = UDim.new(0, DESIGN.ContainerPadding)
+    padding.PaddingBottom = UDim.new(0, DESIGN.ContainerPadding)
+    padding.Parent = container
+
+    -- Layout dos componentes
+    local listLayout = Instance.new("UIListLayout")
+    listLayout.Padding = UDim.new(0, DESIGN.ComponentPadding)
+    listLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    listLayout.Parent = container
+
+    -- Camada fixa para box vazio
+    local overlay = Instance.new("Frame")
+    overlay.Size = UDim2.new(1, 0, 1, 0)
+    overlay.Position = UDim2.new(0, 0, 0, 0)
+    overlay.BackgroundTransparency = 1
+    overlay.ZIndex = 5
+    overlay.Parent = container
+
+    -- Box centralizado
+    local emptyBox = Instance.new("Frame")
+    emptyBox.Size = UDim2.new(0.6, 0, 0.2, 0)
+    emptyBox.AnchorPoint = Vector2.new(0.5, 0.5)
+    emptyBox.Position = UDim2.new(0.5, 0, 0.5, 0)
+    emptyBox.BackgroundColor3 = DESIGN.EmptyStateBoxColor
+    emptyBox.BackgroundTransparency = 0.2
+    emptyBox.BorderSizePixel = 0
+    emptyBox.Visible = true
+    emptyBox.ZIndex = 6
+    emptyBox.Parent = overlay
+
+    local corner = getUICorner(DESIGN.CornerRadius)
+    corner.Parent = emptyBox
+
+    local stroke = Instance.new("UIStroke")
+    stroke.Thickness = 1
+    stroke.Color = DESIGN.EmptyStateBorderColor
+    stroke.Transparency = 0.3
+    stroke.Parent = emptyBox
+
+    local emptyText = Instance.new("TextLabel")
+    emptyText.Size = UDim2.new(1, -10, 1, -10)
+    emptyText.AnchorPoint = Vector2.new(0.5, 0.5)
+    emptyText.Position = UDim2.new(0.5, 0, 0.5, 0)
+    emptyText.BackgroundTransparency = 1
+    emptyText.Text = "Parece que ainda não há nada aqui."
+    emptyText.TextColor3 = DESIGN.EmptyStateTextColor
+    emptyText.Font = Enum.Font.Roboto
+    emptyText.TextScaled = true
+    emptyText.TextWrapped = true
+    emptyText.ZIndex = 7
+    emptyText.Parent = emptyBox
+
+    tab.EmptyBox = emptyBox
+    tab._overlay = overlay
+
+    -- Controle automático de visibilidade do overlay
+    local contentChangeConn = listLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+        local hasComponents = #tab.Components > 0
+        overlay.Visible = not hasComponents
+
+        local totalContentHeight = listLayout.AbsoluteContentSize.Y + (DESIGN.ContainerPadding * 2)
+        local containerHeight = container.AbsoluteSize.Y
+        container.ScrollBarImageTransparency = totalContentHeight > containerHeight and 0 or 1
+    end)
+    table.insert(tab._connections, contentChangeConn)
 
     -- Define aba inicial
     if (self.startTab and self.startTab == title) or not self.CurrentTab then
         self:SetActiveTab(tab)
     end
-    self.NoTabsLabel.Visible = next(self.Tabs) == nil
 
-    -- Destruição limpa
+    -- Atualiza NoTabsLabel de forma segura
+    local function updateNoTabsLabel()
+        if self.NoTabsLabel then
+            self.NoTabsLabel.Visible = next(self.Tabs) == nil
+        end
+    end
+    updateNoTabsLabel()
+
+    -- Função de destruição da aba
     function tab:Destroy()
         if self._destroyed then return end
         self._destroyed = true
-        local parent = self._parentRef
-        self._parentRef = nil
 
-        for _, c in ipairs(self._connections) do
-            if c.Connected then c:Disconnect() end
-        end
-
-        for _, comp in pairs(self.Components or {}) do
-            if typeof(comp) == "table" and comp.Destroy then
-                pcall(comp.Destroy, comp)
+        local function safeDestroy(obj)
+            if typeof(obj) == "Instance" and obj:IsDescendantOf(game) then
+                obj:Destroy()
+            elseif type(obj) == "table" and rawget(obj, "Destroy") and type(obj.Destroy) == "function" then
+                pcall(function() obj:Destroy() end)
             end
         end
 
-        if self.Container then self.Container:Destroy() end
-        if self.Button then self.Button:Destroy() end
-
-        if parent and parent.Tabs then
-            parent.Tabs[title] = nil
-            if parent.CurrentTab == self then
-                local nextName = next(parent.Tabs)
-                parent.CurrentTab = nextName and parent.Tabs[nextName] or nil
-                parent.NoTabsLabel.Visible = not nextName
-                if nextName then
-                    parent:SetActiveTab(parent.Tabs[nextName])
+        -- Desconectar conexões
+        if self._connections then
+            for _, conn in ipairs(self._connections) do
+                if conn and conn.Disconnect then
+                    pcall(conn.Disconnect, conn)
                 end
             end
+            self._connections = nil
         end
 
-        table.clear(self)
+        -- Destruir Components
+        if self.Components then
+            for _, comp in pairs(self.Components) do
+                safeDestroy(comp)
+            end
+            self.Components = nil
+        end
+
+        -- Destruir Container e Button
+        safeDestroy(self.Container)
+        self.Container = nil
+        safeDestroy(self.Button)
+        self.Button = nil
+
+        -- Limpeza final da tabela da aba
+        for k in pairs(self) do
+            self[k] = nil
+        end
     end
 
-    -- Auto-clean
+    -- Auto-destruir se o botão for removido
     table.insert(tab._connections, button.AncestryChanged:Connect(function(_, parent)
         if not parent and not tab._destroyed then
             task.defer(function()
@@ -1330,13 +1427,21 @@ end
 function Tekscripts:SetActiveTab(tab)
     local DESIGN = DESIGN
     if self.CurrentTab then
-        self.CurrentTab.Container.Visible = false
-        self.CurrentTab.Button.BackgroundColor3 = DESIGN.TabInactiveColor
+        if self.CurrentTab.Container then
+            self.CurrentTab.Container.Visible = false
+        end
+        if self.CurrentTab.Button then
+            self.CurrentTab.Button.BackgroundColor3 = DESIGN.TabInactiveColor
+        end
     end
 
     self.CurrentTab = tab
-    self.CurrentTab.Container.Visible = true
-    self.CurrentTab.Button.BackgroundColor3 = DESIGN.TabActiveColor
+    if self.CurrentTab.Container then
+        self.CurrentTab.Container.Visible = true
+    end
+    if self.CurrentTab.Button then
+        self.CurrentTab.Button.BackgroundColor3 = DESIGN.TabActiveColor
+    end
 end
 
 ---
@@ -1358,7 +1463,7 @@ function Tekscripts:Minimize()
         self._activeTween:Cancel()
     end
 
-    local minimizeTween = TweenService:Create(self.Window, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+    local minimizeTween = TweenService:Create(self.Window, CACHE.TweenInfo, {
         Size = UDim2.new(0, 0, 0, 0),
         Position = UDim2.new(0.5, 0, 0.5, 0)
     })
@@ -1399,7 +1504,7 @@ function Tekscripts:Expand()
         self._activeTween:Cancel()
     end
 
-    local expandTween = TweenService:Create(self.Window, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+    local expandTween = TweenService:Create(self.Window, CACHE.TweenInfo, {
         Size = self.LastWindowSize or UDim2.new(0, 300, 0, 200),
         Position = self.LastWindowPosition or UDim2.new(0.5, 0, 0.5, 0)
     })
@@ -4730,4 +4835,5 @@ function Tekscripts:CreateDialog(options)
 
     return api
 end
+
 return Tekscripts
