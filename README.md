@@ -4,7 +4,7 @@
   <img src="./assets/7213904856678237190_avatar.png.jpg" alt="Tekscripts UIX" width="500"/>
 </p>
 
-## 🎯 Visão Geral
+## Visão Geral
 
 A **Tekscripts UIX** é uma biblioteca de interface gráfica (GUI) para [Roblox](https://www.roblox.com/), desenvolvida para criadores de scripts que buscam construir menus e painéis de controle de forma rápida e intuitiva. Com uma API simplificada e um conjunto robusto de componentes, a biblioteca permite a criação de interfaces funcionais e visualmente agradáveis com poucas linhas de código.
 
@@ -12,13 +12,13 @@ Esta documentação detalha todos os recursos, componentes e métodos disponíve
 
 ---
 
-## 🚀 Começando
+## Começando
 
 Para integrar a Tekscripts UIX em seu projeto, o primeiro passo é carregar a biblioteca em seu ambiente de script. Este processo é feito executando uma única linha de código que busca e inicializa o módulo mais recente.
 
-> ⚠️ **Importante**: A linha de código abaixo deve ser executada antes de qualquer outra chamada à biblioteca para garantir que todas as funções sejam carregadas corretamente.
+> **Importante**: A linha de código abaixo deve ser executada antes de qualquer outra chamada à biblioteca para garantir que todas as funções sejam carregadas corretamente.
 
-### 🔧 Instalação
+### Instalação
 
 Copie e cole o código a seguir em seu script para carregar a biblioteca:
 
@@ -28,11 +28,11 @@ local Tekscripts = loadstring(game:HttpGet("https://raw.githubusercontent.com/c0
 
 ---
 
-## 🏗️ Estrutura Fundamental
+## Estrutura Fundamental
 
 A estrutura da Tekscripts UIX é baseada em uma janela principal que contém abas, e cada aba pode abrigar múltiplos componentes. Esta organização modular facilita a criação de interfaces complexas e bem segmentadas.
 
-### 💡 Criando a Janela Principal
+### Criando a Janela Principal
 
 A janela é o contêiner principal da sua interface. Você pode personalizá-la com um título, um texto flutuante para abri-la e definir qual aba será exibida inicialmente.
 
@@ -44,7 +44,7 @@ local gui = Tekscripts.new({
 })
 ```
 
-### 📁 Criando Abas
+### Criando Abas
 
 As abas (tabs) são usadas para organizar os componentes em diferentes seções, como "Principal", "Configurações" ou "Jogador".
 
@@ -56,7 +56,7 @@ local tabPlayer = gui:CreateTab({ Title = "Jogador" })
 
 ---
 
-## 🛠️ Componentes Disponíveis
+## Componentes Disponíveis
 
 A Tekscripts UIX oferece uma vasta gama de componentes para construir sua interface. Abaixo estão detalhados os principais componentes e como utilizá-los.
 
@@ -76,20 +76,110 @@ gui:CreateButton(tabPrincipal, {
 
 ### 2. Interruptores (Toggles)
 
-Interruptores permitem ao usuário alternar uma funcionalidade entre os estados ligado (true) e desligado (false).
+Interruptores permitem ao usuário alternar uma funcionalidade entre os estados **ligado** (`true`) e **desligado** (`false`).  
+O componente é altamente customizável, aceita descrições, pode ser bloqueado para evitar interação e exibe estados de erro visualmente.
+
+---
+
+#### Uso básico
 
 ```lua
-gui:CreateToggle(tabPrincipal, {
-    Text = "Modo Voo",
+local vooToggle = Tekscripts:CreateToggle(tabPrincipal, {
+    Text   = "Modo Voo",
+    Desc   = "Ativa a capacidade de voar no mapa.",
     Callback = function(estado)
-        if estado then
-            print("Modo Voo ativado!")
-        else
-            print("Modo Voo desativado.")
+        print("Modo Voo", estado and "ativado" or "desativado")
+    end
+})
+```
+
+---
+
+Parâmetros
+
+Campo	Tipo	Descrição	
+`tab`	`table`	Aba retornada por `CreateTab`. Obrigatório.	
+`options`	`table`	Configurações do interruptor.	
+`options.Text`	`string`	Rótulo exibido ao lado do switch.	
+`options.Desc`	`string?`	Texto explicativo menor sob o rótulo.	
+`options.Callback`	`function(state: boolean)`	Executada sempre que o estado mudar.	
+
+---
+
+Exemplos avançados
+
+1. Toggle com tratamento de erro
+
+```lua
+local invencivel = Tekscripts:CreateToggle(tabPrincipal, {
+    Text = "Invencibilidade",
+    Callback = function(ativo)
+        local sucesso = pcall(tornarInvencivel, ativo)
+        if not sucesso then
+            invencivel:SetState(false) -- reverte visualmente
+            invencivel:SetLocked(true) -- bloqueia até corrigir
+            task.wait(2)
+            invencivel:SetLocked(false)
         end
     end
 })
 ```
+
+2. Alterando texto / descrição em tempo real
+
+```lua
+vooToggle:SetText("Voo (Premium)")
+vooToggle:SetDesc("Disponível apenas para assinantes.")
+```
+
+3. Atualização em lote
+
+```lua
+vooToggle:Update({
+    Text  = "Voo Rápido",
+    Desc  = "Velocidade 2x while flying.",
+    State = true
+})
+```
+
+---
+
+API disponível
+
+Método	Assinatura	Descrição	
+`SetState`	`(state: boolean)`	Altera o estado sem disparar o callback.	
+`GetState`	`() → boolean`	Retorna o estado atual.	
+`Toggle`	`()`	Inverte o estado (equivale a clicar).	
+`SetText`	`(text: string)`	Atualiza o rótulo.	
+`SetDesc`	`(desc: string)`	Atualiza a descrição.	
+`SetCallback`	`(fn: function)`	Substitui a função de callback.	
+`SetLocked`	`(locked: boolean)`	Bloqueia/desbloqueia interação do usuário.	
+`Update`	`{Text?, Desc?, State?}`	Atualiza múltiplas propriedades de uma vez.	
+`Destroy`	`()`	Remove o componente e desconecta eventos.	
+
+---
+
+Dicas de uso
+
+- Use `SetLocked(true)` durante carregamentos ou validações para evitar cliques duplos.  
+- O callback é executado dentro de `pcall`; erros exibem um pulsar vermelho no switch e são logados no console.  
+- O estado de erro é automático: basta lançar um erro dentro do callback ou chamar `pulseError()` (interno).  
+- Para salvar preferências, combine `GetState()` com seu sistema de configurações:
+
+```lua
+salvarConfig("modVoo", vooToggle:GetState())
+```
+
+---
+
+Integração com sistemas de configuração
+
+```lua
+-- Ao iniciar o script
+vooToggle:SetState(lerConfig("modVoo") or false)
+
+-- Ao sair ou aplicar
+salvarConfig("modVoo", vooToggle:GetState())
 
 3. Menu Suspenso (Dropdown)
 
@@ -312,75 +402,9 @@ Exibe notificações temporárias na tela para informar o usuário sobre ações
 ```lua
 Em breve.
 ```
-
 ---
 
-## 📝 Exemplo Completo
-
-Este exemplo demonstra como criar uma interface simples com uma janela, duas abas e alguns componentes básicos.
-
-```lua
--- 1. Carregar a biblioteca
-local Tekscripts = loadstring(game:HttpGet("https://raw.githubusercontent.com/c0nfigs/LibUix/refs/heads/main/init.lua"))()
-
--- 2. Criar a janela principal
-local gui = Tekscripts.new({
-    Name = "Painel de Controle",
-    FloatText = "Abrir",
-    startTab = "Principal"
-})
-
--- 3. Criar abas
-local tabMain = gui:CreateTab({ Title = "Principal" })
-local tabSettings = gui:CreateTab({ Title = "Configurações" })
-
--- 4. Adicionar componentes
-
--- Aba Principal
-gui:CreateToggle(tabMain, {
-    Text = "Modo Voo",
-    Callback = function(state)
-        print("Modo Voo:", state and "ON" or "OFF")
-    end
-})
-
-gui:CreateButton(tabMain, {
-    Text = "Ativar ESP",
-    Callback = function()
-        gui:Notify({
-            Title = "ESP Ativado",
-            Desc = "Todos os jogadores estão visíveis.",
-            Duration = 3
-        })
-    end
-})
-
--- Aba de Configurações
-gui:CreateInput(tabSettings, {
-    Text = "WalkSpeed",
-    Placeholder = "16",
-    Type = "number",
-    Callback = function(num)
-        if type(num) == "number" then
-            game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = num
-        end
-    end
-})
-
-Tekscripts:CreateSlider(tabSettings, {
-    Text = "Campo de Visão (FOV)",
-    Min = 70,
-    Max = 120,
-    Value = 90,
-    Callback = function(val)
-        game.workspace.CurrentCamera.FieldOfView = val
-    end
-})
-```
-
----
-
-## 📊 Referência da API
+## Referência da API
 
 A tabela abaixo resume os principais métodos disponíveis na Tekscripts UIX.
 
@@ -403,7 +427,7 @@ A tabela abaixo resume os principais métodos disponíveis na Tekscripts UIX.
 
 ---
 
-## ⚠️ Considerações Finais
+## Considerações Finais
 
 - **Uso Responsável**: Esta biblioteca foi desenvolvida para fins educacionais e de aprendizado. A utilização de scripts em jogos deve respeitar os termos de serviço de cada plataforma. O desenvolvedor não se responsabiliza pelo uso indevido da ferramenta.
 - **Documentação Viva**: Este documento será atualizado continuamente para refletir novas funcionalidades e melhorias na biblioteca.
