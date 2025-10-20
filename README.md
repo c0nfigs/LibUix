@@ -179,7 +179,7 @@ Integração com sistemas de configuração
 vooToggle:SetState(lerConfig("modVoo") or false)
 
 -- Ao sair ou aplicar
-salvarConfig("modVoo", vooToggle:GetState())
+salvarConfig("modVoo", vooToggle:GetState())```
 
 3. Menu Suspenso (Dropdown)
 
