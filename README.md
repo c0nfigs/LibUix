@@ -177,9 +177,11 @@ Integração com sistemas de configuração
 ```lua
 -- Ao iniciar o script
 vooToggle:SetState(lerConfig("modVoo") or false)
-
+```
+```lua
 -- Ao sair ou aplicar
-salvarConfig("modVoo", vooToggle:GetState())```
+salvarConfig("modVoo", vooToggle:GetState())
+```
 
 3. Menu Suspenso (Dropdown)
 
