@@ -91,20 +91,96 @@ gui:CreateToggle(tabPrincipal, {
 })
 ```
 
-### 3. Menu Suspenso (Dropdown)
+3. Menu Suspenso (Dropdown)
 
-O menu suspenso (ou dropdown) oferece uma lista de opções para o usuário selecionar.
+O componente Dropdown permite que os usuários selecionem uma ou várias opções a partir de uma lista suspensa. Ele suporta seleção única ou múltipla, exibição de imagens nos itens, e controle programático via API.
+
+---
+
+Uso Básico
 
 ```lua
-gui:CreateDropdown(tabPrincipal, {
+local dropdown = Tekscripts:CreateDropdown(tabPrincipal, {
     Title = "Modo de Velocidade",
-    Values = { "Normal", "Rápido", "Super Rápido" },
+    Values = {
+        { Name = "Normal" },
+        { Name = "Rápido" },
+        { Name = "Super Rápido" }
+    },
     SelectedValue = "Normal",
     Callback = function(valorSelecionado)
-        print("Velocidade definida para: " .. valorSelecionado)
+        print("Velocidade definida para: " .. tostring(valorSelecionado))
     end
 })
 ```
+
+---
+
+Parâmetros
+
+Parâmetro	Tipo	Descrição	
+`tab`	`table`	Aba onde o dropdown será inserido. Deve conter um `Container`.	
+`options`	`table`	Configurações do dropdown.	
+`options.Title`	`string`	Título exibido acima do dropdown.	
+`options.Values`	`table`	Lista de itens. Cada item é uma tabela com `Name` (obrigatório) e `Image` (opcional).	
+`options.Callback`	`function`	Função chamada quando a seleção muda. Recebe o valor selecionado (string ou tabela).	
+`options.MultiSelect`	`boolean?`	Permite selecionar múltiplos itens. Padrão: `false`.	
+`options.MaxVisibleItems`	`number?`	Número máximo de itens visíveis antes de ativar scroll. Padrão: `5`, máximo: `8`.	
+`options.InitialValues`	`table?`	Itens pré-selecionados ao iniciar.	
+
+---
+
+Exemplos Avançados
+
+1. Dropdown com imagens e seleção múltipla:
+
+```lua
+local dropdown = Tekscripts:CreateDropdown(tabPrincipal, {
+    Title = "Escolha seus poderes",
+    Values = {
+        { Name = "Fogo", Image = "rbxassetid://123456" },
+        { Name = "Gelo", Image = "rbxassetid://654321" },
+        { Name = "Raio", Image = "rbxassetid://111222" }
+    },
+    MultiSelect = true,
+    InitialValues = { "Fogo" },
+    Callback = function(selecionados)
+        print("Poderes escolhidos: " .. table.concat(selecionados, ", "))
+    end
+})
+```
+
+2. Adicionando e removendo itens dinamicamente:
+
+```lua
+dropdown:AddItem({ Name = "Vento", Image = "rbxassetid://333444" }, 2) -- Insere na posição 2
+dropdown:RemoveItem("Gelo")
+dropdown:ClearItems() -- Remove todos os itens
+```
+
+---
+
+API Disponível
+
+Método	Descrição	
+`AddItem(valueInfo, position?)`	Adiciona um novo item à lista.	
+`RemoveItem(valueName)`	Remove um item pelo nome.	
+`ClearItems()`	Remove todos os itens.	
+`GetSelected()`	Retorna o item selecionado (ou tabela em multiseleção).	
+`GetSelectedFormatted()`	Retorna uma string formatada com os itens selecionados.	
+`SetSelected(values)`	Define os itens selecionados (string ou tabela).	
+`Toggle()`	Abre ou fecha o dropdown.	
+`Close()`	Fecha o dropdown.	
+`Destroy()`	Remove o dropdown e desconecta todos os eventos.	
+
+---
+
+Dicas de Uso
+
+- Use `MaxVisibleItems` para controlar a altura do dropdown e evitar listas muito longas.
+- Prefira `GetSelectedFormatted()` para exibir seleções ao usuário de forma legível.
+- Sempre verifique se o item existe antes de removê-lo ou alterá-lo.
+- Use `InitialValues` para criar interfaces com configurações salvas ou padrões.
 
 ### 4. Rótulos (Labels)
 
