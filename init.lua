@@ -555,7 +555,7 @@ function Tekscripts.new(options: { Name: string?, Parent: Instance?, FloatText: 
     -- // OUTROS COMPONENTES
     
     self:SetupResizeSystem() -- Sistema de redimensionamento
-    self:SetupFloatButton(options.FloatText or "📋 Expandir") -- Botão flutuante
+    self:SetupFloatButton(options.FloatText or "abrir") -- Botão flutuante
     self:CreateEdgeButtons() -- Botões nas bordas
 
     -- Tela de bloqueio
@@ -669,60 +669,69 @@ function Tekscripts:SetupTitleScroll()
     local parent = title.Parent
     if not title or not parent then return end
 
-    local isScrolling = false
-    local scrollTween
-    local TweenService = game:GetService("TweenService")
     local RunService = game:GetService("RunService")
 
-    local function startScroll()
+    -- Remove clones antigos se existirem
+    for _, v in ipairs(parent:GetChildren()) do
+        if v.Name == "TitleClone" then
+            v:Destroy()
+        end
+    end
+
+    -- Reset inicial
+    title.Position = UDim2.new(0, 0, 0, 0)
+
+    -- Cria clone do texto para efeito carrossel
+    local clone = title:Clone()
+    clone.Name = "TitleClone"
+    clone.Parent = parent
+    clone.Position = UDim2.new(0, title.TextBounds.X + 20, 0, 0) -- espaçamento de 20px
+
+    local scrollSpeed = 50 -- velocidade px/s
+    local function updateScroll()
         local textWidth = title.TextBounds.X
         local parentWidth = parent.AbsoluteSize.X
+
         if textWidth <= parentWidth then
+            -- Nenhuma rolagem necessária
+            clone.Visible = false
             title.Position = UDim2.new(0, 0, 0, 0)
-            isScrolling = false
             return
+        else
+            clone.Visible = true
         end
 
-        isScrolling = true
-        local scrollDistance = textWidth - parentWidth + 5
-        local scrollTime = scrollDistance / 50 -- 50 pixels/segundo
+        local move = scrollSpeed / 60 -- deslocamento por frame (aprox 60fps)
 
-        local tweenInfo = TweenInfo.new(
-            scrollTime,
-            Enum.EasingStyle.Linear,
-            Enum.EasingDirection.InOut,
-            -1, -- repete infinitamente
-            false,
-            0
-        )
+        local connection
+        connection = RunService.RenderStepped:Connect(function(dt)
+            local offset = move * (dt * 60)
 
-        scrollTween = TweenService:Create(title, tweenInfo, { Position = UDim2.new(0, -scrollDistance, 0, 0) })
-        scrollTween:Play()
+            title.Position = title.Position - UDim2.new(0, offset, 0, 0)
+            clone.Position = clone.Position - UDim2.new(0, offset, 0, 0)
+
+            -- Reseta posições para loop contínuo
+            if title.Position.X.Offset + textWidth < 0 then
+                title.Position = UDim2.new(0, clone.Position.X.Offset + textWidth + 20, 0, 0)
+            end
+            if clone.Position.X.Offset + textWidth < 0 then
+                clone.Position = UDim2.new(0, title.Position.X.Offset + textWidth + 20, 0, 0)
+            end
+        end)
+
+        self.TitleScrollConnection = connection
     end
 
-    -- Inicia o scroll somente quando necessário
-    local conn
-    conn = parent:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
-        if title.TextBounds.X > parent.AbsoluteSize.X and not isScrolling then
-            startScroll()
-        elseif title.TextBounds.X <= parent.AbsoluteSize.X and isScrolling then
-            if scrollTween then
-                scrollTween:Cancel()
-                scrollTween = nil
-            end
-            title.Position = UDim2.new(0, 0, 0, 0)
-            isScrolling = false
+    -- Detecta redimensionamento do pai para reconfigurar
+    parent:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
+        if self.TitleScrollConnection then
+            self.TitleScrollConnection:Disconnect()
+            self.TitleScrollConnection = nil
         end
+        updateScroll()
     end)
 
-    -- Armazena referências para gerenciamento futuro
-    self.TitleScrollTween = scrollTween
-    self.TitleScrollConnection = conn
-
-    -- Verificação inicial
-    if title.TextBounds.X > parent.AbsoluteSize.X then
-        startScroll()
-    end
+    updateScroll()
 end
 
 ---
@@ -1059,91 +1068,93 @@ end
 -- Sistema de Redimensionamento (com adaptação à tela)
 ---
 function Tekscripts:SetupResizeSystem()
-    self.ResizeHandle = Instance.new("Frame")
-    self.ResizeHandle.Size = UDim2.new(0, DESIGN.ResizeHandleSize, 0, DESIGN.ResizeHandleSize)
-    self.ResizeHandle.Position = UDim2.new(1, -DESIGN.ResizeHandleSize, 1, -DESIGN.ResizeHandleSize)
-    self.ResizeHandle.BackgroundColor3 = DESIGN.ResizeHandleColor
-    self.ResizeHandle.BorderSizePixel = 0
-    self.ResizeHandle.Parent = self.Window
-    addRoundedCorners(self.ResizeHandle, 4)
+	local uiService = game:GetService("UserInputService")
+	local tweenService = game:GetService("TweenService")
+	local camera = workspace.CurrentCamera
+	local DESIGN, CACHE = DESIGN, CACHE
 
-    local resizeIcon = Instance.new("TextLabel")
-    resizeIcon.Size = UDim2.new(1, 0, 1, 0)
-    resizeIcon.BackgroundTransparency = 1
-    resizeIcon.Text = "↘"
-    resizeIcon.TextColor3 = DESIGN.ComponentTextColor
-    resizeIcon.TextScaled = true
-    resizeIcon.Font = Enum.Font.Roboto
-    resizeIcon.Parent = self.ResizeHandle
+	local handle = Instance.new("Frame")
+	handle.Size = UDim2.new(0, DESIGN.ResizeHandleSize, 0, DESIGN.ResizeHandleSize)
+	handle.Position = UDim2.new(1, -DESIGN.ResizeHandleSize, 1, -DESIGN.ResizeHandleSize)
+	handle.BackgroundColor3 = DESIGN.ResizeHandleColor
+	handle.BorderSizePixel = 0
+	handle.Parent = self.Window
+	addRoundedCorners(handle, 4)
+	self.ResizeHandle = handle
 
-    local resizeStart = nil
-    local startSize = nil
+	local icon = Instance.new("TextLabel")
+	icon.Size = UDim2.new(1, 0, 1, 0)
+	icon.BackgroundTransparency = 1
+	icon.Text = "↘"
+	icon.TextColor3 = DESIGN.ComponentTextColor
+	icon.TextScaled = true
+	icon.Font = Enum.Font.Roboto
+	icon.Parent = handle
 
-    self.Connections.ResizeBegin = self.ResizeHandle.InputBegan:Connect(function(input)
-        if self.Blocked then return end
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            self.IsResizing = true
-            resizeStart = UserInputService:GetMouseLocation()
-            startSize = self.Window.Size
-        end
-    end)
+	local resizing, startPos, startSize
+	local lastUpdate = 0
 
-    self.Connections.ResizeChanged = UserInputService.InputChanged:Connect(function(input)
-        if self.Blocked then return end
-        if self.IsResizing and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
-            local delta = UserInputService:GetMouseLocation() - resizeStart
-            
-            -- Calcula novos tamanhos com base na tela atual
-            local screen = workspace.CurrentCamera.ViewportSize
-            local maxW = math.min(DESIGN.MaxWindowSize.X, screen.X * 0.9)
-            local maxH = math.min(DESIGN.MaxWindowSize.Y, screen.Y * 0.9)
-            
-            local newWidth = math.clamp(startSize.X.Offset + delta.X, DESIGN.MinWindowSize.X, maxW)
-            local newHeight = math.clamp(startSize.Y.Offset + delta.Y, DESIGN.MinWindowSize.Y, maxH)
+	self.Connections.ResizeBegin = handle.InputBegan:Connect(function(input)
+		if self.Blocked then return end
+		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+			resizing = true
+			startPos = uiService:GetMouseLocation()
+			startSize = self.Window.Size
+		end
+	end)
 
-            local newSize = UDim2.new(0, newWidth, 0, newHeight)
-            local tween = TweenService:Create(self.Window, CACHE.TweenInfo, { Size = newSize })
-            tween:Play()
+	self.Connections.ResizeChanged = uiService.InputChanged:Connect(function(input)
+		if not resizing or self.Blocked then return end
+		if input.UserInputType ~= Enum.UserInputType.MouseMovement and input.UserInputType ~= Enum.UserInputType.Touch then return end
 
-            self:UpdateContainersSize()
-        end
-    end)
+		-- limita atualização a cada 0.02s (50fps)
+		local now = os.clock()
+		if now - lastUpdate < 0.02 then return end
+		lastUpdate = now
 
-    self.Connections.ResizeEnded = UserInputService.InputEnded:Connect(function(input)
-        if self.Blocked then return end
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            self.IsResizing = false
-        end
-    end)
+		local delta = uiService:GetMouseLocation() - startPos
+		local screen = camera and camera.ViewportSize or Vector2.new(1920, 1080)
+
+		local maxW = math.min(DESIGN.MaxWindowSize.X, screen.X * 0.9)
+		local maxH = math.min(DESIGN.MaxWindowSize.Y, screen.Y * 0.9)
+		local newW = math.clamp(startSize.X.Offset + delta.X, DESIGN.MinWindowSize.X, maxW)
+		local newH = math.clamp(startSize.Y.Offset + delta.Y, DESIGN.MinWindowSize.Y, maxH)
+
+		self.Window.Size = UDim2.new(0, newW, 0, newH)
+		self:UpdateContainersSize()
+	end)
+
+	self.Connections.ResizeEnded = uiService.InputEnded:Connect(function(input)
+		if self.Blocked then return end
+		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+			resizing = false
+		end
+	end)
 end
 
 function Tekscripts:UpdateContainersSize()
-    local DESIGN = DESIGN -- cache local (acesso mais rápido)
-    local camera = workspace.CurrentCamera
-    if not camera or not self.Window then return end
+	local DESIGN = DESIGN
+	local win = self.Window
+	if not win then return end
 
-    local windowSize = self.Window.AbsoluteSize
-    local tabWidth, handleSize, titleHeight = DESIGN.TabButtonWidth, DESIGN.ResizeHandleSize, DESIGN.TitleHeight
+	local tabW, handle, titleH = DESIGN.TabButtonWidth, DESIGN.ResizeHandleSize, DESIGN.TitleHeight
 
-    -- Atualiza o container de abas (lado esquerdo)
-    local tabContainer = self.TabContainer
-    if tabContainer then
-        tabContainer.Size = UDim2.new(0, tabWidth, 1, -titleHeight)
-        tabContainer.Position = UDim2.new(0, 0, 0, titleHeight)
-    end
+	local tabs = self.TabContainer
+	if tabs then
+		tabs.Size = UDim2.new(0, tabW, 1, -titleH)
+		tabs.Position = UDim2.new(0, 0, 0, titleH)
+	end
 
-    -- Atualiza o container de conteúdo
-    local contentContainer = self.TabContentContainer
-    if contentContainer then
-        contentContainer.Position = UDim2.new(0, tabWidth, 0, titleHeight)
-        contentContainer.Size = UDim2.new(1, -tabWidth - handleSize, 1, -titleHeight)
-    end
+	local content = self.TabContentContainer
+	if content then
+		content.Position = UDim2.new(0, tabW, 0, titleH)
+		content.Size = UDim2.new(1, -tabW - handle, 1, -titleH)
+	end
 
-    -- Atualiza o handle de redimensionamento
-    local resizeHandle = self.ResizeHandle
-    if resizeHandle then
-        resizeHandle.Position = UDim2.new(1, -handleSize, 1, -handleSize)
-    end
+	local resize = self.ResizeHandle
+	if resize then
+		resize.Position = UDim2.new(1, -handle, 1, -handle)
+	end
 end
 
 ---
@@ -1690,7 +1701,7 @@ end
 -- 🟩 FIM API DIRECTORY
 
 -- 🟩 API REQUEST
-function Tekscripts:Request(options)
+function Tekscripts:RequestAsync(options, callback)
 	assert(type(options) == "table", "As opções precisam ser uma tabela.")
 
 	local HttpService = game:GetService("HttpService")
@@ -1706,33 +1717,40 @@ function Tekscripts:Request(options)
 
 	if not requestFunc then
 		warn("[HTTP] Nenhuma função de request disponível neste executor.")
-		return nil
+		if callback then callback(nil) end
+		return
 	end
 
-	-- 🔹 Conversão automática de Body para JSON
-	if options.Body and type(options.Body) == "table" then
-		options.Headers = options.Headers or {}
-		if not options.Headers["Content-Type"] then
-			options.Headers["Content-Type"] = "application/json"
+	task.spawn(function()
+		-- 🔹 Conversão automática de Body para JSON
+		if options.Body and type(options.Body) == "table" then
+			options.Headers = options.Headers or {}
+			if not options.Headers["Content-Type"] then
+				options.Headers["Content-Type"] = "application/json"
+			end
+
+			local ok, encoded = pcall(HttpService.JSONEncode, HttpService, options.Body)
+			if ok then
+				options.Body = encoded
+			else
+				warn("[HTTP] Falha ao converter Body para JSON:", encoded)
+				if callback then callback(nil) end
+				return
+			end
 		end
 
-		local ok, encoded = pcall(HttpService.JSONEncode, HttpService, options.Body)
-		if ok then
-			options.Body = encoded
-		else
-			warn("[HTTP] Falha ao converter Body para JSON:", encoded)
-			return nil
+		-- 🔹 Executa a requisição
+		local ok, response = pcall(requestFunc, options)
+		if not ok then
+			warn("[HTTP] Erro na requisição:", response)
+			if callback then callback(nil) end
+			return
 		end
-	end
 
-	-- 🔹 Executa a requisição
-	local ok, response = pcall(requestFunc, options)
-	if not ok then
-		warn("[HTTP] Erro na requisição:", response)
-		return nil
-	end
-
-	return response
+		if callback then
+			callback(response)
+		end
+	end)
 end
 
 -- 🟩 FIM DA API REQUEST
@@ -3537,34 +3555,36 @@ end
 
 function Tekscripts:CreateButton(tab, options)
     -- // VALIDAÇÃO
-    assert(typeof(tab) == "table" and tab.Container, "CreateButton: 'tab' inválido ou sem Container.")
-    assert(typeof(options) == "table" and typeof(options.Text) == "string", "CreateButton: 'options' inválido.")
-
-    -- // SERVIÇOS
-    local TweenService = game:GetService("TweenService")
+    local container = tab and tab.Container
+    if not container or typeof(options) ~= "table" or typeof(options.Text) ~= "string" then
+        return error("CreateButton: argumentos inválidos.")
+    end
 
     -- // CONFIG
     local callback = typeof(options.Callback) == "function" and options.Callback or function() end
     local debounceTime = tonumber(options.Debounce or 0.25)
     local lastClick = 0
+
+    -- // CORES PRÉ-CALCULADAS
     local btnColor = DESIGN.ComponentBackground
     local hoverColor = DESIGN.ComponentHoverColor
     local errorColor = Color3.fromRGB(255, 60, 60)
+    local textColor = DESIGN.ComponentTextColor
 
-    -- // INSTÂNCIA
+    -- // INSTÂNCIA BASE
     local btn = Instance.new("TextButton")
     btn.Name = "Button"
     btn.Size = UDim2.new(1, 0, 0, DESIGN.ComponentHeight)
     btn.BackgroundColor3 = btnColor
-    btn.TextColor3 = DESIGN.ComponentTextColor
+    btn.TextColor3 = textColor
     btn.Font = Enum.Font.Gotham
     btn.TextSize = 14
     btn.Text = options.Text
     btn.AutoButtonColor = false
     btn.ClipsDescendants = true
-    btn.Parent = tab.Container
+    btn.Parent = container
 
-    -- // VISUAL
+    -- // UI ELEMENTOS (reutilizáveis por Theme)
     local corner = Instance.new("UICorner")
     corner.CornerRadius = UDim.new(0, DESIGN.CornerRadius)
     corner.Parent = btn
@@ -3575,44 +3595,47 @@ function Tekscripts:CreateButton(tab, options)
     stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
     stroke.Parent = btn
 
-    -- // ANIMAÇÕES
-    local function tweenTo(props, duration)
-        if not btn or not btn.Parent then return end
-        local tween = TweenService:Create(btn, TweenInfo.new(duration or 0.15, Enum.EasingStyle.Quad), props)
-        tween:Play()
-        return tween
+    -- // TWEEN LEVE (reaproveita objeto)
+    local TweenService = game:GetService("TweenService")
+    local tweenInfoFast = TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+    local tweenInfoSlow = TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+
+    local function fastTween(prop)
+        local ok, tween = pcall(TweenService.Create, TweenService, btn, tweenInfoFast, prop)
+        if ok and tween then tween:Play() end
     end
 
+    -- // FUNÇÃO DE ERRO (sem tween duplo)
     local function pulseError()
-        tweenTo({BackgroundColor3 = errorColor}, 0.1)
-        task.delay(0.2, function()
-            tweenTo({BackgroundColor3 = btnColor}, 0.2)
+        btn.BackgroundColor3 = errorColor
+        task.delay(0.15, function()
+            btn.BackgroundColor3 = btnColor
         end)
     end
 
-    -- // EVENTOS
-    local hoverConn = btn.MouseEnter:Connect(function()
-        if not self.Blocked then tweenTo({BackgroundColor3 = hoverColor}) end
-    end)
-
-    local leaveConn = btn.MouseLeave:Connect(function()
-        if not self.Blocked then tweenTo({BackgroundColor3 = btnColor}) end
-    end)
-
-    local clickConn = btn.MouseButton1Click:Connect(function()
+    -- // EVENTOS OTIMIZADOS (sem excesso de conexões)
+    btn.MouseEnter:Connect(function()
         if self.Blocked then return end
-        if tick() - lastClick < debounceTime then return end
+        btn.BackgroundColor3 = hoverColor
+    end)
+
+    btn.MouseLeave:Connect(function()
+        if self.Blocked then return end
+        btn.BackgroundColor3 = btnColor
+    end)
+
+    btn.MouseButton1Down:Connect(function()
+        if self.Blocked or tick() - lastClick < debounceTime then return end
         lastClick = tick()
 
-        tweenTo({Size = UDim2.new(0.95, 0, 0, DESIGN.ComponentHeight * 0.9)}, 0.1)
-        task.delay(0.1, function()
-            tweenTo({Size = UDim2.new(1, 0, 0, DESIGN.ComponentHeight)}, 0.1)
+        btn.Size = UDim2.new(0.97, 0, 0, DESIGN.ComponentHeight * 0.92)
+        task.delay(0.08, function()
+            btn.Size = UDim2.new(1, 0, 0, DESIGN.ComponentHeight)
         end)
 
         task.spawn(function()
             local ok, err = pcall(callback)
             if not ok then
-                warn("[CreateButton] Callback error:", err)
                 pulseError()
                 if Tekscripts.Log then
                     Tekscripts.Log("[Button Error] " .. tostring(err))
@@ -3621,158 +3644,146 @@ function Tekscripts:CreateButton(tab, options)
         end)
     end)
 
-    -- // API PÚBLICA
-    local publicApi = {
-        _instance = btn,
-        _connections = {clickConn, hoverConn, leaveConn},
-        _blocked = false,
-        _callback = callback
-    }
+    -- // API LEVE
+    local api = {}
 
-    function publicApi:SetBlocked(state)
-        self._blocked = state
-        self._instance.Active = not state
-        local color = state and Color3.fromRGB(60, 60, 60) or btnColor
-        tweenTo({BackgroundColor3 = color}, 0.15)
+    function api:SetBlocked(state)
+        self.Blocked = state
+        btn.Active = not state
+        btn.BackgroundColor3 = state and Color3.fromRGB(70, 70, 70) or btnColor
     end
 
-    function publicApi:Update(newOptions)
+    function api:Update(newOptions)
         if typeof(newOptions) ~= "table" then return end
         if newOptions.Text then btn.Text = tostring(newOptions.Text) end
-        if typeof(newOptions.Callback) == "function" then
-            callback = newOptions.Callback
-            self._callback = callback
-        end
-        if newOptions.Debounce then
-            debounceTime = tonumber(newOptions.Debounce)
-        end
+        if typeof(newOptions.Callback) == "function" then callback = newOptions.Callback end
+        if newOptions.Debounce then debounceTime = tonumber(newOptions.Debounce) end
     end
 
-    function publicApi:Destroy()
-        for _, c in ipairs(self._connections) do
-            if c.Connected then c:Disconnect() end
-        end
-        if self._instance then
-            self._instance:Destroy()
-        end
-        self._connections = nil
-        self._instance = nil
-        self._callback = nil
-        setmetatable(self, nil)
+    function api:Destroy()
+        btn:Destroy()
         table.clear(self)
     end
 
-    table.insert(tab.Components, publicApi)
-    return publicApi
+    tab.Components[#tab.Components + 1] = api
+    api._instance = btn
+    return api
 end
 
-function Tekscripts:CreateToggle(tab: any, options: { Text: string, Desc: string?, Callback: (state: boolean) -> () })
-    assert(type(tab) == "table" and tab.Container, "Invalid Tab object provided to CreateToggle")
-    assert(type(options) == "table" and type(options.Text) == "string", "Invalid arguments for CreateToggle")
+function Tekscripts:CreateToggle(tab, options)
+    -- // VALIDAÇÃO
+    local container = tab and tab.Container
+    if not container or typeof(options) ~= "table" or typeof(options.Text) ~= "string" then
+        return error("CreateToggle: argumentos inválidos.")
+    end
 
+    -- // CONFIG
     local TweenService = game:GetService("TweenService")
     local descHeight = options.Desc and 16 or 0
-    local padding = 6
-    local totalHeight = DESIGN.ComponentHeight + descHeight + padding
+    local totalHeight = DESIGN.ComponentHeight + descHeight + 6
+    local callback = typeof(options.Callback) == "function" and options.Callback or function() end
 
-    -- Outer box
-    local outerBox = Instance.new("Frame")
-    outerBox.Size = UDim2.new(1, 0, 0, totalHeight)
-    outerBox.BackgroundColor3 = DESIGN.ComponentBackground
-    outerBox.BorderSizePixel = 0
-    outerBox.Parent = tab.Container
-    addRoundedCorners(outerBox, DESIGN.CornerRadius)
+    -- // CORES
+    local bgColor = DESIGN.ComponentBackground
+    local textColor = DESIGN.ComponentTextColor
+    local hoverColor = DESIGN.ComponentHoverColor
+    local activeColor = DESIGN.ActiveToggleColor
+    local inactiveColor = DESIGN.InactiveToggleColor
+    local errorColor = Color3.fromRGB(255, 60, 60)
+    local descColor = Color3.fromRGB(160, 160, 160)
 
-    -- Internal container
-    local container = Instance.new("Frame")
-    container.Size = UDim2.new(1, -DESIGN.ComponentPadding*2, 1, 0)
-    container.Position = UDim2.new(0, DESIGN.ComponentPadding, 0, 0)
-    container.BackgroundTransparency = 1
-    container.Parent = outerBox
+    -- // FRAME PRINCIPAL
+    local outer = Instance.new("Frame")
+    outer.Size = UDim2.new(1, 0, 0, totalHeight)
+    outer.BackgroundColor3 = bgColor
+    outer.BorderSizePixel = 0
+    outer.Parent = container
 
-    -- Label
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, DESIGN.CornerRadius)
+    corner.Parent = outer
+
+    -- // CONTAINER INTERNO
+    local inner = Instance.new("Frame")
+    inner.Size = UDim2.new(1, -DESIGN.ComponentPadding*2, 1, 0)
+    inner.Position = UDim2.new(0, DESIGN.ComponentPadding, 0, 0)
+    inner.BackgroundTransparency = 1
+    inner.Parent = outer
+
+    -- // LABEL PRINCIPAL
     local label = Instance.new("TextLabel")
     label.Text = options.Text
     label.Size = UDim2.new(0.7, -10, 0, DESIGN.ComponentHeight)
-    label.Position = UDim2.new(0, 0, 0, 0)
     label.BackgroundTransparency = 1
-    label.TextColor3 = DESIGN.ComponentTextColor
-    label.Font = Enum.Font.Roboto
-    label.TextScaled = false
+    label.TextColor3 = textColor
+    label.Font = Enum.Font.Gotham
     label.TextSize = 16
     label.TextXAlignment = Enum.TextXAlignment.Left
-    label.Parent = container
+    label.Parent = inner
 
-    -- Description
-    local descLabel
+    -- // DESCRIÇÃO
+    local desc
     if options.Desc then
-        descLabel = Instance.new("TextLabel")
-        descLabel.Text = options.Desc
-        descLabel.Size = UDim2.new(0.7, -10, 0, descHeight)
-        descLabel.Position = UDim2.new(0, 0, 0, DESIGN.ComponentHeight)
-        descLabel.BackgroundTransparency = 1
-        descLabel.TextColor3 = Color3.fromRGB(160, 160, 160)
-        descLabel.Font = Enum.Font.Roboto
-        descLabel.TextScaled = false
-        descLabel.TextSize = 14
-        descLabel.TextXAlignment = Enum.TextXAlignment.Left
-        descLabel.Parent = container
+        desc = Instance.new("TextLabel")
+        desc.Text = options.Desc
+        desc.Size = UDim2.new(0.7, -10, 0, descHeight)
+        desc.Position = UDim2.new(0, 0, 0, DESIGN.ComponentHeight)
+        desc.BackgroundTransparency = 1
+        desc.TextColor3 = descColor
+        desc.Font = Enum.Font.Gotham
+        desc.TextSize = 14
+        desc.TextXAlignment = Enum.TextXAlignment.Left
+        desc.Parent = inner
     end
 
-    -- Switch
+    -- // SWITCH
     local switch = Instance.new("TextButton")
     switch.Size = UDim2.new(0, 50, 0, 24)
-    switch.Position = UDim2.new(0.85, 0, 0, (totalHeight - 24)/2)
-    switch.BackgroundColor3 = DESIGN.InactiveToggleColor
+    switch.Position = UDim2.new(0.85, 0, 0, (totalHeight - 24) / 2)
+    switch.BackgroundColor3 = inactiveColor
     switch.Text = ""
     switch.AutoButtonColor = false
     switch.ClipsDescendants = true
-    switch.Parent = container
-    addRoundedCorners(switch, 100)
+    switch.Parent = inner
 
-    -- Knob
+    local switchCorner = Instance.new("UICorner")
+    switchCorner.CornerRadius = UDim.new(1, 0)
+    switchCorner.Parent = switch
+
+    -- // KNOB
     local knob = Instance.new("Frame")
     knob.Size = UDim2.new(0, 20, 0, 20)
     knob.Position = UDim2.new(0, 2, 0, 2)
     knob.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
     knob.Parent = switch
-    addRoundedCorners(knob, 100)
 
-    -- Error indicator
-    local errorIndicator = Instance.new("Frame")
-    errorIndicator.Size = UDim2.new(0, 8, 0, 8)
-    errorIndicator.Position = UDim2.new(1, -10, 0, 2)
-    errorIndicator.BackgroundColor3 = Color3.fromRGB(255, 60, 60)
-    errorIndicator.Visible = false
-    errorIndicator.Parent = switch
-    addRoundedCorners(errorIndicator, 100)
+    local knobCorner = Instance.new("UICorner")
+    knobCorner.CornerRadius = UDim.new(1, 0)
+    knobCorner.Parent = knob
 
-    -- Internal state
+    -- // ESTADO INTERNO
     local state = false
     local locked = false
     local inError = false
-    local connections = {}
+
+    local tweenInfo = TweenInfo.new(0.18, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
 
     local function animateToggle(newState)
         if not switch or not knob then return end
-        TweenService:Create(switch, TweenInfo.new(0.25, Enum.EasingStyle.Quad), {
-            BackgroundColor3 = inError and Color3.fromRGB(255,60,60)
-                                or (newState and DESIGN.ActiveToggleColor or DESIGN.InactiveToggleColor)
-        }):Play()
-        TweenService:Create(knob, TweenInfo.new(0.25, Enum.EasingStyle.Quad), {
-            Position = newState and UDim2.new(1, -22, 0, 2) or UDim2.new(0, 2, 0, 2)
-        }):Play()
+        local color = inError and errorColor or (newState and activeColor or inactiveColor)
+        local targetPos = newState and UDim2.new(1, -22, 0, 2) or UDim2.new(0, 2, 0, 2)
+        TweenService:Create(switch, tweenInfo, { BackgroundColor3 = color }):Play()
+        TweenService:Create(knob, tweenInfo, { Position = targetPos }):Play()
     end
 
     local function setError(state)
         inError = state
-        errorIndicator.Visible = state
         animateToggle(state or state)
     end
 
     local function pulseError()
         setError(true)
-        task.delay(0.5, function()
+        task.delay(0.3, function()
             setError(false)
         end)
     end
@@ -3781,71 +3792,60 @@ function Tekscripts:CreateToggle(tab: any, options: { Text: string, Desc: string
         if locked then return end
         state = newState
         animateToggle(state)
-        if not skipCallback and typeof(options.Callback) == "function" then
-            local ok, err = pcall(function() options.Callback(state) end)
-            if not ok then
-                warn("[Toggle Error] ", err)
-                pulseError()
-            end
+        if not skipCallback then
+            task.spawn(function()
+                local ok, err = pcall(callback, state)
+                if not ok then
+                    warn("[Toggle Error]:", err)
+                    pulseError()
+                end
+            end)
         end
     end
 
-    connections.Click = switch.MouseButton1Click:Connect(function()
-        toggle(not state)
+    -- // EVENTOS OTIMIZADOS
+    switch.MouseButton1Click:Connect(function()
+        if not locked then toggle(not state) end
     end)
 
-    -- Hover logic respecting error
-    connections.Enter = switch.MouseEnter:Connect(function()
+    switch.MouseEnter:Connect(function()
         if not locked then
-            TweenService:Create(switch, TweenInfo.new(0.15, Enum.EasingStyle.Quad), {
-                BackgroundColor3 = inError and Color3.fromRGB(255,60,60)
-                                    or (state and DESIGN.ActiveToggleColor or DESIGN.ComponentHoverColor)
-            }):Play()
-        end
-    end)
-    connections.Leave = switch.MouseLeave:Connect(function()
-        if not locked then
-            animateToggle(state)
+            switch.BackgroundColor3 = inError and errorColor or (state and activeColor or hoverColor)
         end
     end)
 
-    -- Public API
-    local publicApi = {
-        _instance = outerBox,
-        _connections = connections
-    }
+    switch.MouseLeave:Connect(function()
+        if not locked then animateToggle(state) end
+    end)
 
-    function publicApi:SetState(newState: boolean) toggle(newState, true) end
-    function publicApi:GetState(): boolean return state end
-    function publicApi:Toggle() toggle(not state) end
-    function publicApi:SetText(newText: string) if label then label.Text = newText end end
-    function publicApi:SetDesc(newDesc: string) if descLabel then descLabel.Text = newDesc end end
-    function publicApi:SetCallback(newCallback)
-        if typeof(newCallback) == "function" then options.Callback = newCallback end
-    end
-    function publicApi:SetLocked(isLocked: boolean)
-        locked = isLocked
-        switch.AutoButtonColor = not locked
+    -- // API PÚBLICA LEVE
+    local api = {}
+
+    function api:SetState(v) toggle(v, true) end
+    function api:GetState() return state end
+    function api:Toggle() toggle(not state) end
+    function api:SetText(t) if label then label.Text = t end end
+    function api:SetDesc(t) if desc then desc.Text = t end end
+    function api:SetCallback(fn) if typeof(fn) == "function" then callback = fn end end
+    function api:SetLocked(v)
+        locked = v
+        switch.Active = not v
         animateToggle(state)
     end
-    function publicApi:Update(newOptions: { Text: string?, Desc: string?, State: boolean? })
-        if newOptions.Text then publicApi:SetText(newOptions.Text) end
-        if newOptions.Desc then publicApi:SetDesc(newOptions.Desc) end
-        if newOptions.State ~= nil then toggle(newOptions.State) end
+    function api:Update(opt)
+        if typeof(opt) ~= "table" then return end
+        if opt.Text then self:SetText(opt.Text) end
+        if opt.Desc then self:SetDesc(opt.Desc) end
+        if opt.State ~= nil then toggle(opt.State, true) end
     end
-    function publicApi:Destroy()
-        for _, c in pairs(publicApi._connections) do
-            if c and c.Connected then c:Disconnect() end
-        end
-        if publicApi._instance then
-            publicApi._instance:Destroy()
-            publicApi._instance = nil
-        end
-        publicApi._connections = nil
+    function api:Destroy()
+        outer:Destroy()
+        table.clear(self)
     end
 
-    table.insert(tab.Components, publicApi)
-    return publicApi
+    tab.Components[#tab.Components + 1] = api
+    api._instance = outer
+    return api
 end
 
 function Tekscripts:CreateInput(tab, options)
@@ -4834,6 +4834,100 @@ function Tekscripts:CreateDialog(options)
     end
 
     return api
+end
+
+function Tekscripts:CreateTitlebar(tab, options)
+	assert(type(tab) == "table" and tab.Container, "Invalid Tab object provided to CreateTitlebar")
+	assert(type(options) == "table" and type(options.Text) == "string", "Invalid arguments for CreateTitlebar")
+
+	local title = options.Text or "Title"
+
+	-- CRIAÇÃO DO FRAME
+	local box = Instance.new("Frame")
+	box.Name = "Titlebar"
+	box.BackgroundTransparency = 1
+	box.Size = UDim2.new(1, 0, 0, DESIGN.ComponentHeight)
+	box.ClipsDescendants = true
+
+	local holder = Instance.new("Frame")
+	holder.BackgroundTransparency = 1
+	holder.Size = UDim2.new(1, 0, 1, 0)
+	holder.Parent = box
+
+	-- LABEL DO TÍTULO
+	local label = Instance.new("TextLabel")
+	label.BackgroundTransparency = 1
+	label.Text = title
+	label.Font = Enum.Font.GothamBold
+	label.TextColor3 = DESIGN.ComponentTextColor
+	label.TextSize = 16
+	label.TextXAlignment = Enum.TextXAlignment.Left
+	label.Size = UDim2.new(1, -DESIGN.ComponentPadding, 1, 0)
+	label.Parent = holder
+
+	local padding = Instance.new("UIPadding")
+	padding.PaddingLeft = UDim.new(0, DESIGN.ComponentPadding)
+	padding.PaddingRight = UDim.new(0, DESIGN.ComponentPadding)
+	padding.PaddingTop = UDim.new(0, 0)
+	padding.PaddingBottom = UDim.new(0, 0)
+	padding.Parent = holder
+
+	-- ESTILO OPCIONAL: LINHA ABAIXO DO TÍTULO
+	if options.line then
+		local line = Instance.new("Frame")
+		line.Name = "line"
+		line.Size = UDim2.new(1, 0, 0, 2)
+		line.Position = UDim2.new(0, 0, 1, -2)
+		line.BackgroundColor3 = DESIGN.HRColor
+		line.Parent = box
+	end
+
+	-- ESTADO DESTRUIDO
+	local destroyed = false
+	local connections = {}
+
+	-- FUNÇÃO SEGURA DE CONEXÃO
+	local function safeConnect(signal, func)
+		local conn = signal:Connect(function(...)
+			if destroyed then return end
+			local ok, err = pcall(func, ...)
+			if not ok then
+				warn("[TitlebarCallbackError]:", err)
+			end
+		end)
+		table.insert(connections, conn)
+		return conn
+	end
+
+	-- API PÚBLICA
+	local publicApi = {
+		_instance = box,
+		_connections = connections,
+	}
+
+	function publicApi:SetText(newText)
+		if destroyed then return end
+		if typeof(newText) == "string" then
+			pcall(function() label.Text = newText end)
+		end
+	end
+
+	function publicApi:Destroy()
+		if destroyed then return end
+		destroyed = true
+		pcall(function()
+			for _, conn in ipairs(connections) do
+				if conn and conn.Connected then conn:Disconnect() end
+			end
+			table.clear(connections)
+			if box then box:Destroy() end
+		end)
+	end
+
+	table.insert(tab.Components, publicApi)
+	box.Parent = tab.Container
+
+	return publicApi
 end
 
 return Tekscripts
