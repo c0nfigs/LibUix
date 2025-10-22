@@ -4961,7 +4961,7 @@ function Tekscripts:CreateLabel(tab, options)
 end
 
 function Tekscripts:CreateToggle(tab, options)
-    assert(tab and typeof(tab) == "table" and tab.Container, "CreateToggle: Tab inválida ou sem container.")
+    assert(tab and typeof(tab) == "table", "CreateToggle: Tab inválida.")
     assert(typeof(options) == "table", "CreateToggle: 'options' deve ser uma tabela.")
     assert(typeof(options.Text) == "string", "CreateToggle: 'Text' deve ser uma string.")
 
@@ -4980,16 +4980,13 @@ function Tekscripts:CreateToggle(tab, options)
     local errorColor = Color3.fromRGB(255, 60, 60)
     local descColor = Color3.fromRGB(160, 160, 160)
 
-    local container = tab.Container
-    if not container or not container.Parent then
-        return error("CreateToggle: container inválido ou removido.")
-    end
+    local container = tab.Container  -- Pode ser nil se lazy
 
     local outer = Instance.new("Frame")
     outer.Size = UDim2.new(1, 0, 0, totalHeight)
     outer.BackgroundColor3 = bgColor
     outer.BorderSizePixel = 0
-    outer.Parent = container
+    -- Não parentear ainda se container nil
 
     local corner = Instance.new("UICorner")
     corner.CornerRadius = UDim.new(0, (DESIGN and DESIGN.CornerRadius) or 6)
@@ -5149,6 +5146,7 @@ function Tekscripts:CreateToggle(tab, options)
             switch.BackgroundColor3 = switch.BackgroundColor3:Lerp(activeColor, 0.05)
         end
     end)
+    table.insert(tab._connections, connection)  -- Para limpeza na destruição da aba
 
     local PublicApi = {}
 
@@ -5204,7 +5202,26 @@ function Tekscripts:CreateToggle(tab, options)
         table.clear(self)
     end
 
-    tab.Components[#tab.Components + 1] = PublicApi
+    -- Adiciona à lista de components (como Instance, para lazy parent)
+    table.insert(tab.Components, outer)
+
+    -- Se container já existe, parentea e atualiza estado
+    if container then
+        outer.Parent = container
+        -- Update direto (como no fix anterior, sem :Fire())
+        task.defer(function()
+            if tab.ListLayout and tab.Container then
+                local hasComponents = #tab.Components > 0
+                if tab._overlay then
+                    tab._overlay.Visible = not hasComponents
+                end
+                local totalContentHeight = tab.ListLayout.AbsoluteContentSize.Y + (DESIGN.ContainerPadding * 2)
+                local containerHeight = tab.Container.AbsoluteSize.Y
+                tab.Container.ScrollBarImageTransparency = totalContentHeight > containerHeight and 0 or 1
+            end
+        end)
+    end
+
     PublicApi._instance = outer
     return PublicApi
 end
