@@ -1483,8 +1483,15 @@ local function loadTabContent(tab)
 
     -- Força update inicial
     task.defer(function()
-        if tab.ListLayout then
-            tab.ListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Fire()
+        if tab.ListLayout and tab.Container then
+            local hasComponents = #tab.Components > 0
+            if tab._overlay then
+                tab._overlay.Visible = not hasComponents
+            end
+
+            local totalContentHeight = tab.ListLayout.AbsoluteContentSize.Y + (DESIGN.ContainerPadding * 2)
+            local containerHeight = tab.Container.AbsoluteSize.Y
+            tab.Container.ScrollBarImageTransparency = totalContentHeight > containerHeight and 0 or 1
         end
     end)
 end
