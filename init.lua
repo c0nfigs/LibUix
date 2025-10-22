@@ -88,10 +88,16 @@ local DESIGN = {
     BlurEffectSize = 8,
     AnimationSpeed = 0.3,
 
-    EdgeThreshold = 15,
+    EdgeThreshold = 40, -- NOVO: Aumentado para a "drop zone"
     EdgeButtonSize = 40,
     EdgeButtonPadding = 5,
     EdgeButtonCornerRadius = 6,
+    
+    -- NOVO: Configurações do indicador
+    EdgeIndicatorColor = Color3.fromRGB(200, 50, 50),
+    EdgeIndicatorSize = 5,
+    EdgeIndicatorActiveTransparency = 0.3,
+    EdgeIndicatorInactiveTransparency = 1.0,
 }
 
 ---
@@ -217,55 +223,9 @@ local function createButton(text: string, size: UDim2?, parent: Instance)
 end
 
 ---
--- Construtor da GUI
+-- NOVO: Construtor interno da UI (chamado assincronamente)
 ---
-function Tekscripts.new(options: { Name: string?, Parent: Instance?, FloatText: string?, startTab: string?, iconId: string? })
-    options = options or {}
-    
-    -- // ESTRUTURA E ESTADOS INICIAIS
-    
-    local self = setmetatable({} :: {
-        ScreenGui: ScreenGui?,
-        MinimizedState: string?, -- nil, "float", "left", "right", "top", "bottom"
-        Tabs: { [string]: any },
-        CurrentTab: any?,
-        IsDragging: boolean,
-        IsResizing: boolean,
-        Window: Frame?,
-        TitleBar: Frame?,
-        TabContainer: Frame?,
-        TabContentContainer: Frame?,
-        ResizeHandle: Frame?,
-        FloatButton: Frame?,
-        EdgeButtons: { [string]: { Button: TextButton, Frame: Frame, Arrow: TextLabel } },
-        Connections: { any },
-        BlockScreen: Frame?,
-        Blocked: boolean,
-        startTab: string?,
-        DropdownMenu: Frame?,
-        NoTabsLabel: TextLabel?,
-        Title: TextLabel?,
-        TitleScrollTween: Tween?,
-        TitleScrollConnection: any?,
-        BlurEffect: BlurEffect?,
-        LastWindowPosition: UDim2?,
-        LastWindowSize: UDim2?,
-        LastWindowPos: Vector2?,
-        _activeTween: Tween?,
-        _destroyed: boolean
-    }, Tekscripts)
-
-    self.MinimizedState = nil
-    self.Tabs = {}
-    self.CurrentTab = nil
-    self.IsDragging = false
-    self.IsResizing = false
-    self.Connections = {}
-    self.startTab = options.startTab
-    self.Blocked = false
-    self.EdgeButtons = {}
-    self._destroyed = false
-    
+function Tekscripts:_buildUI(options: { Name: string?, Parent: Instance?, FloatText: string?, startTab: string?, iconId: string? })
     -- Variáveis de Ambiente
     local viewSize = workspace.CurrentCamera.ViewportSize -- Tamanho da tela atual
     -- Breakpoint ajustado para a largura mínima da janela (500px)
@@ -288,17 +248,11 @@ function Tekscripts.new(options: { Name: string?, Parent: Instance?, FloatText: 
         contentContainerWidth = UDim.new(1, -DESIGN.TabButtonWidth - RESIZE_SIZE) 
     end
     
-    -- Criação do ScreenGui
-    self.ScreenGui = Instance.new("ScreenGui")
-    self.ScreenGui.Name = options.Name or "Tekscripts"
-    self.ScreenGui.ResetOnSpawn = false
-    self.ScreenGui.Parent = options.Parent or localPlayer:WaitForChild("PlayerGui")
-    
-    
     -- // JANELA PRINCIPAL (WINDOW)
     
     self.Window = Instance.new("Frame")
     self.Window.Size = windowSize
+    self.Window.Visible = false -- **** IMPORTANTE: Começa invisível ****
     
     -- Posição centralizada com base no novo tamanho
     if isSmallScreen then
@@ -321,7 +275,7 @@ function Tekscripts.new(options: { Name: string?, Parent: Instance?, FloatText: 
     local windowGradient = getUIGradient(DESIGN.WindowColor1, DESIGN.WindowColor2, 90)
     windowGradient.Parent = self.Window
     
-    -- // BARRA DE TÍTULO (TITLE BAR) E CABEÇALHO
+    -- // BARRA de TÍTULO (TITLE BAR) E CABEÇALHO
     
     self.TitleBar = Instance.new("Frame")
     self.TitleBar.Size = UDim2.new(1, 0, 0, DESIGN.TitleHeight)
@@ -524,6 +478,7 @@ function Tekscripts.new(options: { Name: string?, Parent: Instance?, FloatText: 
     tabPadding.PaddingTop = UDim.new(0, 10)
     tabPadding.PaddingLeft = UDim.new(0, 5)
     tabPadding.PaddingRight = UDim.new(0, 5)
+    tabPadding.PaddingBottom = UDim.new(0, 5)
     tabPadding.Parent = self.TabContainer
 
     -- Mensagem de "sem abas"
@@ -557,6 +512,7 @@ function Tekscripts.new(options: { Name: string?, Parent: Instance?, FloatText: 
     self:SetupResizeSystem() -- Sistema de redimensionamento
     self:SetupFloatButton(options.FloatText or "abrir") -- Botão flutuante
     self:CreateEdgeButtons() -- Botões nas bordas
+    self:_createEdgeIndicators() -- NOVO: Cria os indicadores de borda
 
     -- Tela de bloqueio
     self.BlockScreen = Instance.new("Frame")
@@ -571,7 +527,118 @@ function Tekscripts.new(options: { Name: string?, Parent: Instance?, FloatText: 
     blur.Size = 0
     blur.Parent = self.BlockScreen
     self.BlurEffect = blur
+end
 
+---
+-- Construtor da GUI (MODIFICADO)
+---
+function Tekscripts.new(options: { Name: string?, Parent: Instance?, FloatText: string?, startTab: string?, iconId: string? }, setupCallback: (lib: any) -> ())
+    options = options or {}
+    
+    -- // ESTRUTURA E ESTADOS INICIAIS
+    
+    local self = setmetatable({} :: {
+        ScreenGui: ScreenGui?,
+        MinimizedState: string?, -- nil, "float", "left", "right", "top", "bottom"
+        Tabs: { [string]: any },
+        CurrentTab: any?,
+        IsDragging: boolean,
+        IsResizing: boolean,
+        Window: Frame?,
+        TitleBar: Frame?,
+        TabContainer: Frame?,
+        TabContentContainer: Frame?,
+        ResizeHandle: Frame?,
+        FloatButton: Frame?,
+        EdgeButtons: { [string]: { Button: TextButton, Frame: Frame, Arrow: TextLabel } },
+        EdgeIndicators: { [string]: Frame }, -- NOVO
+        ActiveMinimizeEdge: string?, -- NOVO
+        Connections: { any },
+        BlockScreen: Frame?,
+        Blocked: boolean,
+        startTab: string?,
+        DropdownMenu: Frame?,
+        NoTabsLabel: TextLabel?,
+        Title: TextLabel?,
+        TitleScrollTween: Tween?,
+        TitleScrollConnection: any?,
+        BlurEffect: BlurEffect?,
+        LastWindowPosition: UDim2?,
+        LastWindowSize: UDim2?,
+        LastWindowPos: Vector2?,
+        _activeTween: Tween?,
+        _destroyed: boolean,
+        LoadingFrame: Frame? -- NOVO: Referência à tela de carregamento
+    }, Tekscripts)
+
+    self.MinimizedState = nil
+    self.Tabs = {}
+    self.CurrentTab = nil
+    self.IsDragging = false
+    self.IsResizing = false
+    self.Connections = {}
+    self.startTab = options.startTab
+    self.Blocked = false
+    self.EdgeButtons = {}
+    self.EdgeIndicators = {} -- NOVO
+    self.ActiveMinimizeEdge = nil -- NOVO
+    self._destroyed = false
+    
+    -- Criação do ScreenGui
+    self.ScreenGui = Instance.new("ScreenGui")
+    self.ScreenGui.Name = options.Name or "Tekscripts"
+    self.ScreenGui.ResetOnSpawn = false
+    self.ScreenGui.Parent = options.Parent or localPlayer:WaitForChild("PlayerGui")
+    
+    -- **** NOVO: MOSTRAR TELA DE CARREGAMENTO ****
+    local loadingFrame = Instance.new("Frame")
+    loadingFrame.Name = "LoadingFrame"
+    loadingFrame.Size = UDim2.new(1, 0, 1, 0)
+    loadingFrame.BackgroundColor3 = DESIGN.WindowColor2
+    loadingFrame.BackgroundTransparency = 0.2
+    loadingFrame.ZIndex = 100
+    loadingFrame.Parent = self.ScreenGui
+
+    local blur = Instance.new("BlurEffect")
+    blur.Size = DESIGN.BlurEffectSize
+    blur.Parent = loadingFrame
+
+    local waitText = Instance.new("TextLabel")
+    waitText.Text = "Wait..."
+    waitText.Size = UDim2.new(0, 200, 0, 50)
+    waitText.Position = UDim2.new(0.5, 0, 0.5, 0)
+    waitText.AnchorPoint = Vector2.new(0.5, 0.5)
+    waitText.BackgroundTransparency = 1
+    waitText.TextColor3 = DESIGN.TitleColor
+    waitText.Font = Enum.Font.RobotoMono
+    waitText.TextScaled = true
+    waitText.Parent = loadingFrame
+    
+    self.LoadingFrame = loadingFrame
+    
+    -- **** NOVO: CONSTRUÇÃO ASSÍNCRONA ****
+    task.spawn(function()
+        -- 1. Construir a UI em segundo plano
+        self:_buildUI(options)
+        
+        -- 2. Chamar o setup do usuário (para adicionar abas, botões, etc.)
+        if setupCallback then
+            local success, err = pcall(setupCallback, self)
+            if not success then
+                warn("[Tekscripts] Erro durante o setupCallback assíncrono:", err)
+            end
+        end
+        
+        -- 3. Remover carregamento e mostrar a janela
+        if self.LoadingFrame then
+            self.LoadingFrame:Destroy()
+            self.LoadingFrame = nil
+        end
+        
+        if self.Window then
+            self.Window.Visible = true -- Exibe a janela principal
+        end
+    end)
     
     -- // CONEXÕES DE LIMPEZA
     
@@ -615,7 +682,8 @@ function Tekscripts:Destroy()
     local guiObjects = {
         self.ScreenGui, self.Window, self.TitleBar, self.TabContainer,
         self.TabContentContainer, self.ResizeHandle, self.FloatButton,
-        self.BlockScreen, self.BlurEffect, self.DropdownMenu, self.NoTabsLabel
+        self.BlockScreen, self.BlurEffect, self.DropdownMenu, self.NoTabsLabel,
+        self.LoadingFrame -- NOVO: Limpa a tela de carregamento se ainda existir
     }
 
     for i, obj in ipairs(guiObjects) do
@@ -637,8 +705,9 @@ function Tekscripts:Destroy()
     self.DropdownMenu = nil
     self.NoTabsLabel = nil
     self.Title = nil
+    self.LoadingFrame = nil
 
-    -- Destroi abas
+    -- Destroi abas (incluindo o container que será destruído pela nova lógica)
     for _, tab in pairs(self.Tabs or {}) do
         if tab.Destroy then
             tab:Destroy()
@@ -654,6 +723,14 @@ function Tekscripts:Destroy()
         end
     end
     self.EdgeButtons = {}
+
+    -- NOVO: Destroi edge indicators
+    for _, indicator in pairs(self.EdgeIndicators or {}) do
+        if indicator and indicator:IsDescendantOf(game) then
+            indicator:Destroy()
+        end
+    end
+    self.EdgeIndicators = {}
 
     -- Limpa variáveis auxiliares
     self.LastWindowPosition = nil
@@ -735,7 +812,7 @@ function Tekscripts:SetupTitleScroll()
 end
 
 ---
--- Sistema de Arrastar
+-- Sistema de Arrastar (MODIFICADO)
 ---
 function Tekscripts:SetupDragSystem()
     local dragStart = nil
@@ -753,16 +830,35 @@ function Tekscripts:SetupDragSystem()
     self.Connections.DragChanged = UserInputService.InputChanged:Connect(function(input)
         if self.Blocked then return end
         if self.IsDragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
-            local delta = UserInputService:GetMouseLocation() - dragStart
+            local mousePos = UserInputService:GetMouseLocation()
+            local delta = mousePos - dragStart
+            
+            -- Move a janela
             local newPos = UDim2.new(
                 startPos.X.Scale,
                 startPos.X.Offset + delta.X,
                 startPos.Y.Scale,
                 startPos.Y.Offset + delta.Y
             )
-
             local tween = TweenService:Create(self.Window, TweenInfo.new(DESIGN.AnimationSpeed, Enum.EasingStyle.Quad), { Position = newPos })
             tween:Play()
+
+            -- NOVO: Lógica do indicador de borda
+            local screen = workspace.CurrentCamera.ViewportSize
+            local threshold = DESIGN.EdgeThreshold -- Zona de ativação em pixels (ex: 40px)
+            
+            local activeEdge = nil
+            if mousePos.X <= threshold then
+                activeEdge = "left"
+            elseif mousePos.X >= screen.X - threshold then
+                activeEdge = "right"
+            elseif mousePos.Y <= threshold then
+                activeEdge = "top"
+            elseif mousePos.Y >= screen.Y - threshold then
+                activeEdge = "bottom"
+            end
+            
+            self:UpdateEdgeIndicators(activeEdge)
         end
     end)
 
@@ -771,53 +867,87 @@ function Tekscripts:SetupDragSystem()
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
             self.IsDragging = false
             
-            -- Verifica se está próximo de alguma borda da tela
-            if not self.MinimizedState then
-                self:CheckEdgeProximity()
+            -- NOVO: Verifica se deve minimizar ao soltar
+            if self.ActiveMinimizeEdge then
+                self:MinimizeToEdge(self.ActiveMinimizeEdge)
             end
+            
+            -- Limpa os indicadores independentemente de ter minimizado
+            self:UpdateEdgeIndicators(nil)
         end
     end)
 end
 
 ---
--- Verifica proximidade das bordas da tela
+-- NOVO: Cria os indicadores de borda (drop zones)
 ---
-function Tekscripts:CheckEdgeProximity()
-    if not self.Window then return end -- evita erro se Window não existir
-    if not self.Window:IsDescendantOf(game) then return end -- evita erro se Window foi removido
+function Tekscripts:_createEdgeIndicators()
+    local edges = {"left", "right", "top", "bottom"}
+    local size = DESIGN.EdgeIndicatorSize
+    
+    for _, edge in ipairs(edges) do
+        local indicator = Instance.new("Frame")
+        indicator.Name = edge .. "Indicator"
+        indicator.BackgroundColor3 = DESIGN.EdgeIndicatorColor
+        indicator.BackgroundTransparency = DESIGN.EdgeIndicatorInactiveTransparency
+        indicator.BorderSizePixel = 0
+        indicator.ZIndex = 99
+        indicator.Visible = false
+        indicator.Parent = self.ScreenGui
+        
+        if edge == "left" then
+            indicator.Size = UDim2.new(0, size, 1, 0)
+            indicator.Position = UDim2.new(0, 0, 0, 0)
+        elseif edge == "right" then
+            indicator.Size = UDim2.new(0, size, 1, 0)
+            indicator.Position = UDim2.new(1, -size, 0, 0)
+        elseif edge == "top" then
+            indicator.Size = UDim2.new(1, 0, 0, size)
+            indicator.Position = UDim2.new(0, 0, 0, 0)
+        elseif edge == "bottom" then
+            indicator.Size = UDim2.new(1, 0, 0, size)
+            indicator.Position = UDim2.new(0, 0, 1, -size)
+        end
+        
+        self.EdgeIndicators[edge] = indicator
+    end
+end
 
-    local screen = workspace.CurrentCamera.ViewportSize
-    local windowPos = self.Window.AbsolutePosition
-    local windowSize = self.Window.AbsoluteSize
-    local threshold = DESIGN.EdgeThreshold
+---
+-- NOVO: Atualiza a visibilidade dos indicadores de borda
+---
+function Tekscripts:UpdateEdgeIndicators(activeEdge: string?)
+    if self.ActiveMinimizeEdge == activeEdge then return end -- Sem mudança
+    self.ActiveMinimizeEdge = activeEdge
 
-    -- Calcula distância do centro da janela para cada borda
-    local edges = {
-        left = windowPos.X <= threshold,
-        right = windowPos.X + windowSize.X >= screen.X - threshold,
-        top = windowPos.Y <= threshold,
-        bottom = windowPos.Y + windowSize.Y >= screen.Y - threshold
-    }
-
-    -- Calcula velocidade de arrasto (delta desde o último frame)
-    if not self.LastWindowPos then self.LastWindowPos = windowPos end
-    local delta = (windowPos - self.LastWindowPos).Magnitude
-    self.LastWindowPos = windowPos
-
-    local minDragSpeed = 150 -- só minimiza se tiver arrastado rápido o suficiente
-
-    if delta >= minDragSpeed then
-        if edges.left then
-            self:MinimizeToEdge("left")
-        elseif edges.right then
-            self:MinimizeToEdge("right")
-        elseif edges.top then
-            self:MinimizeToEdge("top")
-        elseif edges.bottom then
-            self:MinimizeToEdge("bottom")
+    for edgeName, indicator in pairs(self.EdgeIndicators) do
+        local isVisible = (edgeName == activeEdge)
+        
+        if isVisible and not indicator.Visible then
+            -- Fade In
+            indicator.BackgroundTransparency = DESIGN.EdgeIndicatorInactiveTransparency
+            indicator.Visible = true
+            TweenService:Create(indicator, CACHE.TweenInfo, { BackgroundTransparency = DESIGN.EdgeIndicatorActiveTransparency }):Play()
+            
+        elseif not isVisible and indicator.Visible then
+            -- Fade Out
+            local tween = TweenService:Create(indicator, CACHE.TweenInfo, { BackgroundTransparency = DESIGN.EdgeIndicatorInactiveTransparency })
+            local conn
+            conn = tween.Completed:Connect(function()
+                if self.ActiveMinimizeEdge ~= edgeName then -- Verifica novamente caso tenha sido reativado rápido
+                    indicator.Visible = false
+                end
+                conn:Disconnect()
+            end)
+            tween:Play()
         end
     end
 end
+
+---
+-- (FUNÇÃO REMOVIDA: CheckEdgeProximity)
+---
+
 ---
 -- Cria os botões nas bordas da tela
 ---
@@ -1240,51 +1370,16 @@ end
 -- Lógica de Abas
 ---
 
-function Tekscripts:CreateTab(options: { Title: string })
+-- NOVA FUNÇÃO: Cria o Container da aba quando necessário (Lazy Load)
+local function loadTabContent(tab)
     local DESIGN = DESIGN
-    local title = assert(options and options.Title, "CreateTab: argumento 'Title' inválido")
-    assert(type(title) == "string", "CreateTab: argumento 'Title' deve ser string")
-
-    self.Tabs = self.Tabs or {}
-
-    local tab = {
-        _connections = {},
-        Components = {},
-        _parentRef = self,
-        _destroyed = false
-    }
-
-    self.Tabs[title] = tab
-
-    -- Botão da aba
-    local button = Instance.new("TextButton")
-    button.Name = title
-    button.Text = title
-    button.Size = UDim2.new(1, 0, 0, DESIGN.TabButtonHeight)
-    button.BackgroundColor3 = DESIGN.TabInactiveColor
-    button.TextColor3 = DESIGN.ComponentTextColor
-    button.Font = Enum.Font.Roboto
-    button.TextScaled = true
-    button.BorderSizePixel = 0
-    button.AutoButtonColor = false
-    button.ZIndex = 3
-    button.Parent = self.TabContainer
-    tab.Button = button
-
-    addRoundedCorners(button, DESIGN.CornerRadius)
-    addHoverEffect(button, DESIGN.TabInactiveColor, DESIGN.ComponentHoverColor, function()
-        return self.CurrentTab ~= tab
-    end)
-
-    table.insert(tab._connections, button.MouseButton1Click:Connect(function()
-        if not self.Blocked and self.CurrentTab ~= tab then
-            self:SetActiveTab(tab)
-        end
-    end))
+    local self = tab._parentRef
+    
+    if tab.Container and tab.Container.Parent then return end -- Já carregado
 
     -- Container da aba
     local container = Instance.new("ScrollingFrame")
-    container.Visible = false
+    container.Name = tab.Button.Name .. "_Content"
     container.Size = UDim2.new(1, 0, 1, 0)
     container.BackgroundTransparency = 1
     container.BorderSizePixel = 0
@@ -1310,6 +1405,7 @@ function Tekscripts:CreateTab(options: { Title: string })
     listLayout.Padding = UDim.new(0, DESIGN.ComponentPadding)
     listLayout.SortOrder = Enum.SortOrder.LayoutOrder
     listLayout.Parent = container
+    tab.ListLayout = listLayout -- Armazenar ListLayout para reuso
 
     -- Camada fixa para box vazio
     local overlay = Instance.new("Frame")
@@ -1356,7 +1452,15 @@ function Tekscripts:CreateTab(options: { Title: string })
     tab.EmptyBox = emptyBox
     tab._overlay = overlay
 
+    -- Adiciona todos os componentes que estavam pendentes
+    for _, component in ipairs(tab.Components) do
+        if component:IsA("GuiObject") then
+             component.Parent = container
+        end
+    end
+
     -- Controle automático de visibilidade do overlay
+    -- Conexão é adicionada ao Container, mas desconectada no Unload
     local contentChangeConn = listLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
         local hasComponents = #tab.Components > 0
         overlay.Visible = not hasComponents
@@ -1365,7 +1469,135 @@ function Tekscripts:CreateTab(options: { Title: string })
         local containerHeight = container.AbsoluteSize.Y
         container.ScrollBarImageTransparency = totalContentHeight > containerHeight and 0 or 1
     end)
-    table.insert(tab._connections, contentChangeConn)
+    tab._connections.ContentChange = contentChangeConn
+
+    -- Garante que o container esteja visível ao carregar
+    container.Visible = true
+end
+
+-- NOVO MÉTODO: Descarrega o Container (Unload)
+function Tekscripts:UnloadTabContent(tab)
+    if not tab or not tab.Container then return end
+    
+    -- Desconecta o ContentChange
+    if tab._connections.ContentChange and tab._connections.ContentChange.Connected then
+        tab._connections.ContentChange:Disconnect()
+        tab._connections.ContentChange = nil
+    end
+
+    -- Destrói o container, liberando todos os componentes filhos
+    if tab.Container and tab.Container.Parent then
+        tab.Container:Destroy()
+    end
+    
+    -- Limpa as referências do container
+    tab.Container = nil
+    tab.ListLayout = nil
+    tab.EmptyBox = nil
+    tab._overlay = nil
+end
+
+
+function Tekscripts:CreateTab(options: { Title: string })
+    local DESIGN = DESIGN
+    local title = assert(options and options.Title, "CreateTab: argumento 'Title' inválido")
+    assert(type(title) == "string", "CreateTab: argumento 'Title' deve ser string")
+
+    self.Tabs = self.Tabs or {}
+
+    local tab = {
+        _connections = {},
+        Components = {}, -- Componentes são armazenados aqui até que a aba seja carregada
+        _parentRef = self,
+        _destroyed = false,
+        
+        -- Propriedades que serão criadas no loadContent()
+        Container = nil, 
+        ListLayout = nil,
+        EmptyBox = nil,
+        _overlay = nil,
+    }
+
+    -- Mapeia os componentes (Funções como tab:AddButton)
+    -- Isso garante que as funções de componente adicionem objetos à lista 'Components'
+    function tab:AddButton(text: string)
+        local btn = createButton(text, nil, nil) -- Cria sem pai
+        table.insert(self.Components, btn)
+
+        if self.Container and self.Container.Parent then
+            btn.Parent = self.Container
+            if self.ListLayout then
+                self.ListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Fire() -- Força a atualização do EmptyBox
+            end
+        end
+        return btn
+    end
+
+    self.Tabs[title] = tab
+
+    -- Botão da aba
+    local button = Instance.new("TextButton")
+    button.Name = title
+    button.Text = title
+    button.Size = UDim2.new(1, 0, 0, DESIGN.TabButtonHeight)
+    button.BackgroundColor3 = DESIGN.TabInactiveColor
+    button.TextColor3 = DESIGN.ComponentTextColor
+    button.Font = Enum.Font.Roboto
+    button.TextScaled = true
+    button.BorderSizePixel = 0
+    button.AutoButtonColor = false
+    button.ZIndex = 3
+    button.Parent = self.TabContainer
+    tab.Button = button
+
+    addRoundedCorners(button, DESIGN.CornerRadius)
+    addHoverEffect(button, DESIGN.TabInactiveColor, DESIGN.ComponentHoverColor, function()
+        return self.CurrentTab ~= tab
+    end)
+
+    table.insert(tab._connections, button.MouseButton1Click:Connect(function()
+        if not self.Blocked and self.CurrentTab ~= tab then
+            self:SetActiveTab(tab)
+        end
+    end))
+    
+    -- Função de destruição da aba
+    function tab:Destroy()
+        if self._destroyed then return end
+        self._destroyed = true
+        
+        -- Descarrega/Destrói o container (libera memória)
+        self._parentRef:UnloadTabContent(self)
+
+        local function safeDestroy(obj)
+            if typeof(obj) == "Instance" and obj:IsDescendantOf(game) then
+                obj:Destroy()
+            end
+        end
+
+        -- Desconectar conexões
+        if self._connections then
+            for _, conn in pairs(self.Connections) do
+                if conn and conn.Disconnect then
+                    pcall(conn.Disconnect, conn)
+                end
+            end
+            self._connections = {}
+        end
+
+        -- Destruir Button
+        safeDestroy(self.Button)
+        self.Button = nil
+
+        -- A lista Components só é limpa, pois o conteúdo já foi destruído pelo UnloadTabContent
+        self.Components = {} 
+
+        -- Limpeza final da tabela da aba
+        for k in pairs(self) do
+            self[k] = nil
+        end
+    end
+
 
     -- Define aba inicial
     if (self.startTab and self.startTab == title) or not self.CurrentTab then
@@ -1380,49 +1612,6 @@ function Tekscripts:CreateTab(options: { Title: string })
     end
     updateNoTabsLabel()
 
-    -- Função de destruição da aba
-    function tab:Destroy()
-        if self._destroyed then return end
-        self._destroyed = true
-
-        local function safeDestroy(obj)
-            if typeof(obj) == "Instance" and obj:IsDescendantOf(game) then
-                obj:Destroy()
-            elseif type(obj) == "table" and rawget(obj, "Destroy") and type(obj.Destroy) == "function" then
-                pcall(function() obj:Destroy() end)
-            end
-        end
-
-        -- Desconectar conexões
-        if self._connections then
-            for _, conn in ipairs(self._connections) do
-                if conn and conn.Disconnect then
-                    pcall(conn.Disconnect, conn)
-                end
-            end
-            self._connections = nil
-        end
-
-        -- Destruir Components
-        if self.Components then
-            for _, comp in pairs(self.Components) do
-                safeDestroy(comp)
-            end
-            self.Components = nil
-        end
-
-        -- Destruir Container e Button
-        safeDestroy(self.Container)
-        self.Container = nil
-        safeDestroy(self.Button)
-        self.Button = nil
-
-        -- Limpeza final da tabela da aba
-        for k in pairs(self) do
-            self[k] = nil
-        end
-    end
-
     -- Auto-destruir se o botão for removido
     table.insert(tab._connections, button.AncestryChanged:Connect(function(_, parent)
         if not parent and not tab._destroyed then
@@ -1431,27 +1620,40 @@ function Tekscripts:CreateTab(options: { Title: string })
             end)
         end
     end))
-
+    
     return tab
 end
 
+
+-- FUNÇÃO MODIFICADA: Gerencia a ativação e o descarregamento
 function Tekscripts:SetActiveTab(tab)
     local DESIGN = DESIGN
+    
+    -- 1. DESCARREGA a aba atual (se houver)
     if self.CurrentTab then
-        if self.CurrentTab.Container then
-            self.CurrentTab.Container.Visible = false
-        end
+        -- Desativa o visual do botão
         if self.CurrentTab.Button then
             self.CurrentTab.Button.BackgroundColor3 = DESIGN.TabInactiveColor
         end
+        -- Destrói o container (LIBERA MEMÓRIA)
+        self:UnloadTabContent(self.CurrentTab)
     end
 
     self.CurrentTab = tab
-    if self.CurrentTab.Container then
-        self.CurrentTab.Container.Visible = true
+    
+    -- 2. CARREGA a nova aba (se necessário)
+    if not tab.Container then
+        loadTabContent(tab) -- Cria o container e insere os componentes
     end
+
+    -- 3. ATIVA o visual do botão
     if self.CurrentTab.Button then
         self.CurrentTab.Button.BackgroundColor3 = DESIGN.TabActiveColor
+    end
+    
+    -- 4. Garante que o container carregado esteja visível
+    if self.CurrentTab.Container then
+        self.CurrentTab.Container.Visible = true
     end
 end
 
@@ -1570,6 +1772,8 @@ function Tekscripts:Block(state: boolean)
         TweenService:Create(self.BlurEffect, TweenInfo.new(0.4, Enum.EasingStyle.Quad), {Size = 0}):Play()
     end
 end
+
+
 
 ---
 -- Funções Públicas para criar componentes
@@ -1927,247 +2131,6 @@ function Tekscripts:CreateFloatingButton(options: {
     }
 
     updateVisuals()
-    return publicApi
-end
-
-
-function Tekscripts:CreateLabel(tab, options)
-    assert(type(tab) == "table" and tab.Container, "Invalid Tab object provided to CreateLabel")
-    assert(type(options) == "table" and type(options.Title) == "string", "Invalid arguments for CreateLabel")
-
-    local UserInputService = game:GetService("UserInputService")
-    local TweenService = game:GetService("TweenService")
-
-    -- Valores padrão
-    local defaultOptions = {
-        Title = options.Title,
-        Desc = options.Desc,
-        Icon = options.Icon,
-        TitleColor = DESIGN.ComponentTextColor,
-        DescColor = Color3.fromRGB(200, 200, 200),
-        Align = Enum.TextXAlignment.Left,
-        Highlight = false
-    }
-
-    -- Box principal (com sombra sutil)
-    local outerBox = Instance.new("Frame")
-    outerBox.Size = UDim2.new(1, 0, 0, 0)
-    outerBox.BackgroundColor3 = DESIGN.ComponentBackground
-    outerBox.BorderSizePixel = 0
-    outerBox.ClipsDescendants = true
-    outerBox.Parent = tab.Container
-    addRoundedCorners(outerBox, DESIGN.CornerRadius)
-
-    -- Sombra sutil (opcional, mas elegante)
-    local shadow = Instance.new("Frame")
-    shadow.Size = UDim2.new(1, 0, 1, 0)
-    shadow.Position = UDim2.new(0, 0, 0, 2)
-    shadow.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    shadow.BackgroundTransparency = 0.92
-    shadow.BorderSizePixel = 0
-    shadow.ZIndex = 0
-    addRoundedCorners(shadow, DESIGN.CornerRadius)
-    shadow.Parent = outerBox
-
-    -- Container interno
-    local container = Instance.new("Frame")
-    container.Size = UDim2.new(1, -DESIGN.ComponentPadding * 2, 1, -DESIGN.ComponentPadding * 2)
-    container.Position = UDim2.new(0, DESIGN.ComponentPadding, 0, DESIGN.ComponentPadding)
-    container.BackgroundTransparency = 1
-    container.AutomaticSize = Enum.AutomaticSize.Y
-    container.Parent = outerBox
-
-    local listLayout = Instance.new("UIListLayout")
-    listLayout.Padding = UDim.new(0, 8)
-    listLayout.SortOrder = Enum.SortOrder.LayoutOrder
-    listLayout.HorizontalAlignment = defaultOptions.Align == Enum.TextXAlignment.Center and Enum.HorizontalAlignment.Center or Enum.HorizontalAlignment.Left
-    listLayout.Parent = container
-
-    -- Ícone (opcional)
-    local iconLabel
-    if defaultOptions.Icon then
-        local iconContainer = Instance.new("Frame")
-        iconContainer.Size = UDim2.new(0, 24, 0, 24)
-        iconContainer.BackgroundTransparency = 1
-        iconContainer.Parent = container
-
-        iconLabel = Instance.new("ImageLabel")
-        iconLabel.Image = defaultOptions.Icon
-        iconLabel.Size = UDim2.new(1, 0, 1, 0)
-        iconLabel.BackgroundTransparency = 1
-        iconLabel.Parent = iconContainer
-    end
-
-    -- Título
-    local titleLabel = Instance.new("TextLabel")
-    titleLabel.Text = defaultOptions.Title
-    titleLabel.Size = UDim2.new(1, 0, 0, 26)
-    titleLabel.BackgroundTransparency = 1
-    titleLabel.TextColor3 = defaultOptions.TitleColor
-    titleLabel.Font = Enum.Font.GothamBold
-    titleLabel.TextSize = 18
-    titleLabel.TextXAlignment = defaultOptions.Align
-    titleLabel.TextWrapped = true
-    titleLabel.Parent = container
-
-    -- Linha de destaque (opcional)
-    local highlightLine
-    if defaultOptions.Highlight then
-        highlightLine = Instance.new("Frame")
-        highlightLine.Size = UDim2.new(0, 40, 0, 2)
-        highlightLine.BackgroundColor3 = DESIGN.AccentColor or Color3.fromRGB(100, 180, 255)
-        highlightLine.Position = UDim2.new(0, 0, 1, 4)
-        highlightLine.Parent = titleLabel
-        addRoundedCorners(highlightLine, 1)
-    end
-
-    -- Descrição
-    local descLabel
-    if defaultOptions.Desc then
-        descLabel = Instance.new("TextLabel")
-        descLabel.Text = defaultOptions.Desc
-        descLabel.Size = UDim2.new(1, 0, 0, 0)
-        descLabel.AutomaticSize = Enum.AutomaticSize.Y
-        descLabel.BackgroundTransparency = 1
-        descLabel.TextColor3 = defaultOptions.DescColor
-        descLabel.Font = Enum.Font.GothamMedium
-        descLabel.TextSize = 15
-        descLabel.TextXAlignment = defaultOptions.Align
-        descLabel.TextWrapped = true
-        descLabel.LineHeight = 1.15
-        descLabel.Parent = container
-    end
-
-    -- Ajuste automático de altura
-    local layoutConnection = listLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-        local totalHeight = listLayout.AbsoluteContentSize.Y + DESIGN.ComponentPadding * 2
-        outerBox.Size = UDim2.new(1, 0, 0, totalHeight)
-        if shadow then
-            shadow.Size = UDim2.new(1, 0, 0, totalHeight)
-        end
-    end)
-
-    -- API pública
-    local publicApi = {
-        _instance = outerBox,
-        _connections = { layoutConnection },
-        _titleLabel = titleLabel,
-        _descLabel = descLabel,
-        _iconLabel = iconLabel
-    }
-
-    -- Atualiza título com transição suave
-    function publicApi.SetTitle(newTitle, color)
-        if not newTitle then return end
-        titleLabel.Text = newTitle
-        if color then
-            TweenService:Create(titleLabel, TweenInfo.new(0.2, Enum.EasingStyle.Quad), { TextColor3 = color }):Play()
-        end
-    end
-
-    -- Atualiza descrição
-    function publicApi.SetDesc(newDesc, color)
-        if newDesc == nil then
-            if descLabel then
-                descLabel:Destroy()
-                descLabel = nil
-            end
-            return
-        end
-
-        if not descLabel then
-            descLabel = Instance.new("TextLabel")
-            descLabel.Size = UDim2.new(1, 0, 0, 0)
-            descLabel.AutomaticSize = Enum.AutomaticSize.Y
-            descLabel.BackgroundTransparency = 1
-            descLabel.Font = Enum.Font.GothamMedium
-            descLabel.TextSize = 15
-            descLabel.TextXAlignment = defaultOptions.Align
-            descLabel.TextWrapped = true
-            descLabel.LineHeight = 1.15
-            descLabel.Parent = container
-        end
-
-        descLabel.Text = newDesc
-        if color then
-            descLabel.TextColor3 = color
-        end
-    end
-
-    -- Atualiza ícone
-    function publicApi.SetIcon(iconAsset)
-        if iconAsset then
-            if not iconLabel then
-                local iconContainer = Instance.new("Frame")
-                iconContainer.Size = UDim2.new(0, 24, 0, 24)
-                iconContainer.BackgroundTransparency = 1
-                iconContainer.Parent = container
-
-                -- Mantém o ícone no topo
-                table.insert(publicApi._connections, listLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-                    iconContainer.LayoutOrder = -1
-                end))
-
-                iconLabel = Instance.new("ImageLabel")
-                iconLabel.Image = iconAsset
-                iconLabel.Size = UDim2.new(1, 0, 1, 0)
-                iconLabel.BackgroundTransparency = 1
-                iconLabel.Parent = iconContainer
-                publicApi._iconLabel = iconLabel
-            else
-                iconLabel.Image = iconAsset
-            end
-        else
-            if iconLabel and iconLabel.Parent then
-                iconLabel.Parent:Destroy()
-                iconLabel = nil
-                publicApi._iconLabel = nil
-            end
-        end
-    end
-
-    -- Atualiza alinhamento
-    function publicApi.SetAlignment(align)
-        if not align then return end
-        titleLabel.TextXAlignment = align
-        if descLabel then
-            descLabel.TextXAlignment = align
-        end
-        listLayout.HorizontalAlignment = align == Enum.TextXAlignment.Center and Enum.HorizontalAlignment.Center or Enum.HorizontalAlignment.Left
-    end
-
-    -- Atualização em lote (compatível com antigo)
-    function publicApi.Update(newOptions)
-        if newOptions.Title ~= nil then
-            publicApi.SetTitle(newOptions.Title, newOptions.TitleColor)
-        end
-        if newOptions.Desc ~= nil then
-            publicApi.SetDesc(newOptions.Desc, newOptions.DescColor)
-        end
-        if newOptions.Icon ~= nil then
-            publicApi.SetIcon(newOptions.Icon)
-        end
-        if newOptions.Align then
-            publicApi.SetAlignment(newOptions.Align)
-        end
-    end
-
-    -- Destruição segura
-    function publicApi.Destroy()
-        if publicApi._instance then
-            for _, conn in pairs(publicApi._connections) do
-                if conn and conn.Connected then
-                    conn:Disconnect()
-                end
-            end
-            publicApi._instance:Destroy()
-            publicApi._instance = nil
-            publicApi._connections = nil
-        end
-        table.clear(publicApi)
-    end
-
-    table.insert(tab.Components, publicApi)
     return publicApi
 end
 
@@ -4928,6 +4891,238 @@ function Tekscripts:CreateTitlebar(tab, options)
 	box.Parent = tab.Container
 
 	return publicApi
+end
+
+function Tekscripts:CreateLabel(tab, options)
+    assert(type(tab) == "table" and tab.Container, "Invalid Tab object provided to CreateLabel")
+    assert(type(options) == "table" and type(options.Title) == "string", "Invalid arguments for CreateLabel")
+
+    local TweenService = game:GetService("TweenService")
+
+    local defaultOptions = {
+        Title = options.Title,
+        Desc = options.Desc,
+        Icon = options.Icon,
+        TitleColor = DESIGN.ComponentTextColor,
+        DescColor = Color3.fromRGB(200, 200, 200),
+        Align = Enum.TextXAlignment.Left,
+        Highlight = false
+    }
+
+    -- Box principal
+    local outerBox = Instance.new("Frame")
+    outerBox.Size = UDim2.new(1, 0, 0, 0)
+    outerBox.BackgroundColor3 = DESIGN.ComponentBackground
+    outerBox.BorderSizePixel = 0
+    outerBox.ClipsDescendants = true
+    outerBox.Parent = tab.Container
+    addRoundedCorners(outerBox, DESIGN.CornerRadius)
+
+    -- Sombra
+    local shadow = Instance.new("Frame")
+    shadow.Size = UDim2.new(1, 0, 1, 0)
+    shadow.Position = UDim2.new(0, 0, 0, 2)
+    shadow.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    shadow.BackgroundTransparency = 0.92
+    shadow.BorderSizePixel = 0
+    shadow.ZIndex = 0
+    addRoundedCorners(shadow, DESIGN.CornerRadius)
+    shadow.Parent = outerBox
+
+    -- Container interno
+    local container = Instance.new("Frame")
+    container.Size = UDim2.new(1, -DESIGN.ComponentPadding*2, 1, -DESIGN.ComponentPadding*2)
+    container.Position = UDim2.new(0, DESIGN.ComponentPadding, 0, DESIGN.ComponentPadding)
+    container.BackgroundTransparency = 1
+    container.AutomaticSize = Enum.AutomaticSize.Y
+    container.Parent = outerBox
+
+    local listLayout = Instance.new("UIListLayout")
+    listLayout.Padding = UDim.new(0, 8)
+    listLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    listLayout.HorizontalAlignment = defaultOptions.Align == Enum.TextXAlignment.Center and Enum.HorizontalAlignment.Center or Enum.HorizontalAlignment.Left
+    listLayout.Parent = container
+
+    -- Ícone opcional
+    local iconLabel
+    if defaultOptions.Icon then
+        local iconContainer = Instance.new("Frame")
+        iconContainer.Size = UDim2.new(0, 24, 0, 24)
+        iconContainer.BackgroundTransparency = 1
+        iconContainer.Parent = container
+
+        iconLabel = Instance.new("ImageLabel")
+        iconLabel.Image = defaultOptions.Icon
+        iconLabel.Size = UDim2.new(1, 0, 1, 0)
+        iconLabel.BackgroundTransparency = 1
+        iconLabel.Parent = iconContainer
+    end
+
+    -- Título
+    local titleLabel = Instance.new("TextLabel")
+    titleLabel.Text = defaultOptions.Title
+    titleLabel.Size = UDim2.new(1, 0, 0, 26)
+    titleLabel.BackgroundTransparency = 1
+    titleLabel.TextColor3 = defaultOptions.TitleColor
+    titleLabel.Font = Enum.Font.GothamBold
+    titleLabel.TextSize = 18
+    titleLabel.TextXAlignment = defaultOptions.Align
+    titleLabel.TextWrapped = true
+    titleLabel.Parent = container
+
+    -- Linha de destaque opcional
+    if defaultOptions.Highlight then
+        local highlightLine = Instance.new("Frame")
+        highlightLine.Size = UDim2.new(0, 40, 0, 2)
+        highlightLine.BackgroundColor3 = DESIGN.AccentColor or Color3.fromRGB(100,180,255)
+        highlightLine.Position = UDim2.new(0,0,1,4)
+        addRoundedCorners(highlightLine, 1)
+        highlightLine.Parent = titleLabel
+    end
+
+    -- Descrição opcional
+    local descLabel
+    if defaultOptions.Desc then
+        descLabel = Instance.new("TextLabel")
+        descLabel.Text = defaultOptions.Desc
+        descLabel.Size = UDim2.new(1,0,0,0)
+        descLabel.AutomaticSize = Enum.AutomaticSize.Y
+        descLabel.BackgroundTransparency = 1
+        descLabel.TextColor3 = defaultOptions.DescColor
+        descLabel.Font = Enum.Font.GothamMedium
+        descLabel.TextSize = 15
+        descLabel.TextXAlignment = defaultOptions.Align
+        descLabel.TextWrapped = true
+        descLabel.LineHeight = 1.15
+        descLabel.Parent = container
+    end
+
+    -- Conexão de layout otimizada (evita atualizar mil vezes por segundo)
+    local updateScheduled = false
+    local function updateSize()
+        if updateScheduled then return end
+        updateScheduled = true
+        task.defer(function()
+            local totalHeight = listLayout.AbsoluteContentSize.Y + DESIGN.ComponentPadding*2
+            outerBox.Size = UDim2.new(1,0,0,totalHeight)
+            if shadow then
+                shadow.Size = UDim2.new(1,0,0,totalHeight)
+            end
+            updateScheduled = false
+        end)
+    end
+    local layoutConnection = listLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(updateSize)
+
+    -- API pública
+    local publicApi = {
+        _instance = outerBox,
+        _connections = { layoutConnection },
+        _titleLabel = titleLabel,
+        _descLabel = descLabel,
+        _iconLabel = iconLabel
+    }
+
+    function publicApi.SetTitle(newTitle, color)
+        if not newTitle then return end
+        titleLabel.Text = newTitle
+        if color then
+            TweenService:Create(titleLabel, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {TextColor3=color}):Play()
+        end
+        updateSize()
+    end
+
+    function publicApi.SetDesc(newDesc, color)
+        if newDesc == nil then
+            if descLabel then
+                descLabel:Destroy()
+                descLabel = nil
+                publicApi._descLabel = nil
+                updateSize()
+            end
+            return
+        end
+
+        if not descLabel then
+            descLabel = Instance.new("TextLabel")
+            descLabel.Size = UDim2.new(1,0,0,0)
+            descLabel.AutomaticSize = Enum.AutomaticSize.Y
+            descLabel.BackgroundTransparency = 1
+            descLabel.Font = Enum.Font.GothamMedium
+            descLabel.TextSize = 15
+            descLabel.TextXAlignment = defaultOptions.Align
+            descLabel.TextWrapped = true
+            descLabel.LineHeight = 1.15
+            descLabel.Parent = container
+            publicApi._descLabel = descLabel
+        end
+
+        descLabel.Text = newDesc
+        if color then
+            descLabel.TextColor3 = color
+        end
+        updateSize()
+    end
+
+    function publicApi.SetIcon(iconAsset)
+        if iconAsset then
+            if not iconLabel then
+                local iconContainer = Instance.new("Frame")
+                iconContainer.Size = UDim2.new(0,24,0,24)
+                iconContainer.BackgroundTransparency = 1
+                iconContainer.Parent = container
+
+                iconLabel = Instance.new("ImageLabel")
+                iconLabel.Size = UDim2.new(1,0,1,0)
+                iconLabel.BackgroundTransparency = 1
+                iconLabel.Parent = iconContainer
+                publicApi._iconLabel = iconLabel
+            end
+            iconLabel.Image = iconAsset
+        elseif iconLabel then
+            iconLabel.Parent:Destroy()
+            iconLabel = nil
+            publicApi._iconLabel = nil
+        end
+        updateSize()
+    end
+
+    function publicApi.SetAlignment(align)
+        if not align then return end
+        titleLabel.TextXAlignment = align
+        if descLabel then
+            descLabel.TextXAlignment = align
+        end
+        listLayout.HorizontalAlignment = align == Enum.TextXAlignment.Center and Enum.HorizontalAlignment.Center or Enum.HorizontalAlignment.Left
+        updateSize()
+    end
+
+    function publicApi.Update(opts)
+        if opts.Title ~= nil then publicApi.SetTitle(opts.Title, opts.TitleColor) end
+        if opts.Desc ~= nil then publicApi.SetDesc(opts.Desc, opts.DescColor) end
+        if opts.Icon ~= nil then publicApi.SetIcon(opts.Icon) end
+        if opts.Align then publicApi.SetAlignment(opts.Align) end
+    end
+
+    function publicApi.Destroy()
+        if publicApi._instance then
+            for _, conn in pairs(publicApi._connections) do
+                if conn and conn.Connected then
+                    conn:Disconnect()
+                end
+            end
+            publicApi._instance:Destroy()
+            publicApi._instance = nil
+            publicApi._connections = nil
+            publicApi._titleLabel = nil
+            publicApi._descLabel = nil
+            publicApi._iconLabel = nil
+        end
+        table.clear(publicApi)
+    end
+
+    table.insert(tab.Components, publicApi)
+    updateSize()
+    return publicApi
 end
 
 return Tekscripts
