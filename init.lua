@@ -3639,184 +3639,6 @@ function Tekscripts:CreateButton(tab, options)
     return api
 end
 
-function Tekscripts:CreateToggle(tab, options)
-    -- // VALIDAÇÃO
-    local container = tab and tab.Container
-    if not container or typeof(options) ~= "table" or typeof(options.Text) ~= "string" then
-        return error("CreateToggle: argumentos inválidos.")
-    end
-
-    -- // CONFIG
-    local TweenService = game:GetService("TweenService")
-    local descHeight = options.Desc and 16 or 0
-    local totalHeight = DESIGN.ComponentHeight + descHeight + 6
-    local callback = typeof(options.Callback) == "function" and options.Callback or function() end
-
-    -- // CORES
-    local bgColor = DESIGN.ComponentBackground
-    local textColor = DESIGN.ComponentTextColor
-    local hoverColor = DESIGN.ComponentHoverColor
-    local activeColor = DESIGN.ActiveToggleColor
-    local inactiveColor = DESIGN.InactiveToggleColor
-    local errorColor = Color3.fromRGB(255, 60, 60)
-    local descColor = Color3.fromRGB(160, 160, 160)
-
-    -- // FRAME PRINCIPAL
-    local outer = Instance.new("Frame")
-    outer.Size = UDim2.new(1, 0, 0, totalHeight)
-    outer.BackgroundColor3 = bgColor
-    outer.BorderSizePixel = 0
-    outer.Parent = container
-
-    local corner = Instance.new("UICorner")
-    corner.CornerRadius = UDim.new(0, DESIGN.CornerRadius)
-    corner.Parent = outer
-
-    -- // CONTAINER INTERNO
-    local inner = Instance.new("Frame")
-    inner.Size = UDim2.new(1, -DESIGN.ComponentPadding*2, 1, 0)
-    inner.Position = UDim2.new(0, DESIGN.ComponentPadding, 0, 0)
-    inner.BackgroundTransparency = 1
-    inner.Parent = outer
-
-    -- // LABEL PRINCIPAL
-    local label = Instance.new("TextLabel")
-    label.Text = options.Text
-    label.Size = UDim2.new(0.7, -10, 0, DESIGN.ComponentHeight)
-    label.BackgroundTransparency = 1
-    label.TextColor3 = textColor
-    label.Font = Enum.Font.Gotham
-    label.TextSize = 16
-    label.TextXAlignment = Enum.TextXAlignment.Left
-    label.Parent = inner
-
-    -- // DESCRIÇÃO
-    local desc
-    if options.Desc then
-        desc = Instance.new("TextLabel")
-        desc.Text = options.Desc
-        desc.Size = UDim2.new(0.7, -10, 0, descHeight)
-        desc.Position = UDim2.new(0, 0, 0, DESIGN.ComponentHeight)
-        desc.BackgroundTransparency = 1
-        desc.TextColor3 = descColor
-        desc.Font = Enum.Font.Gotham
-        desc.TextSize = 14
-        desc.TextXAlignment = Enum.TextXAlignment.Left
-        desc.Parent = inner
-    end
-
-    -- // SWITCH
-    local switch = Instance.new("TextButton")
-    switch.Size = UDim2.new(0, 50, 0, 24)
-    switch.Position = UDim2.new(0.85, 0, 0, (totalHeight - 24) / 2)
-    switch.BackgroundColor3 = inactiveColor
-    switch.Text = ""
-    switch.AutoButtonColor = false
-    switch.ClipsDescendants = true
-    switch.Parent = inner
-
-    local switchCorner = Instance.new("UICorner")
-    switchCorner.CornerRadius = UDim.new(1, 0)
-    switchCorner.Parent = switch
-
-    -- // KNOB
-    local knob = Instance.new("Frame")
-    knob.Size = UDim2.new(0, 20, 0, 20)
-    knob.Position = UDim2.new(0, 2, 0, 2)
-    knob.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    knob.Parent = switch
-
-    local knobCorner = Instance.new("UICorner")
-    knobCorner.CornerRadius = UDim.new(1, 0)
-    knobCorner.Parent = knob
-
-    -- // ESTADO INTERNO
-    local state = false
-    local locked = false
-    local inError = false
-
-    local tweenInfo = TweenInfo.new(0.18, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-
-    local function animateToggle(newState)
-        if not switch or not knob then return end
-        local color = inError and errorColor or (newState and activeColor or inactiveColor)
-        local targetPos = newState and UDim2.new(1, -22, 0, 2) or UDim2.new(0, 2, 0, 2)
-        TweenService:Create(switch, tweenInfo, { BackgroundColor3 = color }):Play()
-        TweenService:Create(knob, tweenInfo, { Position = targetPos }):Play()
-    end
-
-    local function setError(state)
-        inError = state
-        animateToggle(state or state)
-    end
-
-    local function pulseError()
-        setError(true)
-        task.delay(0.3, function()
-            setError(false)
-        end)
-    end
-
-    local function toggle(newState, skipCallback)
-        if locked then return end
-        state = newState
-        animateToggle(state)
-        if not skipCallback then
-            task.spawn(function()
-                local ok, err = pcall(callback, state)
-                if not ok then
-                    warn("[Toggle Error]:", err)
-                    pulseError()
-                end
-            end)
-        end
-    end
-
-    -- // EVENTOS OTIMIZADOS
-    switch.MouseButton1Click:Connect(function()
-        if not locked then toggle(not state) end
-    end)
-
-    switch.MouseEnter:Connect(function()
-        if not locked then
-            switch.BackgroundColor3 = inError and errorColor or (state and activeColor or hoverColor)
-        end
-    end)
-
-    switch.MouseLeave:Connect(function()
-        if not locked then animateToggle(state) end
-    end)
-
-    -- // API PÚBLICA LEVE
-    local api = {}
-
-    function api:SetState(v) toggle(v, true) end
-    function api:GetState() return state end
-    function api:Toggle() toggle(not state) end
-    function api:SetText(t) if label then label.Text = t end end
-    function api:SetDesc(t) if desc then desc.Text = t end end
-    function api:SetCallback(fn) if typeof(fn) == "function" then callback = fn end end
-    function api:SetLocked(v)
-        locked = v
-        switch.Active = not v
-        animateToggle(state)
-    end
-    function api:Update(opt)
-        if typeof(opt) ~= "table" then return end
-        if opt.Text then self:SetText(opt.Text) end
-        if opt.Desc then self:SetDesc(opt.Desc) end
-        if opt.State ~= nil then toggle(opt.State, true) end
-    end
-    function api:Destroy()
-        outer:Destroy()
-        table.clear(self)
-    end
-
-    tab.Components[#tab.Components + 1] = api
-    api._instance = outer
-    return api
-end
-
 function Tekscripts:CreateInput(tab, options)
 	assert(type(tab) == "table" and tab.Container, "Invalid Tab object provided to CreateInput")
 	assert(type(options) == "table" and type(options.Text) == "string", "Invalid arguments for CreateInput")
@@ -5130,5 +4952,254 @@ function Tekscripts:CreateLabel(tab, options)
     updateSize()
     return publicApi
 end
-return Tekscripts
 
+function Tekscripts:CreateToggle(tab, options)
+    assert(tab and typeof(tab) == "table" and tab.Container, "CreateToggle: Tab inválida ou sem container.")
+    assert(typeof(options) == "table", "CreateToggle: 'options' deve ser uma tabela.")
+    assert(typeof(options.Text) == "string", "CreateToggle: 'Text' deve ser uma string.")
+
+    local TweenService = game:GetService("TweenService")
+    local RunService = game:GetService("RunService")
+
+    local descHeight = typeof(options.Desc) == "string" and 16 or 0
+    local totalHeight = (DESIGN and DESIGN.ComponentHeight or 24) + descHeight + 6
+    local callback = typeof(options.Callback) == "function" and options.Callback or function() end
+
+    local bgColor = DESIGN and DESIGN.ComponentBackground or Color3.fromRGB(25, 25, 25)
+    local textColor = DESIGN and DESIGN.ComponentTextColor or Color3.fromRGB(255, 255, 255)
+    local hoverColor = DESIGN and DESIGN.ComponentHoverColor or Color3.fromRGB(60, 60, 60)
+    local activeColor = DESIGN and DESIGN.ActiveToggleColor or Color3.fromRGB(0, 200, 0)
+    local inactiveColor = DESIGN and DESIGN.InactiveToggleColor or Color3.fromRGB(80, 80, 80)
+    local errorColor = Color3.fromRGB(255, 60, 60)
+    local descColor = Color3.fromRGB(160, 160, 160)
+
+    local container = tab.Container
+    if not container or not container.Parent then
+        return error("CreateToggle: container inválido ou removido.")
+    end
+
+    local outer = Instance.new("Frame")
+    outer.Size = UDim2.new(1, 0, 0, totalHeight)
+    outer.BackgroundColor3 = bgColor
+    outer.BorderSizePixel = 0
+    outer.Parent = container
+
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, (DESIGN and DESIGN.CornerRadius) or 6)
+    corner.Parent = outer
+
+    local inner = Instance.new("Frame")
+    inner.Size = UDim2.new(1, -(DESIGN and DESIGN.ComponentPadding or 8) * 2, 1, 0)
+    inner.Position = UDim2.new(0, (DESIGN and DESIGN.ComponentPadding) or 8, 0, 0)
+    inner.BackgroundTransparency = 1
+    inner.Parent = outer
+
+    local label = Instance.new("TextLabel")
+    label.Text = options.Text
+    label.Size = UDim2.new(0.7, -10, 0, (DESIGN and DESIGN.ComponentHeight) or 24)
+    label.BackgroundTransparency = 1
+    label.TextColor3 = textColor
+    label.Font = Enum.Font.Gotham
+    label.TextSize = 16
+    label.TextXAlignment = Enum.TextXAlignment.Left
+    label.Parent = inner
+
+    local desc
+    if typeof(options.Desc) == "string" then
+        desc = Instance.new("TextLabel")
+        desc.Text = options.Desc
+        desc.Size = UDim2.new(0.7, -10, 0, descHeight)
+        desc.Position = UDim2.new(0, 0, 0, (DESIGN and DESIGN.ComponentHeight) or 24)
+        desc.BackgroundTransparency = 1
+        desc.TextColor3 = descColor
+        desc.Font = Enum.Font.Gotham
+        desc.TextSize = 14
+        desc.TextXAlignment = Enum.TextXAlignment.Left
+        desc.Parent = inner
+    end
+
+    local switch = Instance.new("TextButton")
+    switch.Size = UDim2.new(0, 50, 0, 24)
+    switch.Position = UDim2.new(0.85, 0, 0, (totalHeight - 24) / 2)
+    switch.BackgroundColor3 = inactiveColor
+    switch.Text = ""
+    switch.AutoButtonColor = false
+    switch.ClipsDescendants = true
+    switch.Parent = inner
+
+    local switchCorner = Instance.new("UICorner")
+    switchCorner.CornerRadius = UDim.new(1, 0)
+    switchCorner.Parent = switch
+
+    local knob = Instance.new("Frame")
+    knob.Size = UDim2.new(0, 20, 0, 20)
+    knob.Position = UDim2.new(0, 2, 0, 2)
+    knob.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    knob.Parent = switch
+
+    local knobCorner = Instance.new("UICorner")
+    knobCorner.CornerRadius = UDim.new(1, 0)
+    knobCorner.Parent = knob
+
+    local state = false
+    local locked = false
+    local inError = false
+    local destroyed = false
+    local hover = false
+    local tweenInfo = TweenInfo.new(0.18, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+    local activeTweens = {}
+
+    local function stopTween(obj)
+        local tw = activeTweens[obj]
+        if tw then
+            tw:Cancel()
+            activeTweens[obj] = nil
+        end
+    end
+
+    local function safeTween(obj, props)
+        if not obj or not obj.Parent then return end
+        stopTween(obj)
+        local ok, tween = pcall(function() return TweenService:Create(obj, tweenInfo, props) end)
+        if ok and tween then
+            activeTweens[obj] = tween
+            tween.Completed:Connect(function() activeTweens[obj] = nil end)
+            tween:Play()
+        end
+    end
+
+    local function animateToggle(newState)
+        if destroyed then return end
+        local color
+        if inError then
+            color = errorColor
+        elseif hover and not locked then
+            color = hoverColor
+        else
+            color = newState and activeColor or inactiveColor
+        end
+        local targetPos = newState and UDim2.new(1, -22, 0, 2) or UDim2.new(0, 2, 0, 2)
+        safeTween(switch, { BackgroundColor3 = color })
+        safeTween(knob, { Position = targetPos })
+    end
+
+    local function setError(v)
+        if destroyed then return end
+        inError = v
+        animateToggle(state)
+    end
+
+    local function pulseError()
+        if destroyed then return end
+        setError(true)
+        task.delay(0.25, function()
+            if not destroyed then setError(false) end
+        end)
+    end
+
+    local function toggle(newState, skipCallback)
+        if locked or destroyed then return end
+        if state == newState then return end
+        state = newState
+        animateToggle(state)
+        if not skipCallback then
+            task.spawn(function()
+                local ok, err = pcall(callback, state)
+                if not ok then
+                    warn("[Toggle Error]:", err)
+                    pulseError()
+                end
+            end)
+        end
+    end
+
+    switch.MouseButton1Click:Connect(function()
+        if not locked and not destroyed then toggle(not state) end
+    end)
+
+    switch.MouseEnter:Connect(function()
+        if not locked and not destroyed then
+            hover = true
+            animateToggle(state)
+        end
+    end)
+
+    switch.MouseLeave:Connect(function()
+        if not locked and not destroyed then
+            hover = false
+            animateToggle(state)
+        end
+    end)
+
+    -- Atualização leve automática de hover sem recriar tweens constantemente
+    local connection
+    connection = RunService.Heartbeat:Connect(function()
+        if destroyed or not outer.Parent then
+            connection:Disconnect()
+            return
+        end
+        if hover and not locked and not inError then
+            switch.BackgroundColor3 = switch.BackgroundColor3:Lerp(activeColor, 0.05)
+        end
+    end)
+
+    local PublicApi = {}
+
+    function PublicApi:SetState(v)
+        if destroyed then return end
+        toggle(v, true)
+    end
+
+    function PublicApi:GetState()
+        return state
+    end
+
+    function PublicApi:Toggle()
+        if destroyed then return end
+        toggle(not state)
+    end
+
+    function PublicApi:SetText(t)
+        if destroyed or typeof(t) ~= "string" or not label then return end
+        label.Text = t
+    end
+
+    function PublicApi:SetDesc(t)
+        if destroyed or not desc or typeof(t) ~= "string" then return end
+        desc.Text = t
+    end
+
+    function PublicApi:SetCallback(fn)
+        if destroyed or typeof(fn) ~= "function" then return end
+        callback = fn
+    end
+
+    function PublicApi:SetLocked(v)
+        if destroyed then return end
+        locked = v and true or false
+        switch.Active = not locked
+        animateToggle(state)
+    end
+
+    function PublicApi:Update(opt)
+        if destroyed or typeof(opt) ~= "table" then return end
+        if opt.Text then self:SetText(opt.Text) end
+        if opt.Desc then self:SetDesc(opt.Desc) end
+        if opt.State ~= nil then toggle(opt.State, true) end
+    end
+
+    function PublicApi:Destroy()
+        if destroyed then return end
+        destroyed = true
+        for _, tw in pairs(activeTweens) do pcall(function() tw:Cancel() end) end
+        activeTweens = {}
+        pcall(function() outer:Destroy() end)
+        table.clear(self)
+    end
+
+    tab.Components[#tab.Components + 1] = PublicApi
+    PublicApi._instance = outer
+    return PublicApi
+end
+
+return Tekscripts
