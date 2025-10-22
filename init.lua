@@ -88,16 +88,14 @@ local DESIGN = {
     BlurEffectSize = 8,
     AnimationSpeed = 0.3,
 
-    EdgeThreshold = 40, -- NOVO: Aumentado para a "drop zone"
+    EdgeThreshold = 15,
     EdgeButtonSize = 40,
     EdgeButtonPadding = 5,
     EdgeButtonCornerRadius = 6,
-    
-    -- NOVO: Configurações do indicador
-    EdgeIndicatorColor = Color3.fromRGB(200, 50, 50),
-    EdgeIndicatorSize = 5,
-    EdgeIndicatorActiveTransparency = 0.3,
-    EdgeIndicatorInactiveTransparency = 1.0,
+
+    EdgeIndicatorColor = Color3.fromRGB(255, 0, 0),
+    EdgeIndicatorWidth = 5,
+    EdgeIndicatorTransparency = 0.5,
 }
 
 ---
@@ -512,7 +510,6 @@ function Tekscripts:_buildUI(options: { Name: string?, Parent: Instance?, FloatT
     self:SetupResizeSystem() -- Sistema de redimensionamento
     self:SetupFloatButton(options.FloatText or "abrir") -- Botão flutuante
     self:CreateEdgeButtons() -- Botões nas bordas
-    self:_createEdgeIndicators() -- NOVO: Cria os indicadores de borda
 
     -- Tela de bloqueio
     self.BlockScreen = Instance.new("Frame")
@@ -527,6 +524,30 @@ function Tekscripts:_buildUI(options: { Name: string?, Parent: Instance?, FloatT
     blur.Size = 0
     blur.Parent = self.BlockScreen
     self.BlurEffect = blur
+
+    -- NOVO: Indicadores de borda vermelhos
+    self.EdgeIndicators = {}
+    local edges = {"left", "right", "top", "bottom"}
+    for _, edge in ipairs(edges) do
+        local indicator = Instance.new("Frame")
+        indicator.Name = "EdgeIndicator_" .. edge
+        indicator.BackgroundColor3 = DESIGN.EdgeIndicatorColor
+        indicator.BackgroundTransparency = DESIGN.EdgeIndicatorTransparency
+        indicator.BorderSizePixel = 0
+        indicator.Visible = false
+        indicator.Parent = self.ScreenGui
+        indicator.ZIndex = 20  -- Acima de outros elementos
+
+        if edge == "left" or edge == "right" then
+            indicator.Size = UDim2.new(0, DESIGN.EdgeIndicatorWidth, 1, 0)
+            indicator.Position = (edge == "left") and UDim2.new(0, 0, 0, 0) or UDim2.new(1, -DESIGN.EdgeIndicatorWidth, 0, 0)
+        else  -- top or bottom
+            indicator.Size = UDim2.new(1, 0, 0, DESIGN.EdgeIndicatorWidth)
+            indicator.Position = (edge == "top") and UDim2.new(0, 0, 0, 0) or UDim2.new(0, 0, 1, -DESIGN.EdgeIndicatorWidth)
+        end
+
+        self.EdgeIndicators[edge] = indicator
+    end
 end
 
 ---
@@ -551,8 +572,7 @@ function Tekscripts.new(options: { Name: string?, Parent: Instance?, FloatText: 
         ResizeHandle: Frame?,
         FloatButton: Frame?,
         EdgeButtons: { [string]: { Button: TextButton, Frame: Frame, Arrow: TextLabel } },
-        EdgeIndicators: { [string]: Frame }, -- NOVO
-        ActiveMinimizeEdge: string?, -- NOVO
+        EdgeIndicators: { [string]: Frame },
         Connections: { any },
         BlockScreen: Frame?,
         Blocked: boolean,
@@ -580,8 +600,7 @@ function Tekscripts.new(options: { Name: string?, Parent: Instance?, FloatText: 
     self.startTab = options.startTab
     self.Blocked = false
     self.EdgeButtons = {}
-    self.EdgeIndicators = {} -- NOVO
-    self.ActiveMinimizeEdge = nil -- NOVO
+    self.EdgeIndicators = {}
     self._destroyed = false
     
     -- Criação do ScreenGui
@@ -724,10 +743,10 @@ function Tekscripts:Destroy()
     end
     self.EdgeButtons = {}
 
-    -- NOVO: Destroi edge indicators
-    for _, indicator in pairs(self.EdgeIndicators or {}) do
-        if indicator and indicator:IsDescendantOf(game) then
-            indicator:Destroy()
+    -- Destroi edge indicators
+    for _, ind in pairs(self.EdgeIndicators or {}) do
+        if ind and ind:IsDescendantOf(game) then
+            ind:Destroy()
         end
     end
     self.EdgeIndicators = {}
@@ -812,7 +831,7 @@ function Tekscripts:SetupTitleScroll()
 end
 
 ---
--- Sistema de Arrastar (MODIFICADO)
+-- Sistema de Arrastar
 ---
 function Tekscripts:SetupDragSystem()
     local dragStart = nil
@@ -830,35 +849,19 @@ function Tekscripts:SetupDragSystem()
     self.Connections.DragChanged = UserInputService.InputChanged:Connect(function(input)
         if self.Blocked then return end
         if self.IsDragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
-            local mousePos = UserInputService:GetMouseLocation()
-            local delta = mousePos - dragStart
-            
-            -- Move a janela
+            local delta = UserInputService:GetMouseLocation() - dragStart
             local newPos = UDim2.new(
                 startPos.X.Scale,
                 startPos.X.Offset + delta.X,
                 startPos.Y.Scale,
                 startPos.Y.Offset + delta.Y
             )
+
             local tween = TweenService:Create(self.Window, TweenInfo.new(DESIGN.AnimationSpeed, Enum.EasingStyle.Quad), { Position = newPos })
             tween:Play()
 
-            -- NOVO: Lógica do indicador de borda
-            local screen = workspace.CurrentCamera.ViewportSize
-            local threshold = DESIGN.EdgeThreshold -- Zona de ativação em pixels (ex: 40px)
-            
-            local activeEdge = nil
-            if mousePos.X <= threshold then
-                activeEdge = "left"
-            elseif mousePos.X >= screen.X - threshold then
-                activeEdge = "right"
-            elseif mousePos.Y <= threshold then
-                activeEdge = "top"
-            elseif mousePos.Y >= screen.Y - threshold then
-                activeEdge = "bottom"
-            end
-            
-            self:UpdateEdgeIndicators(activeEdge)
+            -- NOVO: Atualiza indicadores de borda durante o arrasto
+            self:UpdateEdgeIndicators()
         end
     end)
 
@@ -867,87 +870,88 @@ function Tekscripts:SetupDragSystem()
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
             self.IsDragging = false
             
-            -- NOVO: Verifica se deve minimizar ao soltar
-            if self.ActiveMinimizeEdge then
-                self:MinimizeToEdge(self.ActiveMinimizeEdge)
+            -- Verifica se está próximo de alguma borda da tela
+            if not self.MinimizedState then
+                self:CheckEdgeProximity()
             end
-            
-            -- Limpa os indicadores independentemente de ter minimizado
-            self:UpdateEdgeIndicators(nil)
+
+            -- NOVO: Esconde todos os indicadores ao final do arrasto
+            self:HideAllEdgeIndicators()
         end
     end)
 end
 
 ---
--- NOVO: Cria os indicadores de borda (drop zones)
+-- NOVO: Atualiza visibilidade dos indicadores de borda
 ---
-function Tekscripts:_createEdgeIndicators()
-    local edges = {"left", "right", "top", "bottom"}
-    local size = DESIGN.EdgeIndicatorSize
-    
-    for _, edge in ipairs(edges) do
-        local indicator = Instance.new("Frame")
-        indicator.Name = edge .. "Indicator"
-        indicator.BackgroundColor3 = DESIGN.EdgeIndicatorColor
-        indicator.BackgroundTransparency = DESIGN.EdgeIndicatorInactiveTransparency
-        indicator.BorderSizePixel = 0
-        indicator.ZIndex = 99
+function Tekscripts:UpdateEdgeIndicators()
+    if not self.Window or not self.IsDragging then return end
+
+    local screen = workspace.CurrentCamera.ViewportSize
+    local windowPos = self.Window.AbsolutePosition
+    local windowSize = self.Window.AbsoluteSize
+    local threshold = DESIGN.EdgeThreshold
+
+    local near = {
+        left = windowPos.X <= threshold,
+        right = windowPos.X + windowSize.X >= screen.X - threshold,
+        top = windowPos.Y <= threshold,
+        bottom = windowPos.Y + windowSize.Y >= screen.Y - threshold
+    }
+
+    for edge, indicator in pairs(self.EdgeIndicators) do
+        indicator.Visible = near[edge]
+    end
+end
+
+---
+-- NOVO: Esconde todos os indicadores de borda
+---
+function Tekscripts:HideAllEdgeIndicators()
+    for _, indicator in pairs(self.EdgeIndicators) do
         indicator.Visible = false
-        indicator.Parent = self.ScreenGui
-        
-        if edge == "left" then
-            indicator.Size = UDim2.new(0, size, 1, 0)
-            indicator.Position = UDim2.new(0, 0, 0, 0)
-        elseif edge == "right" then
-            indicator.Size = UDim2.new(0, size, 1, 0)
-            indicator.Position = UDim2.new(1, -size, 0, 0)
-        elseif edge == "top" then
-            indicator.Size = UDim2.new(1, 0, 0, size)
-            indicator.Position = UDim2.new(0, 0, 0, 0)
-        elseif edge == "bottom" then
-            indicator.Size = UDim2.new(1, 0, 0, size)
-            indicator.Position = UDim2.new(0, 0, 1, -size)
-        end
-        
-        self.EdgeIndicators[edge] = indicator
     end
 end
 
 ---
--- NOVO: Atualiza a visibilidade dos indicadores de borda
+-- Verifica proximidade das bordas da tela
 ---
-function Tekscripts:UpdateEdgeIndicators(activeEdge: string?)
-    if self.ActiveMinimizeEdge == activeEdge then return end -- Sem mudança
-    self.ActiveMinimizeEdge = activeEdge
+function Tekscripts:CheckEdgeProximity()
+    if not self.Window then return end -- evita erro se Window não existir
+    if not self.Window:IsDescendantOf(game) then return end -- evita erro se Window foi removido
 
-    for edgeName, indicator in pairs(self.EdgeIndicators) do
-        local isVisible = (edgeName == activeEdge)
-        
-        if isVisible and not indicator.Visible then
-            -- Fade In
-            indicator.BackgroundTransparency = DESIGN.EdgeIndicatorInactiveTransparency
-            indicator.Visible = true
-            TweenService:Create(indicator, CACHE.TweenInfo, { BackgroundTransparency = DESIGN.EdgeIndicatorActiveTransparency }):Play()
-            
-        elseif not isVisible and indicator.Visible then
-            -- Fade Out
-            local tween = TweenService:Create(indicator, CACHE.TweenInfo, { BackgroundTransparency = DESIGN.EdgeIndicatorInactiveTransparency })
-            local conn
-            conn = tween.Completed:Connect(function()
-                if self.ActiveMinimizeEdge ~= edgeName then -- Verifica novamente caso tenha sido reativado rápido
-                    indicator.Visible = false
-                end
-                conn:Disconnect()
-            end)
-            tween:Play()
+    local screen = workspace.CurrentCamera.ViewportSize
+    local windowPos = self.Window.AbsolutePosition
+    local windowSize = self.Window.AbsoluteSize
+    local threshold = DESIGN.EdgeThreshold
+
+    -- Calcula distância do centro da janela para cada borda
+    local edges = {
+        left = windowPos.X <= threshold,
+        right = windowPos.X + windowSize.X >= screen.X - threshold,
+        top = windowPos.Y <= threshold,
+        bottom = windowPos.Y + windowSize.Y >= screen.Y - threshold
+    }
+
+    -- Calcula velocidade de arrasto (delta desde o último frame)
+    if not self.LastWindowPos then self.LastWindowPos = windowPos end
+    local delta = (windowPos - self.LastWindowPos).Magnitude
+    self.LastWindowPos = windowPos
+
+    local minDragSpeed = 150 -- só minimiza se tiver arrastado rápido o suficiente
+
+    if delta >= minDragSpeed then
+        if edges.left then
+            self:MinimizeToEdge("left")
+        elseif edges.right then
+            self:MinimizeToEdge("right")
+        elseif edges.top then
+            self:MinimizeToEdge("top")
+        elseif edges.bottom then
+            self:MinimizeToEdge("bottom")
         end
     end
 end
-
----
--- (FUNÇÃO REMOVIDA: CheckEdgeProximity)
----
-
 ---
 -- Cria os botões nas bordas da tela
 ---
@@ -1375,104 +1379,114 @@ local function loadTabContent(tab)
     local DESIGN = DESIGN
     local self = tab._parentRef
     
-    if tab.Container and tab.Container.Parent then return end -- Já carregado
+    if not tab.Container then
+        -- Container da aba
+        local container = Instance.new("ScrollingFrame")
+        container.Name = tab.Button.Name .. "_Content"
+        container.Size = UDim2.new(1, 0, 1, 0)
+        container.BackgroundTransparency = 1
+        container.BorderSizePixel = 0
+        container.ScrollBarThickness = 6
+        container.ScrollBarImageColor3 = DESIGN.ComponentHoverColor
+        container.AutomaticCanvasSize = Enum.AutomaticSize.Y
+        container.CanvasSize = UDim2.new(0, 0, 0, 0)
+        container.ScrollingDirection = Enum.ScrollingDirection.Y
+        container.ClipsDescendants = true
+        container.Parent = self.TabContentContainer
+        tab.Container = container
 
-    -- Container da aba
-    local container = Instance.new("ScrollingFrame")
-    container.Name = tab.Button.Name .. "_Content"
-    container.Size = UDim2.new(1, 0, 1, 0)
-    container.BackgroundTransparency = 1
-    container.BorderSizePixel = 0
-    container.ScrollBarThickness = 6
-    container.ScrollBarImageColor3 = DESIGN.ComponentHoverColor
-    container.AutomaticCanvasSize = Enum.AutomaticSize.Y
-    container.CanvasSize = UDim2.new(0, 0, 0, 0)
-    container.ScrollingDirection = Enum.ScrollingDirection.Y
-    container.ClipsDescendants = true
-    container.Parent = self.TabContentContainer
-    tab.Container = container
+        -- Padding interno
+        local padding = Instance.new("UIPadding")
+        padding.PaddingTop = UDim.new(0, DESIGN.ContainerPadding)
+        padding.PaddingLeft = UDim.new(0, DESIGN.ContainerPadding)
+        padding.PaddingRight = UDim.new(0, DESIGN.ContainerPadding)
+        padding.PaddingBottom = UDim.new(0, DESIGN.ContainerPadding)
+        padding.Parent = container
 
-    -- Padding interno
-    local padding = Instance.new("UIPadding")
-    padding.PaddingTop = UDim.new(0, DESIGN.ContainerPadding)
-    padding.PaddingLeft = UDim.new(0, DESIGN.ContainerPadding)
-    padding.PaddingRight = UDim.new(0, DESIGN.ContainerPadding)
-    padding.PaddingBottom = UDim.new(0, DESIGN.ContainerPadding)
-    padding.Parent = container
+        -- Layout dos componentes
+        local listLayout = Instance.new("UIListLayout")
+        listLayout.Padding = UDim.new(0, DESIGN.ComponentPadding)
+        listLayout.SortOrder = Enum.SortOrder.LayoutOrder
+        listLayout.Parent = container
+        tab.ListLayout = listLayout -- Armazenar ListLayout para reuso
 
-    -- Layout dos componentes
-    local listLayout = Instance.new("UIListLayout")
-    listLayout.Padding = UDim.new(0, DESIGN.ComponentPadding)
-    listLayout.SortOrder = Enum.SortOrder.LayoutOrder
-    listLayout.Parent = container
-    tab.ListLayout = listLayout -- Armazenar ListLayout para reuso
+        -- Camada fixa para box vazio
+        local overlay = Instance.new("Frame")
+        overlay.Size = UDim2.new(1, 0, 1, 0)
+        overlay.Position = UDim2.new(0, 0, 0, 0)
+        overlay.BackgroundTransparency = 1
+        overlay.ZIndex = 5
+        overlay.Parent = container
 
-    -- Camada fixa para box vazio
-    local overlay = Instance.new("Frame")
-    overlay.Size = UDim2.new(1, 0, 1, 0)
-    overlay.Position = UDim2.new(0, 0, 0, 0)
-    overlay.BackgroundTransparency = 1
-    overlay.ZIndex = 5
-    overlay.Parent = container
+        -- Box centralizado
+        local emptyBox = Instance.new("Frame")
+        emptyBox.Size = UDim2.new(0.6, 0, 0.2, 0)
+        emptyBox.AnchorPoint = Vector2.new(0.5, 0.5)
+        emptyBox.Position = UDim2.new(0.5, 0, 0.5, 0)
+        emptyBox.BackgroundColor3 = DESIGN.EmptyStateBoxColor
+        emptyBox.BackgroundTransparency = 0.2
+        emptyBox.BorderSizePixel = 0
+        emptyBox.Visible = true
+        emptyBox.ZIndex = 6
+        emptyBox.Parent = overlay
 
-    -- Box centralizado
-    local emptyBox = Instance.new("Frame")
-    emptyBox.Size = UDim2.new(0.6, 0, 0.2, 0)
-    emptyBox.AnchorPoint = Vector2.new(0.5, 0.5)
-    emptyBox.Position = UDim2.new(0.5, 0, 0.5, 0)
-    emptyBox.BackgroundColor3 = DESIGN.EmptyStateBoxColor
-    emptyBox.BackgroundTransparency = 0.2
-    emptyBox.BorderSizePixel = 0
-    emptyBox.Visible = true
-    emptyBox.ZIndex = 6
-    emptyBox.Parent = overlay
+        local corner = getUICorner(DESIGN.CornerRadius)
+        corner.Parent = emptyBox
 
-    local corner = getUICorner(DESIGN.CornerRadius)
-    corner.Parent = emptyBox
+        local stroke = Instance.new("UIStroke")
+        stroke.Thickness = 1
+        stroke.Color = DESIGN.EmptyStateBorderColor
+        stroke.Transparency = 0.3
+        stroke.Parent = emptyBox
 
-    local stroke = Instance.new("UIStroke")
-    stroke.Thickness = 1
-    stroke.Color = DESIGN.EmptyStateBorderColor
-    stroke.Transparency = 0.3
-    stroke.Parent = emptyBox
+        local emptyText = Instance.new("TextLabel")
+        emptyText.Size = UDim2.new(1, -10, 1, -10)
+        emptyText.AnchorPoint = Vector2.new(0.5, 0.5)
+        emptyText.Position = UDim2.new(0.5, 0, 0.5, 0)
+        emptyText.BackgroundTransparency = 1
+        emptyText.Text = "Parece que ainda não há nada aqui."
+        emptyText.TextColor3 = DESIGN.EmptyStateTextColor
+        emptyText.Font = Enum.Font.Roboto
+        emptyText.TextScaled = true
+        emptyText.TextWrapped = true
+        emptyText.ZIndex = 7
+        emptyText.Parent = emptyBox
 
-    local emptyText = Instance.new("TextLabel")
-    emptyText.Size = UDim2.new(1, -10, 1, -10)
-    emptyText.AnchorPoint = Vector2.new(0.5, 0.5)
-    emptyText.Position = UDim2.new(0.5, 0, 0.5, 0)
-    emptyText.BackgroundTransparency = 1
-    emptyText.Text = "Parece que ainda não há nada aqui."
-    emptyText.TextColor3 = DESIGN.EmptyStateTextColor
-    emptyText.Font = Enum.Font.Roboto
-    emptyText.TextScaled = true
-    emptyText.TextWrapped = true
-    emptyText.ZIndex = 7
-    emptyText.Parent = emptyBox
+        tab.EmptyBox = emptyBox
+        tab._overlay = overlay
 
-    tab.EmptyBox = emptyBox
-    tab._overlay = overlay
-
-    -- Adiciona todos os componentes que estavam pendentes
-    for _, component in ipairs(tab.Components) do
-        if component:IsA("GuiObject") then
-             component.Parent = container
+        -- Adiciona todos os componentes que estavam pendentes
+        for _, component in ipairs(tab.Components) do
+            if typeof(component) == "Instance" and component:IsA("GuiObject") then
+                component.Parent = container
+            end
         end
     end
 
-    -- Controle automático de visibilidade do overlay
-    -- Conexão é adicionada ao Container, mas desconectada no Unload
-    local contentChangeConn = listLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-        local hasComponents = #tab.Components > 0
-        overlay.Visible = not hasComponents
+    -- Ativa visibilidade
+    tab.Container.Visible = true
 
-        local totalContentHeight = listLayout.AbsoluteContentSize.Y + (DESIGN.ContainerPadding * 2)
-        local containerHeight = container.AbsoluteSize.Y
-        container.ScrollBarImageTransparency = totalContentHeight > containerHeight and 0 or 1
+    -- Controle automático de visibilidade do overlay (conecta se não estiver)
+    if not tab._connections.ContentChange then
+        local contentChangeConn = tab.ListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+            local hasComponents = #tab.Components > 0
+            if tab._overlay then
+                tab._overlay.Visible = not hasComponents
+            end
+
+            local totalContentHeight = tab.ListLayout.AbsoluteContentSize.Y + (DESIGN.ContainerPadding * 2)
+            local containerHeight = tab.Container.AbsoluteSize.Y
+            tab.Container.ScrollBarImageTransparency = totalContentHeight > containerHeight and 0 or 1
+        end)
+        tab._connections.ContentChange = contentChangeConn
+    end
+
+    -- Força update inicial
+    task.defer(function()
+        if tab.ListLayout then
+            tab.ListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Fire()
+        end
     end)
-    tab._connections.ContentChange = contentChangeConn
-
-    -- Garante que o container esteja visível ao carregar
-    container.Visible = true
 end
 
 -- NOVO MÉTODO: Descarrega o Container (Unload)
@@ -1485,16 +1499,8 @@ function Tekscripts:UnloadTabContent(tab)
         tab._connections.ContentChange = nil
     end
 
-    -- Destrói o container, liberando todos os componentes filhos
-    if tab.Container and tab.Container.Parent then
-        tab.Container:Destroy()
-    end
-    
-    -- Limpa as referências do container
-    tab.Container = nil
-    tab.ListLayout = nil
-    tab.EmptyBox = nil
-    tab._overlay = nil
+    -- Esconde o container
+    tab.Container.Visible = false
 end
 
 
@@ -1524,7 +1530,7 @@ function Tekscripts:CreateTab(options: { Title: string })
         local btn = createButton(text, nil, nil) -- Cria sem pai
         table.insert(self.Components, btn)
 
-        if self.Container and self.Container.Parent then
+        if self.Container then
             btn.Parent = self.Container
             if self.ListLayout then
                 self.ListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Fire() -- Força a atualização do EmptyBox
@@ -1567,7 +1573,13 @@ function Tekscripts:CreateTab(options: { Title: string })
         self._destroyed = true
         
         -- Descarrega/Destrói o container (libera memória)
-        self._parentRef:UnloadTabContent(self)
+        if self.Container and self.Container.Parent then
+            self.Container:Destroy()
+        end
+        self.Container = nil
+        self.ListLayout = nil
+        self.EmptyBox = nil
+        self._overlay = nil
 
         local function safeDestroy(obj)
             if typeof(obj) == "Instance" and obj:IsDescendantOf(game) then
@@ -1577,7 +1589,7 @@ function Tekscripts:CreateTab(options: { Title: string })
 
         -- Desconectar conexões
         if self._connections then
-            for _, conn in pairs(self.Connections) do
+            for _, conn in pairs(self._connections) do
                 if conn and conn.Disconnect then
                     pcall(conn.Disconnect, conn)
                 end
@@ -1589,7 +1601,10 @@ function Tekscripts:CreateTab(options: { Title: string })
         safeDestroy(self.Button)
         self.Button = nil
 
-        -- A lista Components só é limpa, pois o conteúdo já foi destruído pelo UnloadTabContent
+        -- Destruir componentes
+        for _, component in ipairs(self.Components) do
+            safeDestroy(component)
+        end
         self.Components = {} 
 
         -- Limpeza final da tabela da aba
@@ -1630,30 +1645,23 @@ function Tekscripts:SetActiveTab(tab)
     local DESIGN = DESIGN
     
     -- 1. DESCARREGA a aba atual (se houver)
-    if self.CurrentTab then
+    if self.CurrentTab and self.CurrentTab ~= tab then
         -- Desativa o visual do botão
         if self.CurrentTab.Button then
             self.CurrentTab.Button.BackgroundColor3 = DESIGN.TabInactiveColor
         end
-        -- Destrói o container (LIBERA MEMÓRIA)
+        -- Esconde a aba anterior
         self:UnloadTabContent(self.CurrentTab)
     end
 
     self.CurrentTab = tab
     
-    -- 2. CARREGA a nova aba (se necessário)
-    if not tab.Container then
-        loadTabContent(tab) -- Cria o container e insere os componentes
-    end
+    -- 2. CARREGA a nova aba (lazy load)
+    loadTabContent(tab)
 
     -- 3. ATIVA o visual do botão
     if self.CurrentTab.Button then
         self.CurrentTab.Button.BackgroundColor3 = DESIGN.TabActiveColor
-    end
-    
-    -- 4. Garante que o container carregado esteja visível
-    if self.CurrentTab.Container then
-        self.CurrentTab.Container.Visible = true
     end
 end
 
@@ -1772,8 +1780,6 @@ function Tekscripts:Block(state: boolean)
         TweenService:Create(self.BlurEffect, TweenInfo.new(0.4, Enum.EasingStyle.Quad), {Size = 0}):Play()
     end
 end
-
-
 
 ---
 -- Funções Públicas para criar componentes
@@ -5124,5 +5130,5 @@ function Tekscripts:CreateLabel(tab, options)
     updateSize()
     return publicApi
 end
-
 return Tekscripts
+
