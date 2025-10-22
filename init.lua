@@ -1972,181 +1972,6 @@ end
 
 -- 🟩 FIM DA API REQUEST
 
-
-function Tekscripts:CreateFloatingButton(options: {
-    BorderRadius: number?,
-    Text: string?,
-    Title: string?,
-    Value: boolean?,
-    Visible: boolean?,
-    Drag: boolean?,
-    Block: boolean?,
-    Callback: ((boolean) -> ())?
-})
-    options = options or {}
-    local width = 100 -- Largura fixa
-    local height = 100 -- Altura fixa
-    local borderRadius = tonumber(options.BorderRadius) or 8
-    local text = tostring(options.Text or "Clique Aqui")
-    local title = tostring(options.Title or "Cabeçote")
-    local value = options.Value == nil and false or options.Value
-    local visible = options.Visible == nil and false or options.Visible
-    local drag = options.Drag == nil and true or options.Drag
-    local block = options.Block == nil and false or options.Block
-    local callback = options.Callback
-
-    -- ScreenGui independente
-    local screenGui = Instance.new("ScreenGui")
-    screenGui.Name = "FloatingButtonGui"
-    screenGui.ResetOnSpawn = false
-    screenGui.Parent = game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui")
-
-    -- Container geral (box único)
-    local container = Instance.new("Frame")
-    container.Size = UDim2.new(0, width, 0, height + 25)
-    container.Position = UDim2.new(0.5, -width/2, 0.5, -(height + 25)/2)
-    container.BackgroundColor3 = Color3.fromRGB(25, 25, 25) -- Dark theme
-    container.Visible = visible
-    container.Parent = screenGui
-
-    local containerCorner = Instance.new("UICorner")
-    containerCorner.CornerRadius = UDim.new(0, borderRadius)
-    containerCorner.Parent = container
-
-    -- Cabeçote
-    local header = Instance.new("TextLabel")
-    header.Size = UDim2.new(1, 0, 0, 25)
-    header.BackgroundTransparency = 1
-    header.Text = title
-    header.TextColor3 = Color3.fromRGB(255, 255, 255)
-    header.TextSize = 16
-    header.Font = Enum.Font.GothamBold
-    header.Parent = container
-
-    -- Linha divisória opcional
-    local divider = Instance.new("Frame")
-    divider.Size = UDim2.new(1, 0, 0, 1)
-    divider.Position = UDim2.new(0, 0, 0, 25)
-    divider.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-    divider.BorderSizePixel = 0
-    divider.Parent = container
-
-    -- Botão principal
-    local button = Instance.new("TextButton")
-    button.Size = UDim2.new(1, 0, 1, -25)
-    button.Position = UDim2.new(0, 0, 0, 25)
-    button.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-    button.Text = text
-    button.TextColor3 = Color3.fromRGB(255, 255, 255)
-    button.Font = Enum.Font.GothamBold
-    button.AutoButtonColor = not block
-    button.TextScaled = true -- Adaptação de texto
-    button.TextWrapped = true -- Adaptação de texto
-    button.Parent = container
-
-    local buttonCorner = Instance.new("UICorner")
-    buttonCorner.CornerRadius = UDim.new(0, borderRadius)
-    buttonCorner.Parent = button
-
-    -- Estado interno drag
-    local dragging = false
-    local dragInput, dragStart, startPos
-    local UIS = game:GetService("UserInputService")
-
-    -- Atualizar visuais
-    local function updateVisuals()
-        container.Size = UDim2.new(0, width, 0, height + 25)
-        header.Text = title
-        button.Text = text
-        container.Visible = visible
-        button.AutoButtonColor = not block
-        containerCorner.CornerRadius = UDim.new(0, borderRadius)
-        buttonCorner.CornerRadius = UDim.new(0, borderRadius)
-    end
-
-    -- Toggle no clique
-    button.MouseButton1Click:Connect(function()
-        if block then return end
-        value = not value
-        if callback then
-            task.spawn(callback, value)
-        end
-    end)
-
-    -- Drag pelo cabeçote (com delta e lock no input inicial)
-    if drag then
-        header.InputBegan:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-                dragging = true
-                dragStart = input.Position
-                startPos = container.Position
-                dragInput = input
-            end
-        end)
-
-        header.InputChanged:Connect(function(input)
-            if input == dragInput then
-                dragInput = input
-            end
-        end)
-
-        UIS.InputChanged:Connect(function(input)
-            if input == dragInput and dragging then
-                local delta = input.Position - dragStart
-                container.Position = UDim2.new(
-                    startPos.X.Scale, startPos.X.Offset + delta.X,
-                    startPos.Y.Scale, startPos.Y.Offset + delta.Y
-                )
-            end
-        end)
-
-        header.InputEnded:Connect(function(input)
-            if input == dragInput then
-                dragging = false
-                dragInput = nil
-            end
-        end)
-    end
-
-    -- API pública
-    local publicApi = {
-        _instance = container,
-        State = function()
-            return {
-                BorderRadius = borderRadius,
-                Text = text,
-                Title = title,
-                Value = value,
-                Visible = visible,
-                Drag = drag,
-                Block = block
-            }
-        end,
-        Update = function(newOptions)
-            if newOptions then
-                borderRadius = tonumber(newOptions.BorderRadius) or borderRadius
-                text = tostring(newOptions.Text or text)
-                title = tostring(newOptions.Title or title)
-                value = newOptions.Value == nil and value or newOptions.Value
-                visible = newOptions.Visible == nil and visible or newOptions.Visible
-                drag = newOptions.Drag == nil and drag or newOptions.Drag
-                block = newOptions.Block == nil and block or newOptions.Block
-                callback = newOptions.Callback or callback
-                updateVisuals()
-            end
-        end,
-        Destroy = function()
-            if screenGui then
-                screenGui:Destroy()
-                screenGui = nil
-            end
-        end
-    }
-
-    updateVisuals()
-    return publicApi
-end
-
 function Tekscripts:CreateSlider(tab: any, options: { 
     Text: string?, 
     Min: number?, 
@@ -5226,4 +5051,179 @@ function Tekscripts:CreateToggle(tab, options)
     return PublicApi
 end
 
+function Tekscripts:CreateFloatingButton(options: {
+	Text: string?,
+	Title: string?,
+	Value: boolean?,
+	Visible: boolean?,
+	Drag: boolean?,
+	Block: boolean?,
+	Callback: ((boolean) -> ())?
+})
+	options = options or {}
+
+	local width, height = 100, 100
+	local borderRadius = 8 -- fixo, sem parâmetro externo
+	local text = tostring(options.Text or "Clique Aqui")
+	local title = tostring(options.Title or "Cabeçote")
+	local value = options.Value == nil and false or options.Value
+	local visible = options.Visible == nil and false or options.Visible
+	local drag = options.Drag == nil and true or options.Drag
+	local block = options.Block == nil and false or options.Block
+	local callback = options.Callback
+
+	local playerGui = game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui")
+	local UIS = game:GetService("UserInputService")
+
+	local screenGui = Instance.new("ScreenGui")
+	screenGui.Name = "FloatingButtonGui"
+	screenGui.ResetOnSpawn = false
+	screenGui.Parent = playerGui
+
+	local container = Instance.new("Frame")
+	container.Size = UDim2.new(0, width, 0, height + 25)
+	container.Position = UDim2.new(0.5, -width / 2, 0.5, -(height + 25) / 2)
+	container.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+	container.Visible = visible
+	container.Parent = screenGui
+
+	local containerCorner = Instance.new("UICorner")
+	containerCorner.CornerRadius = UDim.new(0, borderRadius)
+	containerCorner.Parent = container
+
+	local header = Instance.new("TextLabel")
+	header.Size = UDim2.new(1, 0, 0, 25)
+	header.BackgroundTransparency = 1
+	header.Text = title
+	header.TextColor3 = Color3.fromRGB(255, 255, 255)
+	header.TextSize = 16
+	header.Font = Enum.Font.GothamBold
+	header.TextScaled = true
+	header.TextWrapped = true
+	header.ClipsDescendants = true
+	header.Parent = container
+
+	local divider = Instance.new("Frame")
+	divider.Size = UDim2.new(1, 0, 0, 1)
+	divider.Position = UDim2.new(0, 0, 0, 25)
+	divider.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+	divider.BorderSizePixel = 0
+	divider.Parent = container
+
+	local button = Instance.new("TextButton")
+	button.Size = UDim2.new(1, 0, 1, -25)
+	button.Position = UDim2.new(0, 0, 0, 25)
+	button.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+	button.Text = text
+	button.TextColor3 = Color3.fromRGB(255, 255, 255)
+	button.Font = Enum.Font.GothamBold
+	button.TextScaled = true
+	button.TextWrapped = true
+	button.AutoButtonColor = not block
+	button.Parent = container
+
+	local buttonCorner = Instance.new("UICorner")
+	buttonCorner.CornerRadius = UDim.new(0, borderRadius)
+	buttonCorner.Parent = button
+
+	local dragging = false
+	local dragInput, dragStart, startPos
+
+	local function updateVisuals()
+		header.Text = title
+		button.Text = text
+		container.Visible = visible
+		button.AutoButtonColor = not block
+	end
+
+	button.MouseButton1Click:Connect(function()
+		if block then return end
+		value = not value
+		if callback then task.spawn(callback, value) end
+	end)
+
+	if drag then
+		header.InputBegan:Connect(function(input)
+			if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+				dragging = true
+				dragStart = input.Position
+				startPos = container.Position
+				dragInput = input
+			end
+		end)
+
+		header.InputChanged:Connect(function(input)
+			if input == dragInput then dragInput = input end
+		end)
+
+		UIS.InputChanged:Connect(function(input)
+			if input == dragInput and dragging then
+				local delta = input.Position - dragStart
+				container.Position = UDim2.new(
+					startPos.X.Scale, startPos.X.Offset + delta.X,
+					startPos.Y.Scale, startPos.Y.Offset + delta.Y
+				)
+			end
+		end)
+
+		header.InputEnded:Connect(function(input)
+			if input == dragInput then
+				dragging = false
+				dragInput = nil
+			end
+		end)
+	end
+
+	-- Public API
+	local PublicApi = {
+		_instance = container,
+
+		SetTitle = function(newTitle: string)
+			title = tostring(newTitle)
+			updateVisuals()
+		end,
+
+		SetText = function(newText: string)
+			text = tostring(newText)
+			updateVisuals()
+		end,
+
+		SetVisible = function(state: boolean)
+			visible = state and true or false
+			updateVisuals()
+		end,
+
+		SetBlock = function(state: boolean)
+			block = state and true or false
+			updateVisuals()
+		end,
+
+		SetCallback = function(fn)
+			if typeof(fn) == "function" then
+				callback = fn
+			end
+		end,
+
+		State = function()
+			return {
+				Title = title,
+				Text = text,
+				Value = value,
+				Visible = visible,
+				Drag = drag,
+				Block = block
+			}
+		end,
+
+		Destroy = function()
+			if screenGui then
+				screenGui:Destroy()
+				screenGui = nil
+			end
+		end,
+	}
+
+	updateVisuals()
+	return PublicApi
+end
 return Tekscripts
