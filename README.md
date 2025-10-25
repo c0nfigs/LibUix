@@ -23,7 +23,7 @@ Para integrar a Tekscripts UIX em seu projeto, o primeiro passo é carregar a bi
 Copie e cole o código a seguir em seu script para carregar a biblioteca:
 
 ```lua
-local Tekscripts = loadstring(game:HttpGet("https://raw.githubusercontent.com/c0nfigs/LibUix/refs/heads/main/init.lua"))()
+local Tekscripts = loadstring(game:HttpGet("https://raw.githubusercontent.com/c0nfigs/LibUix/refs/heads/main/load.lua"))()
 ```
 
 ---
