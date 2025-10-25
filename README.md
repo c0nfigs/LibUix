@@ -347,23 +347,193 @@ local floatButton = Tekscripts:CreateFloatingButton({
 -- Para destruir o botão, chame: floatButton.Destroy()
 ```
 
-### 9. Controle Deslizante (Slider)
+### 🎚️ 9. Controle Deslizante (Slider)
 
-Sliders permitem que o usuário selecione um valor numérico dentro de um intervalo definido.
+O Slider permite que o usuário selecione um valor numérico dentro de um intervalo definido.
+Além de ser altamente personalizável, ele oferece API completa para controle dinâmico, bloqueio, animações e callbacks.
 
-```lua
+
+---
+
+### Criação
+
 local speedSlider = Tekscripts:CreateSlider(tabPrincipal, {
     Text = "Velocidade do Player",
     Min = 16,
     Max = 100,
+    Step = 1,
     Value = 16,
     Callback = function(valor)
         print("Velocidade atual:", valor)
     end
 })
 
--- Para destruir o slider, chame: speedSlider.Destroy()
-```
+
+---
+
+### Parâmetros (options)
+
+Parâmetro	Tipo	Padrão	Descrição
+
+Text	string	"Slider"	Título exibido no topo do componente
+Min	number	0	Valor mínimo permitido
+Max	number	100	Valor máximo permitido
+Step	number	1	Incremento mínimo por movimento
+Value	number	Min	Valor inicial do slider
+Callback	function(number)	nil	Função chamada sempre que o valor for alterado manualmente ou via API
+
+
+
+---
+
+### API Pública
+
+O CreateSlider retorna um objeto manipulável com várias funções úteis:
+
+### Set(value: number)
+
+Define um novo valor para o slider.
+O valor é automaticamente ajustado ao intervalo (Min e Max) e ao passo (Step).
+
+```speedSlider.Set(75)```
+
+
+---
+
+### Get() → number
+
+Retorna o valor atual do slider.
+
+```print("Valor atual:", speedSlider.Get())```
+
+
+---
+
+### GetPercent() → number
+
+Retorna a porcentagem atual (0 a 1) com base no intervalo definido.
+
+```print("Porcentagem:", speedSlider.GetPercent())```
+
+
+---
+
+### SetRange(min: number, max: number, step: number?)
+
+Atualiza os limites do slider e o passo opcionalmente.
+
+```speedSlider.SetRange(10, 200, 5)```
+
+
+---
+
+### AnimateTo(value: number, duration: number?)
+
+Move suavemente o slider até o valor indicado em uma animação fluida.
+
+```speedSlider.AnimateTo(50, 0.5)```
+
+
+---
+
+### OnChanged(callback: function(number))
+
+Adiciona um novo listener para alterações de valor.
+Você pode registrar múltiplos callbacks.
+
+```speedSlider.OnChanged(function(v)
+    print("Novo valor detectado:", v)
+end)```
+
+
+---
+
+### Lock(state: boolean)
+
+Bloqueia ou desbloqueia o slider.
+Quando bloqueado, ele não pode ser arrastado nem editado manualmente.
+
+```speedSlider.Lock(true)  -- trava
+speedSlider.Lock(false) -- destrava```
+
+
+---
+
+### Update(options: table)
+
+Atualiza as opções do slider (como texto, min, max, step ou callback) sem recriar o componente.
+
+```speedSlider.Update({
+    Text = "Velocidade Ajustada",
+    Min = 10,
+    Max = 150,
+    Step = 2
+})```
+
+
+---
+
+🔹 Destroy()
+
+Remove o componente da interface e desconecta todos os eventos.
+
+```speedSlider.Destroy()```
+
+
+---
+
+### Aparência e Interatividade
+
+O Slider inclui:
+
+Animações suaves de hover e clique no "thumb" (botão circular).
+
+Gradiente de preenchimento dinâmico.
+
+Badge numérico editável (permite digitar o valor manualmente).
+
+Bloqueio visual automático com transparência reduzida ao ser travado.
+
+
+
+---
+
+### Exemplo completo
+
+```local slider = Tekscripts:CreateSlider(tabMain, {
+    Text = "Força do Ataque",
+    Min = 10,
+    Max = 300,
+    Step = 5,
+    Value = 50,
+    Callback = function(v)
+        print("Força atual:", v)
+    end
+})
+
+slider.OnChanged(function(v)
+    print("Callback secundário:", v)
+end)
+
+task.wait(2)
+slider.AnimateTo(200)
+slider.Lock(true)```
+
+
+---
+
+### Retorno da função
+
+Tekscripts:CreateSlider(...) → retorna uma tabela contendo:
+
+Campo	Tipo	Descrição
+
+_instance	Frame	Instância raiz do slider
+_connections	{RBXScriptConnection}	Lista interna de conexões
+_onChanged	{function}	Lista de callbacks registrados
+_locked	boolean	Estado de bloqueio atual
+Métodos	function	Todas as funções descritas acima
+
 
 ### 10. Seções (Sections)
 
