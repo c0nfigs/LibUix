@@ -357,7 +357,7 @@ Além de ser altamente personalizável, ele oferece API completa para controle d
 
 ### Criação
 
-local speedSlider = Tekscripts:CreateSlider(tabPrincipal, {
+```local speedSlider = Tekscripts:CreateSlider(tabPrincipal, {
     Text = "Velocidade do Player",
     Min = 16,
     Max = 100,
@@ -366,7 +366,7 @@ local speedSlider = Tekscripts:CreateSlider(tabPrincipal, {
     Callback = function(valor)
         print("Velocidade atual:", valor)
     end
-})
+})```
 
 
 ---
