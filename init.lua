@@ -13,55 +13,63 @@ local localPlayer = Players.LocalPlayer
 -- Tabela de Constantes de Design (Tema Dark Clean com mais contraste)
 ---
 local DESIGN = {
-    WindowColor1 = Color3.fromRGB(28, 28, 30),
-    WindowColor2 = Color3.fromRGB(22, 22, 25),
-    BlockScreenColor = Color3.fromRGB(0, 0, 0, 0.6),
+    -- Janelas e planos de fundo
+    WindowColor1 = Color3.fromRGB(25, 26, 28),
+    WindowColor2 = Color3.fromRGB(20, 21, 23),
+    BlockScreenColor = Color3.fromRGB(0, 0, 0, 0.65),
 
-    TitleColor = Color3.fromRGB(230, 230, 230),
-    ComponentTextColor = Color3.fromRGB(220, 220, 220),
-    InputTextColor = Color3.fromRGB(230, 230, 230),
-    NotifyTextColor = Color3.fromRGB(220, 220, 220),
+    -- Tipografia
+    TitleColor = Color3.fromRGB(240, 240, 245),
+    ComponentTextColor = Color3.fromRGB(215, 215, 220),
+    InputTextColor = Color3.fromRGB(230, 230, 235),
+    NotifyTextColor = Color3.fromRGB(220, 220, 225),
+    EmptyStateTextColor = Color3.fromRGB(150, 150, 155),
 
-    ComponentBackground = Color3.fromRGB(35, 35, 40),
-    InputBackgroundColor = Color3.fromRGB(40, 40, 45),
-    AccentColor = Color3.fromRGB(120, 180, 220),
-    ItemHoverColor = Color3.fromRGB(50, 50, 55),
-    ComponentHoverColor = Color3.fromRGB(65, 65, 70),
+    -- Fundos e componentes
+    ComponentBackground = Color3.fromRGB(34, 35, 38),
+    InputBackgroundColor = Color3.fromRGB(42, 43, 47),
+    AccentColor = Color3.fromRGB(90, 160, 255), -- Azul com leve toque neon
+    ItemHoverColor = Color3.fromRGB(50, 52, 57),
+    ComponentHoverColor = Color3.fromRGB(65, 68, 75),
 
-    ActiveToggleColor = Color3.fromRGB(120, 180, 220),
-    InactiveToggleColor = Color3.fromRGB(55, 55, 60),
-    MinimizeButtonColor = Color3.fromRGB(180, 180, 180),
-    CloseButtonColor = Color3.fromRGB(200, 100, 100),
-    FloatButtonColor = Color3.fromRGB(45, 45, 50),
+    -- Botões e toggles
+    ActiveToggleColor = Color3.fromRGB(90, 160, 255),
+    InactiveToggleColor = Color3.fromRGB(55, 56, 60),
+    MinimizeButtonColor = Color3.fromRGB(180, 180, 185),
+    CloseButtonColor = Color3.fromRGB(255, 85, 100),
+    FloatButtonColor = Color3.fromRGB(45, 46, 52),
 
-    DropdownBackground = Color3.fromRGB(30, 30, 35),
-    DropdownItemHover = Color3.fromRGB(55, 55, 60),
+    -- Dropdown
+    DropdownBackground = Color3.fromRGB(32, 33, 37),
+    DropdownItemHover = Color3.fromRGB(55, 57, 63),
 
-    TabActiveColor = Color3.fromRGB(120, 180, 220),
-    TabInactiveColor = Color3.fromRGB(35, 35, 40),
+    -- Tabs
+    TabActiveColor = Color3.fromRGB(90, 160, 255),
+    TabInactiveColor = Color3.fromRGB(36, 37, 41),
 
-    SliderTrackColor = Color3.fromRGB(60, 60, 65),
-    SliderFillColor = Color3.fromRGB(120, 180, 220),
-    ThumbColor = Color3.fromRGB(230, 230, 230),
-    ThumbOutlineColor = Color3.fromRGB(40, 40, 45),
+    -- Slider
+    SliderTrackColor = Color3.fromRGB(58, 59, 63),
+    SliderFillColor = Color3.fromRGB(90, 160, 255),
+    ThumbColor = Color3.fromRGB(240, 240, 245),
+    ThumbOutlineColor = Color3.fromRGB(45, 46, 50),
 
-    HRColor = Color3.fromRGB(70, 70, 75),
-    ResizeHandleColor = Color3.fromRGB(55, 55, 60),
-    NotifyBackground = Color3.fromRGB(40, 40, 45),
-    TagBackground = Color3.fromRGB(120, 180, 220),
+    -- Outros elementos
+    HRColor = Color3.fromRGB(75, 76, 82),
+    ResizeHandleColor = Color3.fromRGB(60, 61, 66),
+    NotifyBackground = Color3.fromRGB(38, 39, 43),
+    TagBackground = Color3.fromRGB(90, 160, 255),
 
-    EmptyStateTextColor = Color3.fromRGB(170, 170, 170),
-
-    WindowSize = UDim2.new(0, 500, 0, 470),
-    MinWindowSize = Vector2.new(500, 370),
-    MaxWindowSize = Vector2.new(790, 570),
-    TitleHeight = 42,
+    -- Dimensões e layout
+    WindowSize = UDim2.new(0, 520, 0, 480),
+    MinWindowSize = Vector2.new(520, 370),
+    MaxWindowSize = Vector2.new(820, 580),
+    TitleHeight = 44,
     TitlePadding = 10,
 
-    ComponentHeight = 44,
+    ComponentHeight = 46,
     ComponentPadding = 10,
-    ContainerPadding = 2,
-    CornerRadius = 8,
+    ContainerPadding = 3,
+    CornerRadius = 9,
     ButtonIconSize = 24,
     IconSize = 28,
 
@@ -70,8 +78,8 @@ local DESIGN = {
 
     FloatButtonSize = UDim2.new(0, 140, 0, 46),
     ResizeHandleSize = 16,
-    NotifyWidth = 270,
-    NotifyHeight = 70,
+    NotifyWidth = 280,
+    NotifyHeight = 72,
     TagHeight = 30,
     TagWidth = 115,
 
@@ -83,8 +91,8 @@ local DESIGN = {
     DropdownWidth = 150,
     DropdownItemHeight = 35,
 
-    BlurEffectSize = 8,
-    AnimationSpeed = 0.3,
+    BlurEffectSize = 10,
+    AnimationSpeed = 0.25,
 
     EdgeThreshold = 15,
     EdgeButtonSize = 40,
