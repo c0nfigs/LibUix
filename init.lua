@@ -744,33 +744,42 @@ end
 -- Sistema de Arrastar (otimizado: atualização direta, sem tweens por input)
 ---
 function Tekscripts:SetupDragSystem()
+    local UIS = game:GetService("UserInputService")
+
     self.Connections.DragBegin = self.TitleBar.InputBegan:Connect(function(input)
         if self.Blocked or self.MinimizedState then return end
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            
             self.IsDragging = true
-            self._dragStart = input.Position
-            self._startPos = self.Window.Position
-            self._lastMousePos = UserInputService:GetMouseLocation()
+
+            local pos = Vector2.new(input.Position.X, input.Position.Y)
+
+            -- Pega o offset correto (dedo - posição da janela)
+            local absPos = self.Window.AbsolutePosition
+            self._offset = Vector2.new(pos.X - absPos.X, pos.Y - absPos.Y)
         end
     end)
 
-    self.Connections.DragChanged = UserInputService.InputChanged:Connect(function(input)
+    self.Connections.DragChanged = UIS.InputChanged:Connect(function(input)
         if not self.IsDragging or self.Blocked or self.MinimizedState then return end
         if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-            local currentPos = UserInputService:GetMouseLocation()
-            local delta = currentPos - self._dragStart
-            self.Window.Position = UDim2.new(
-                self._startPos.X.Scale, self._startPos.X.Offset + delta.X,
-                self._startPos.Y.Scale, self._startPos.Y.Offset + delta.Y
-            )
-            self._lastMousePos = currentPos
+            
+            local pos = Vector2.new(input.Position.X, input.Position.Y)
+
+            -- Nova posição = dedo - offset
+            local newX = pos.X - self._offset.X
+            local newY = pos.Y - self._offset.Y
+
+            self.Window.Position = UDim2.fromOffset(newX, newY)
         end
     end)
 
-    self.Connections.DragEnded = UserInputService.InputEnded:Connect(function(input)
+    self.Connections.DragEnded = UIS.InputEnded:Connect(function(input)
         if not self.IsDragging then return end
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            
             self.IsDragging = false
+
             if not self.MinimizedState then
                 self:CheckEdgeProximity()
             end
@@ -1180,7 +1189,7 @@ function Tekscripts:CreateTab(options: { Title: string })
     local title = assert(options.Title, "CreateTab: argumento 'Title' inválido")
     assert(type(title) == "string", "CreateTab: argumento 'Title' deve ser string")
 
-    local tab = Tab.new(title, self.TabContentContainer) -- Assumindo Tab.new definido em outro lugar
+    local tab = Tab.new(title, self.TabContentContainer)
     tab._connections = {}
     self.Tabs[title] = tab
     tab._parentRef = self
@@ -1215,7 +1224,9 @@ function Tekscripts:CreateTab(options: { Title: string })
     if (self.startTab == title) or not self.CurrentTab then
         self:SetActiveTab(tab)
     end
-    self.NoTabsLabel.Visible = #self.Tabs == 0
+
+    -- CORREÇÃO
+    self.NoTabsLabel.Visible = next(self.Tabs) == nil
 
     function tab:Destroy()
         if self._destroyed then return end
@@ -1240,12 +1251,16 @@ function Tekscripts:CreateTab(options: { Title: string })
 
         if parent and parent.Tabs then
             parent.Tabs[title] = nil
+
             if parent.CurrentTab == self then
-                local nextTab = next(parent.Tabs)
-                parent.CurrentTab = nextTab and parent.Tabs[nextTab] or nil
-                parent.NoTabsLabel.Visible = not nextTab
+                local nextTabKey = next(parent.Tabs)
+                local nextTab = nextTabKey and parent.Tabs[nextTabKey] or nil
+
+                parent.CurrentTab = nextTab
+                parent.NoTabsLabel.Visible = nextTab == nil
+
                 if nextTab then
-                    parent:SetActiveTab(parent.Tabs[nextTab])
+                    parent:SetActiveTab(nextTab)
                 end
             end
         end
@@ -4615,4 +4630,5 @@ function Tekscripts:CreateDialog(options)
 
     return api
 end
+
 return Tekscripts
