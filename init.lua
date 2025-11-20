@@ -17,7 +17,7 @@ local DESIGN = {
     WindowColor1 = Color3.fromRGB(25, 26, 28),
     WindowColor2 = Color3.fromRGB(20, 21, 23),
     BlockScreenColor = Color3.fromRGB(0, 0, 0, 0.65),
-    WindowTransparency = 0.1, -- Quase transparente
+    WindowTransparency = 0.1,
     TabContainerTransparency = 0.15,
 
     -- Tipografia
@@ -30,7 +30,7 @@ local DESIGN = {
     -- Fundos e componentes
     ComponentBackground = Color3.fromRGB(34, 35, 38),
     InputBackgroundColor = Color3.fromRGB(42, 43, 47),
-    AccentColor = Color3.fromRGB(90, 160, 255), -- Azul com leve toque neon
+    AccentColor = Color3.fromRGB(90, 160, 255),
     ItemHoverColor = Color3.fromRGB(50, 52, 57),
     ComponentHoverColor = Color3.fromRGB(65, 68, 75),
 
@@ -101,6 +101,259 @@ local DESIGN = {
     EdgeButtonPadding = 5,
     EdgeButtonCornerRadius = 6,
 }
+local THEME_BINDINGS = {}
+
+-- Função utilitária simples para clonar o design padrão
+local function ShallowCopy(original)
+    local copy = {}
+    for key, value in pairs(original) do
+        copy[key] = value
+    end
+    return copy
+end
+
+
+function RegisterThemeItem(key, object, property)
+    if not THEME_BINDINGS[key] then
+        THEME_BINDINGS[key] = {}
+    end
+    table.insert(THEME_BINDINGS[key], {object = object, property = property})
+    if DESIGN[key] ~= nil then
+        object[property] = DESIGN[key]
+    end
+end
+
+function ApplyThemeChange(key, newValue)
+    DESIGN[key] = newValue
+    if THEME_BINDINGS[key] then
+        for _, data in ipairs(THEME_BINDINGS[key]) do
+            if data.object and data.object.Parent then
+                data.object[data.property] = newValue
+            end
+        end
+    end
+end
+
+function SetThemeKey(key, value)
+    if DESIGN[key] == nil then
+        warn("DESIGN key não existe:", key)
+        return
+    end
+    ApplyThemeChange(key, value)
+end
+
+PRESETS = {
+    -- O TEMA PADRÃO ESTÁ AQUI, CLONADO COMO "Default"
+    ["Default"] = ShallowCopy(DESIGN),
+    
+    Oceanic = {
+    WindowColor1 = Color3.fromRGB(18, 24, 32),
+    WindowColor2 = Color3.fromRGB(13, 18, 25),
+    BlockScreenColor = Color3.fromRGB(0, 0, 0),
+    WindowTransparency = 0.1,
+    TabContainerTransparency = 0.12,
+
+    TitleColor = Color3.fromRGB(220, 235, 245),
+    ComponentTextColor = Color3.fromRGB(210, 225, 235),
+    InputTextColor = Color3.fromRGB(225, 235, 240),
+    NotifyTextColor = Color3.fromRGB(215, 230, 240),
+    EmptyStateTextColor = Color3.fromRGB(150, 170, 175),
+
+    ComponentBackground = Color3.fromRGB(26, 34, 44),
+    InputBackgroundColor = Color3.fromRGB(30, 38, 50),
+
+    AccentColor = Color3.fromRGB(42, 160, 200),      -- teal/sky accent
+    ItemHoverColor = Color3.fromRGB(34, 44, 57),
+    ComponentHoverColor = Color3.fromRGB(40, 52, 68),
+
+    ActiveToggleColor = Color3.fromRGB(42, 160, 200),
+    InactiveToggleColor = Color3.fromRGB(60, 66, 74),
+
+    MinimizeButtonColor = Color3.fromRGB(185, 190, 195),
+    CloseButtonColor = Color3.fromRGB(230, 90, 90),
+    FloatButtonColor = Color3.fromRGB(28, 34, 42),
+
+    DropdownBackground = Color3.fromRGB(24, 32, 42),
+    DropdownItemHover = Color3.fromRGB(36, 46, 60),
+
+    TabActiveColor = Color3.fromRGB(42, 160, 200),
+    TabInactiveColor = Color3.fromRGB(38, 44, 50),
+
+    SliderTrackColor = Color3.fromRGB(52, 60, 70),
+    SliderFillColor = Color3.fromRGB(42, 160, 200),
+    ThumbColor = Color3.fromRGB(235, 245, 250),
+    ThumbOutlineColor = Color3.fromRGB(48, 56, 64),
+
+    HRColor = Color3.fromRGB(64, 76, 90),
+    ResizeHandleColor = Color3.fromRGB(56, 62, 70),
+    NotifyBackground = Color3.fromRGB(26, 34, 44),
+    TagBackground = Color3.fromRGB(42, 160, 200),
+  },
+  
+  Slate = {
+    WindowColor1 = Color3.fromRGB(28, 30, 34),
+    WindowColor2 = Color3.fromRGB(22, 24, 28),
+    BlockScreenColor = Color3.fromRGB(0, 0, 0),
+    WindowTransparency = 0.12,
+    TabContainerTransparency = 0.16,
+
+    TitleColor = Color3.fromRGB(235, 238, 240),
+    ComponentTextColor = Color3.fromRGB(220, 224, 226),
+    InputTextColor = Color3.fromRGB(230, 233, 235),
+    NotifyTextColor = Color3.fromRGB(225, 228, 230),
+    EmptyStateTextColor = Color3.fromRGB(155, 160, 165),
+
+    ComponentBackground = Color3.fromRGB(36, 38, 42),
+    InputBackgroundColor = Color3.fromRGB(42, 44, 48),
+
+    AccentColor = Color3.fromRGB(84, 185, 150),      -- verde suave
+    ItemHoverColor = Color3.fromRGB(46, 48, 52),
+    ComponentHoverColor = Color3.fromRGB(52, 56, 60),
+
+    ActiveToggleColor = Color3.fromRGB(84, 185, 150),
+    InactiveToggleColor = Color3.fromRGB(64, 66, 70),
+
+    MinimizeButtonColor = Color3.fromRGB(190, 190, 195),
+    CloseButtonColor = Color3.fromRGB(255, 95, 95),
+    FloatButtonColor = Color3.fromRGB(34, 36, 40),
+
+    DropdownBackground = Color3.fromRGB(32, 34, 38),
+    DropdownItemHover = Color3.fromRGB(48, 50, 54),
+
+    TabActiveColor = Color3.fromRGB(84, 185, 150),
+    TabInactiveColor = Color3.fromRGB(40, 42, 46),
+
+    SliderTrackColor = Color3.fromRGB(58, 60, 64),
+    SliderFillColor = Color3.fromRGB(84, 185, 150),
+    ThumbColor = Color3.fromRGB(244, 246, 246),
+    ThumbOutlineColor = Color3.fromRGB(50, 52, 56),
+
+    HRColor = Color3.fromRGB(80, 84, 88),
+    ResizeHandleColor = Color3.fromRGB(60, 62, 66),
+    NotifyBackground = Color3.fromRGB(34, 36, 40),
+    TagBackground = Color3.fromRGB(84, 185, 150),
+  },
+  
+    -- NOVO TEMA: MonoDark (Monocromático) ⚫
+    MonoDark = {
+        WindowColor1 = Color3.fromRGB(30, 30, 30),
+        WindowColor2 = Color3.fromRGB(20, 20, 20),
+
+        BlockScreenColor = Color3.fromRGB(0, 0, 0, 0.6),
+        WindowTransparency = 0.1,
+        TabContainerTransparency = 0.15,
+
+        TitleColor = Color3.fromRGB(255, 255, 255),
+        ComponentTextColor = Color3.fromRGB(210, 210, 210),
+        InputTextColor = Color3.fromRGB(230, 230, 230),
+        NotifyTextColor = Color3.fromRGB(220, 220, 220),
+        EmptyStateTextColor = Color3.fromRGB(140, 140, 140),
+
+        ComponentBackground = Color3.fromRGB(40, 40, 40),
+        InputBackgroundColor = Color3.fromRGB(50, 50, 50),
+
+        AccentColor = Color3.fromRGB(255, 255, 255),     -- Acento Branco Puro
+        ItemHoverColor = Color3.fromRGB(60, 60, 60),
+        ComponentHoverColor = Color3.fromRGB(75, 75, 75),
+
+        ActiveToggleColor = Color3.fromRGB(255, 255, 255),
+        InactiveToggleColor = Color3.fromRGB(60, 60, 60),
+
+        MinimizeButtonColor = Color3.fromRGB(180, 180, 180),
+        CloseButtonColor = Color3.fromRGB(255, 80, 80),
+        FloatButtonColor = Color3.fromRGB(35, 35, 35),
+
+        DropdownBackground = Color3.fromRGB(30, 30, 30),
+        DropdownItemHover = Color3.fromRGB(55, 55, 55),
+
+        TabActiveColor = Color3.fromRGB(255, 255, 255),
+        TabInactiveColor = Color3.fromRGB(45, 45, 45),
+
+        SliderTrackColor = Color3.fromRGB(70, 70, 70),
+        SliderFillColor = Color3.fromRGB(255, 255, 255),
+        ThumbColor = Color3.fromRGB(255, 255, 255),
+        ThumbOutlineColor = Color3.fromRGB(50, 50, 50),
+
+        HRColor = Color3.fromRGB(85, 85, 85),
+        ResizeHandleColor = Color3.fromRGB(65, 65, 65),
+        NotifyBackground = Color3.fromRGB(45, 45, 45),
+        TagBackground = Color3.fromRGB(255, 255, 255),
+    },
+    
+    -- NOVO TEMA: Forest (Verde Musgo e Terra) 🌳
+    Forest = {
+        WindowColor1 = Color3.fromRGB(20, 28, 20),
+        WindowColor2 = Color3.fromRGB(15, 22, 15),
+
+        BlockScreenColor = Color3.fromRGB(0, 0, 0, 0.7),
+        WindowTransparency = 0.1,
+        TabContainerTransparency = 0.14,
+
+        TitleColor = Color3.fromRGB(230, 245, 230),
+        ComponentTextColor = Color3.fromRGB(200, 220, 200),
+        InputTextColor = Color3.fromRGB(210, 230, 210),
+        NotifyTextColor = Color3.fromRGB(205, 225, 205),
+        EmptyStateTextColor = Color3.fromRGB(130, 160, 130),
+
+        ComponentBackground = Color3.fromRGB(30, 42, 30),
+        InputBackgroundColor = Color3.fromRGB(40, 55, 40),
+
+        AccentColor = Color3.fromRGB(100, 170, 100),     -- Verde Floresta
+        ItemHoverColor = Color3.fromRGB(40, 55, 40),
+        ComponentHoverColor = Color3.fromRGB(50, 70, 50),
+
+        ActiveToggleColor = Color3.fromRGB(100, 170, 100),
+        InactiveToggleColor = Color3.fromRGB(50, 65, 50),
+
+        MinimizeButtonColor = Color3.fromRGB(170, 190, 170),
+        CloseButtonColor = Color3.fromRGB(255, 90, 90),
+        FloatButtonColor = Color3.fromRGB(25, 35, 25),
+
+        DropdownBackground = Color3.fromRGB(20, 30, 20),
+        DropdownItemHover = Color3.fromRGB(45, 60, 45),
+
+        TabActiveColor = Color3.fromRGB(100, 170, 100),
+        TabInactiveColor = Color3.fromRGB(35, 45, 35),
+
+        SliderTrackColor = Color3.fromRGB(60, 80, 60),
+        SliderFillColor = Color3.fromRGB(100, 170, 100),
+        ThumbColor = Color3.fromRGB(230, 245, 230),
+        ThumbOutlineColor = Color3.fromRGB(50, 65, 50),
+
+        HRColor = Color3.fromRGB(75, 100, 75),
+        ResizeHandleColor = Color3.fromRGB(60, 80, 60),
+        NotifyBackground = Color3.fromRGB(35, 45, 35),
+        TagBackground = Color3.fromRGB(100, 170, 100),
+    },
+    
+}
+
+function SetTheme(presetTable)
+    if type(presetTable) ~= "table" then
+        warn("Preset inválido em SetTheme")
+        return
+    end
+
+    for key, val in pairs(presetTable) do
+        -- Apenas aplica a mudança se o novo valor for diferente do valor atual no DESIGN.
+        if DESIGN[key] ~= nil and DESIGN[key] ~= val then 
+            ApplyThemeChange(key, val)
+        end
+    end
+end
+
+function GetAvailableThemesJson()
+    local themeNames = {}
+    for name, _ in pairs(PRESETS) do
+        table.insert(themeNames, name)
+    end
+    
+    table.sort(themeNames)
+
+    local jsonString = "[\"" .. table.concat(themeNames, "\",\"") .. "\"]"
+    return jsonString
+end
+SetTheme(PRESETS.MonoDark)
 ---
 -- Funções de Criação de Componentes
 ---
@@ -205,13 +458,14 @@ function Tab.new(name: string, parent: Instance)
 
     self.Name = name
 
-    -- Container principal
+    -- Container principal (ScrollingFrame)
     local c = Instance.new("ScrollingFrame")
     self.Container = c
     c.Size = UDim2.new(1, 0, 1, 0)
     c.BackgroundTransparency = 1
     c.BorderSizePixel = 0
     c.ScrollBarThickness = 6
+    -- Cor da barra de rolagem será registrada na API pública
     c.ScrollBarImageColor3 = DESIGN.ComponentHoverColor
     c.AutomaticCanvasSize = Enum.AutomaticSize.Y
     c.CanvasSize = UDim2.new(0, 0, 0, 0)
@@ -245,9 +499,11 @@ function Tab.new(name: string, parent: Instance)
 
     -- Box centralizado
     local emptyBox = Instance.new("Frame")
+    self.EmptyBox = emptyBox
     emptyBox.Size = UDim2.new(0.6, 0, 0.2, 0)
     emptyBox.AnchorPoint = Vector2.new(0.5, 0.5)
     emptyBox.Position = UDim2.new(0.5, 0, 0.5, 0)
+    -- Cor será registrada na API pública
     emptyBox.BackgroundColor3 = DESIGN.EmptyStateBoxColor or Color3.fromRGB(30, 30, 30)
     emptyBox.BackgroundTransparency = 0.2
     emptyBox.BorderSizePixel = 0
@@ -261,16 +517,19 @@ function Tab.new(name: string, parent: Instance)
 
     local stroke = Instance.new("UIStroke")
     stroke.Thickness = 1
+    -- Cor será registrada na API pública
     stroke.Color = DESIGN.EmptyStateBorderColor or Color3.fromRGB(80, 80, 80)
     stroke.Transparency = 0.3
     stroke.Parent = emptyBox
 
     local emptyText = Instance.new("TextLabel")
+    self.EmptyText = emptyText
     emptyText.Size = UDim2.new(1, -10, 1, -10)
     emptyText.AnchorPoint = Vector2.new(0.5, 0.5)
     emptyText.Position = UDim2.new(0.5, 0, 0.5, 0)
     emptyText.BackgroundTransparency = 1
     emptyText.Text = "Parece que ainda não há nada aqui."
+    RegisterThemeItem("EmptyStateTextColor", emptyText, "TextColor3")
     emptyText.TextColor3 = DESIGN.EmptyStateTextColor or Color3.fromRGB(180, 180, 180)
     emptyText.Font = Enum.Font.Roboto
     emptyText.TextScaled = true
@@ -278,8 +537,25 @@ function Tab.new(name: string, parent: Instance)
     emptyText.ZIndex = 7
     emptyText.Parent = emptyBox
 
-    self.EmptyBox = emptyBox
     self._overlay = overlay
+
+    -- Função de reaplicação de cores para temas
+    function self:_reapplyScrollAndEmptyColors()
+        -- 1. Barra de Rolagem
+        c.ScrollBarImageColor3 = DESIGN.ComponentHoverColor
+
+        -- 2. Empty State Box
+        emptyBox.BackgroundColor3 = DESIGN.EmptyStateBoxColor or Color3.fromRGB(30, 30, 30)
+        
+        -- 3. Empty State Stroke
+        stroke.Color = DESIGN.EmptyStateBorderColor or Color3.fromRGB(80, 80, 80)
+    end
+    
+    -- Registra a função para as chaves de tema relevantes
+    RegisterThemeItem("ComponentHoverColor", self, "_reapplyScrollAndEmptyColors")
+    RegisterThemeItem("EmptyStateBoxColor", self, "_reapplyScrollAndEmptyColors")
+    RegisterThemeItem("EmptyStateBorderColor", self, "_reapplyScrollAndEmptyColors")
+
 
     -- Controle automático de visibilidade
     listLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
@@ -293,6 +569,7 @@ function Tab.new(name: string, parent: Instance)
 
     return self
 end
+
 
 ---
 -- Construtor da GUI
@@ -320,6 +597,25 @@ function Tekscripts:Destroy()
     end
 end
 
+-- Assumindo que DESIGN, localPlayer, UserInputService, Players, workspace,
+-- addRoundedCorners, e addHoverEffect são definidos e acessíveis globalmente.
+
+-- Placeholder das funções utilitárias (para fins de clareza do tema, assumindo que elas existem)
+local function addRoundedCorners(instance, radius)
+    local corner = instance:FindFirstChildOfClass("UICorner") or Instance.new("UICorner", instance)
+    corner.CornerRadius = UDim.new(0, radius or 8)
+end
+
+local function addHoverEffect(button, defaultColor, hoverColor)
+    -- Em um ambiente de produção, esta função usaria TweenService e Manter cores atualizadas.
+    -- O importante aqui é que ela será chamada novamente ao trocar o tema.
+end
+
+local Players = game:GetService("Players")
+local localPlayer = Players.LocalPlayer
+local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService") -- Adicionado, pois a classe usa tweens
+
 function Tekscripts.new(options: { Name: string?, Parent: Instance?, FloatText: string?, startTab: string?, iconId: string? })
     options = options or {}
     
@@ -327,7 +623,7 @@ function Tekscripts.new(options: { Name: string?, Parent: Instance?, FloatText: 
     
     local self = setmetatable({
         ScreenGui = nil,
-        MinimizedState = nil, -- nil, "float", "left", "right", "top", "bottom"
+        MinimizedState = nil,
         Tabs = {},
         CurrentTab = nil,
         IsDragging = false,
@@ -344,10 +640,8 @@ function Tekscripts.new(options: { Name: string?, Parent: Instance?, FloatText: 
         Blocked = false,
         startTab = options.startTab,
         
-        -- VARIÁVEIS RENOMEADAS
         CloseButtonContainer = nil, 
         CloseButton = nil,
-        -- FIM DAS VARIÁVEIS RENOMEADAS
         
         NoTabsLabel = nil,
         Title = nil,
@@ -356,7 +650,7 @@ function Tekscripts.new(options: { Name: string?, Parent: Instance?, FloatText: 
         BlurEffect = nil,
         LastWindowPosition = nil,
         LastWindowSize = nil,
-        _activeTween = nil, -- Para gerenciamento de tweens
+        _activeTween = nil,
         _dragStart = nil,
         _resizeStart = nil,
         _lastMousePos = nil,
@@ -364,7 +658,7 @@ function Tekscripts.new(options: { Name: string?, Parent: Instance?, FloatText: 
         _viewSize = nil
     }, Tekscripts)
 
-    -- Variáveis de Ambiente (calculadas uma vez, mas com listener para resize)
+    -- Variáveis de Ambiente (assumindo que self:_UpdateScreenSize() e self:UpdateContainersSize() existem)
     self:_UpdateScreenSize()
     self.Connections.ViewportChanged = workspace.CurrentCamera:GetPropertyChangedSignal("ViewportSize"):Connect(function()
         self:_UpdateScreenSize()
@@ -380,9 +674,10 @@ function Tekscripts.new(options: { Name: string?, Parent: Instance?, FloatText: 
     -- // JANELA PRINCIPAL (WINDOW)
     
     self.Window = Instance.new("Frame")
-    self.Window.Size = self:_GetWindowSize()
-    self.Window.Position = self:_GetWindowPosition()
+    self.Window.Size = self:_GetWindowSize() -- Assume a existência de _GetWindowSize
+    self.Window.Position = self:_GetWindowPosition() -- Assume a existência de _GetWindowPosition
     self.Window.AnchorPoint = self._isSmallScreen and Vector2.new(0.5, 0.5) or Vector2.new(0, 0)
+    -- Cores iniciais
     self.Window.BackgroundColor3 = DESIGN.WindowColor1
     self.Window.BackgroundTransparency = DESIGN.WindowTransparency or 0.1 
     self.Window.BorderSizePixel = 0
@@ -392,6 +687,7 @@ function Tekscripts.new(options: { Name: string?, Parent: Instance?, FloatText: 
     addRoundedCorners(self.Window, DESIGN.CornerRadius)
 
     local windowGradient = Instance.new("UIGradient")
+    -- Cores iniciais
     windowGradient.Color = ColorSequence.new({
         ColorSequenceKeypoint.new(0, DESIGN.WindowColor1),
         ColorSequenceKeypoint.new(1, DESIGN.WindowColor2)
@@ -450,17 +746,19 @@ function Tekscripts.new(options: { Name: string?, Parent: Instance?, FloatText: 
     titleFrame.Parent = mainHeader
 
     local title = Instance.new("TextLabel")
+    self.Title = title
     title.Name = "Title"
     title.Text = options.Name or "Tekscripts"
     title.Size = UDim2.new(1, 0, 1, 0)
     title.Position = UDim2.new(0, 0, 0, 0)
     title.BackgroundTransparency = 1
+    -- Registra a cor do título
+    RegisterThemeItem("TitleColor", title, "TextColor3")
     title.TextColor3 = DESIGN.TitleColor
     title.Font = Enum.Font.RobotoMono
     title.TextScaled = true
     title.TextXAlignment = Enum.TextXAlignment.Left
     title.Parent = titleFrame
-    self.Title = title
 
     self:SetupTitleScroll()
 
@@ -480,7 +778,11 @@ function Tekscripts.new(options: { Name: string?, Parent: Instance?, FloatText: 
     controlBtn.Name = "ControlBtn"
     controlBtn.Text = "•••"
     controlBtn.Size = UDim2.new(0, DESIGN.TitleHeight, 0, DESIGN.TitleHeight)
+    -- Registra a cor de fundo do componente
+    RegisterThemeItem("ComponentBackground", controlBtn, "BackgroundColor3")
     controlBtn.BackgroundColor3 = DESIGN.ComponentBackground
+    -- Registra a cor do texto do componente
+    RegisterThemeItem("ComponentTextColor", controlBtn, "TextColor3")
     controlBtn.TextColor3 = DESIGN.ComponentTextColor
     controlBtn.Font = Enum.Font.Roboto
     controlBtn.TextScaled = true
@@ -488,12 +790,17 @@ function Tekscripts.new(options: { Name: string?, Parent: Instance?, FloatText: 
     controlBtn.Parent = buttonFrame
 
     addRoundedCorners(controlBtn, DESIGN.CornerRadius)
+    -- addHoverEffect será refeito na função de tema
     addHoverEffect(controlBtn, DESIGN.ComponentBackground, DESIGN.ComponentHoverColor)
 
     local minimizeBtn = Instance.new("TextButton")
     minimizeBtn.Text = "−"
     minimizeBtn.Size = UDim2.new(0, DESIGN.TitleHeight, 0, DESIGN.TitleHeight)
+    -- Registra a cor do botão de minimizar
+    RegisterThemeItem("MinimizeButtonColor", minimizeBtn, "BackgroundColor3")
     minimizeBtn.BackgroundColor3 = DESIGN.MinimizeButtonColor
+    -- Registra a cor do texto do componente
+    RegisterThemeItem("ComponentTextColor", minimizeBtn, "TextColor3")
     minimizeBtn.TextColor3 = DESIGN.ComponentTextColor
     minimizeBtn.Font = Enum.Font.Roboto
     minimizeBtn.TextScaled = true
@@ -501,41 +808,36 @@ function Tekscripts.new(options: { Name: string?, Parent: Instance?, FloatText: 
     minimizeBtn.Parent = buttonFrame
 
     addRoundedCorners(minimizeBtn, DESIGN.CornerRadius)
+    -- addHoverEffect será refeito na função de tema
     addHoverEffect(minimizeBtn, DESIGN.MinimizeButtonColor, DESIGN.ComponentHoverColor)
     
-    -- ADIÇÃO: O botão de fechar é escondido quando o painel é minimizado
     self.Connections.MinimizeClick = minimizeBtn.MouseButton1Click:Connect(function()
         self:Minimize()
-        self:HideCloseButton() -- Garante que desapareça
+        self:HideCloseButton()
     end)
     
-    -- Sistema de arrastar (otimizado, sem tweens por frame)
-    self:SetupDragSystem()
+    self:SetupDragSystem() -- Assume a existência de SetupDragSystem
     
     
-    -- // BOTÃO DE FECHAR (SIMPLIFICADO - CORREÇÃO DE POSICIONAMENTO)
+    -- // BOTÃO DE FECHAR 
     
-    -- Container do botão de fechar 
     self.CloseButtonContainer = Instance.new("Frame")
     local buttonWidth = DESIGN.DropdownWidth or 100 
     local buttonHeight = DESIGN.DropdownItemHeight or 25
     self.CloseButtonContainer.Size = UDim2.new(0, buttonWidth + 10, 0, buttonHeight + 10)
-    
-    -- Posição será ajustada para ser relativa ao controlBtn DENTRO do TitleBar
+    -- Cores iniciais
     self.CloseButtonContainer.BackgroundColor3 = DESIGN.DropdownBackground
     self.CloseButtonContainer.BackgroundTransparency = DESIGN.DropdownTransparency or 0
     self.CloseButtonContainer.BorderSizePixel = 0
     self.CloseButtonContainer.Visible = false
     self.CloseButtonContainer.ZIndex = 10 
-    
-    -- CORREÇÃO CHAVE: Mudar o Parent para o Window (Painel Principal)
-    -- Isso faz com que a posição seja calculada em relação ao painel e se mova junto.
     self.CloseButtonContainer.Parent = self.Window 
 
     addRoundedCorners(self.CloseButtonContainer)
 
     -- Botão "Fechar"
     local closeOption = Instance.new("TextButton")
+    self.CloseButton = closeOption
     closeOption.Name = "CloseButton"
     closeOption.Text = "Fechar"
     closeOption.Size = UDim2.new(1, -10, 1, -10) 
@@ -544,6 +846,8 @@ function Tekscripts.new(options: { Name: string?, Parent: Instance?, FloatText: 
     closeOption.BackgroundColor3 = DESIGN.DropdownBackground 
     closeOption.BackgroundTransparency = 1 
     
+    -- Registra a cor do texto do botão de fechar
+    RegisterThemeItem("CloseButtonColor", closeOption, "TextColor3")
     closeOption.TextColor3 = DESIGN.CloseButtonColor
     closeOption.Font = Enum.Font.Roboto
     closeOption.TextScaled = true 
@@ -555,15 +859,13 @@ function Tekscripts.new(options: { Name: string?, Parent: Instance?, FloatText: 
 
     closeOption.BorderSizePixel = 0
     closeOption.Parent = self.CloseButtonContainer
-    self.CloseButton = closeOption
     
     addRoundedCorners(closeOption, 5)
+    -- addHoverEffect será refeito na função de tema
     addHoverEffect(closeOption, closeOption.BackgroundColor3, DESIGN.DropdownItemHover)
 
-    -- CORREÇÃO: Chama self:Destroy() e esconde o botão individualmente.
     self.Connections.CloseClick = closeOption.MouseButton1Click:Connect(function()
         self:Destroy()
-        -- Não precisa esconder o container aqui, pois Destroy já fará isso (se implementado)
     end)
 
 
@@ -573,28 +875,20 @@ function Tekscripts.new(options: { Name: string?, Parent: Instance?, FloatText: 
         self.CloseButtonContainer.Visible = isOpening
         
         if isOpening then
-            -- Para que o CloseButtonContainer seja relativo ao Window, 
-            -- precisamos calcular a posição do controlBtn DENTRO do Window.
-            
             local controlBtnAbsPos = controlBtn.AbsolutePosition
             local windowAbsPos = self.Window.AbsolutePosition
             local closeBtnSize = self.CloseButtonContainer.AbsoluteSize
             
-            -- Posição Relativa X: Posição Absoluta do ControlBtn - Posição Absoluta do Window.
             local relativeX = controlBtnAbsPos.X - windowAbsPos.X
-            
-            -- Ajuste Final X: Alinha o lado direito do botão de fechar com o ControlBtn.
             local newXOffset = relativeX + controlBtn.AbsoluteSize.X - closeBtnSize.X
             
-            -- Posição Relativa Y: Fica logo abaixo do TitleBar (altura TitleHeight + 2px de padding)
             local newYOffset = DESIGN.TitleHeight + 2
 
-            -- Aplica a nova posição (agora como Offset, pois o parent é o Window)
             self.CloseButtonContainer.Position = UDim2.new(0, newXOffset, 0, newYOffset)
         end
     end)
 
-    -- Conexão para fechar se clicar fora do botão (Mantém a lógica de InputBegan, mas usa self.Window)
+    -- Conexão para fechar se clicar fora
     self.Connections.InputBegan = UserInputService.InputBegan:Connect(function(input, gameProcessed)
         if gameProcessed then return end
         if self.CloseButtonContainer.Visible and input.UserInputType == Enum.UserInputType.MouseButton1 then
@@ -619,7 +913,11 @@ function Tekscripts.new(options: { Name: string?, Parent: Instance?, FloatText: 
     self.TabContainer = Instance.new("Frame")
     self.TabContainer.Size = self:_GetTabContainerSize()
     self.TabContainer.Position = UDim2.new(0, 0, 0, DESIGN.TitleHeight)
+    -- Cores iniciais
+    RegisterThemeItem("WindowColor2", self.TabContainer, "BackgroundColor3")
     self.TabContainer.BackgroundColor3 = DESIGN.WindowColor2
+    -- Transparência
+    RegisterThemeItem("TabContainerTransparency", self.TabContainer, "BackgroundTransparency")
     self.TabContainer.BackgroundTransparency = DESIGN.TabContainerTransparency or 0.1 
     self.TabContainer.BorderSizePixel = 0
     self.TabContainer.Parent = self.Window
@@ -641,6 +939,8 @@ function Tekscripts.new(options: { Name: string?, Parent: Instance?, FloatText: 
     self.NoTabsLabel.Size = UDim2.new(1, 0, 1, 0)
     self.NoTabsLabel.BackgroundTransparency = 1
     self.NoTabsLabel.Text = "não tem tabs :("
+    -- Registra a cor do texto de estado vazio
+    RegisterThemeItem("EmptyStateTextColor", self.NoTabsLabel, "TextColor3")
     self.NoTabsLabel.TextColor3 = DESIGN.EmptyStateTextColor
     self.NoTabsLabel.Font = Enum.Font.Roboto
     self.NoTabsLabel.TextScaled = true
@@ -661,13 +961,15 @@ function Tekscripts.new(options: { Name: string?, Parent: Instance?, FloatText: 
     
     -- // OUTROS COMPONENTES
     
-    self:SetupResizeSystem()
-    self:SetupFloatButton(options.FloatText or "Expandir")
+    self:SetupResizeSystem() -- Assume a existência de SetupResizeSystem
+    self:SetupFloatButton(options.FloatText or "Expandir") -- Assume a existência de SetupFloatButton
 
     -- Tela de bloqueio
     self.BlockScreen = Instance.new("Frame")
     self.BlockScreen.Size = UDim2.new(1, 0, 1, 0)
     self.BlockScreen.BackgroundTransparency = 0.5
+    -- Registra a cor da tela de bloqueio
+    RegisterThemeItem("BlockScreenColor", self.BlockScreen, "BackgroundColor3")
     self.BlockScreen.BackgroundColor3 = DESIGN.BlockScreenColor
     self.BlockScreen.ZIndex = 10
     self.BlockScreen.Visible = false
@@ -677,8 +979,77 @@ function Tekscripts.new(options: { Name: string?, Parent: Instance?, FloatText: 
     blur.Size = 0
     blur.Parent = self.BlockScreen
     self.BlurEffect = blur
-
     
+    -- // FUNÇÃO DE REAPLICAÇÃO DE TEMA
+
+    function self:_reapplyThemeColors()
+        -- 1. Janela e Gradiente
+        self.Window.BackgroundColor3 = DESIGN.WindowColor1
+        self.Window.BackgroundTransparency = DESIGN.WindowTransparency or DESIGN.TabContainerTransparency or 0.1
+        
+        windowGradient.Color = ColorSequence.new({
+            ColorSequenceKeypoint.new(0, DESIGN.WindowColor1),
+            ColorSequenceKeypoint.new(1, DESIGN.WindowColor2)
+        })
+
+        -- 2. Título
+        self.Title.TextColor3 = DESIGN.TitleColor
+
+        -- 3. Tab Container
+        self.TabContainer.BackgroundColor3 = DESIGN.WindowColor2
+        self.TabContainer.BackgroundTransparency = DESIGN.TabContainerTransparency or 0.1 
+
+        -- 4. Botões de Controle
+        -- Control Button
+        controlBtn.BackgroundColor3 = DESIGN.ComponentBackground
+        controlBtn.TextColor3 = DESIGN.ComponentTextColor
+        addHoverEffect(controlBtn, DESIGN.ComponentBackground, DESIGN.ComponentHoverColor)
+
+        -- Minimize Button
+        minimizeBtn.BackgroundColor3 = DESIGN.MinimizeButtonColor
+        minimizeBtn.TextColor3 = DESIGN.ComponentTextColor
+        addHoverEffect(minimizeBtn, DESIGN.MinimizeButtonColor, DESIGN.ComponentHoverColor)
+
+        -- Close Button Dropdown
+        self.CloseButtonContainer.BackgroundColor3 = DESIGN.DropdownBackground
+        self.CloseButtonContainer.BackgroundTransparency = DESIGN.DropdownTransparency or 0
+        self.CloseButton.TextColor3 = DESIGN.CloseButtonColor
+        addHoverEffect(self.CloseButton, DESIGN.DropdownBackground, DESIGN.DropdownItemHover)
+
+        -- 5. Outros
+        self.NoTabsLabel.TextColor3 = DESIGN.EmptyStateTextColor
+        self.BlockScreen.BackgroundColor3 = DESIGN.BlockScreenColor
+        
+        -- Garante que o ResizeSystem seja atualizado se também for temático
+        if self.ResizeHandle and self.ResizeHandle._reapplyThemeColors then
+            self.ResizeHandle:_reapplyThemeColors()
+        end
+
+        -- Garante que o FloatButton seja atualizado se também for temático
+        if self.FloatButton and self.FloatButton._reapplyThemeColors then
+            self.FloatButton:_reapplyThemeColors()
+        end
+    end
+    
+    -- // REGISTRO DA FUNÇÃO NO SISTEMA DE TEMA
+    
+    RegisterThemeItem("WindowColor1", self, "_reapplyThemeColors")
+    RegisterThemeItem("WindowColor2", self, "_reapplyThemeColors")
+    RegisterThemeItem("WindowTransparency", self, "_reapplyThemeColors")
+    RegisterThemeItem("TabContainerTransparency", self, "_reapplyThemeColors")
+    RegisterThemeItem("TitleColor", self, "_reapplyThemeColors")
+    RegisterThemeItem("ComponentBackground", self, "_reapplyThemeColors")
+    RegisterThemeItem("ComponentTextColor", self, "_reapplyThemeColors")
+    RegisterThemeItem("ComponentHoverColor", self, "_reapplyThemeColors")
+    RegisterThemeItem("MinimizeButtonColor", self, "_reapplyThemeColors")
+    RegisterThemeItem("DropdownBackground", self, "_reapplyThemeColors")
+    RegisterThemeItem("DropdownTransparency", self, "_reapplyThemeColors")
+    RegisterThemeItem("CloseButtonColor", self, "_reapplyThemeColors")
+    RegisterThemeItem("DropdownItemHover", self, "_reapplyThemeColors")
+    RegisterThemeItem("EmptyStateTextColor", self, "_reapplyThemeColors")
+    RegisterThemeItem("BlockScreenColor", self, "_reapplyThemeColors")
+
+
     -- // CONEXÕES DE LIMPEZA
     
     self.Connections.PlayerRemoving = Players.PlayerRemoving:Connect(function(player)
@@ -689,7 +1060,6 @@ function Tekscripts.new(options: { Name: string?, Parent: Instance?, FloatText: 
     
     return self
 end
-
 
 function Tekscripts:_UpdateScreenSize()
     self._viewSize = workspace.CurrentCamera.ViewportSize
@@ -848,7 +1218,6 @@ function Tekscripts:SetupDragSystem()
             self.IsDragging = false
 
             if not self.MinimizedState then
-                print("ok")
             end
         end
     end)
@@ -1097,8 +1466,8 @@ function Tekscripts:CreateTab(options: { Title: string })
     button.Name = title
     button.Text = title
     button.Size = UDim2.new(1, 0, 0, DESIGN.TabButtonHeight)
-    button.BackgroundColor3 = DESIGN.TabInactiveColor
     button.TextColor3 = DESIGN.ComponentTextColor
+    button.BackgroundColor3 = DESIGN.TabInactiveColor -- Cor inicial INATIVA
     button.Font = Enum.Font.Roboto
     button.TextScaled = true
     button.BorderSizePixel = 0
@@ -1106,6 +1475,8 @@ function Tekscripts:CreateTab(options: { Title: string })
     button.ZIndex = 3
     button.Parent = self.TabContainer
     tab.Button = button
+    
+    RegisterThemeItem("ComponentTextColor", button, "TextColor3") -- Mantém o registro para cor do texto
 
     addRoundedCorners(button, DESIGN.CornerRadius)
     addHoverEffect(button, DESIGN.TabInactiveColor, DESIGN.ComponentHoverColor, function()
@@ -1124,7 +1495,6 @@ function Tekscripts:CreateTab(options: { Title: string })
         self:SetActiveTab(tab)
     end
 
-    -- CORREÇÃO
     self.NoTabsLabel.Visible = next(self.Tabs) == nil
 
     function tab:Destroy()
@@ -1179,74 +1549,92 @@ end
 function Tekscripts:SetActiveTab(tab)
     if self.CurrentTab then
         self.CurrentTab.Container.Visible = false
-        self.CurrentTab.Button.BackgroundColor3 = DESIGN.TabInactiveColor
+        self.CurrentTab.Button.BackgroundColor3 = DESIGN.TabInactiveColor -- Define como INATIVA
+        -- REMOVIDO: RegisterThemeItem("TabInactiveColor", self.CurrentTab.Button, "BackgroundColor3")
     end
 
     self.CurrentTab = tab
     if tab then
         tab.Container.Visible = true
-        tab.Button.BackgroundColor3 = DESIGN.TabActiveColor
+        tab.Button.BackgroundColor3 = DESIGN.TabActiveColor -- Define como ATIVA
+        -- REMOVIDO: RegisterThemeItem("TabActiveColor", tab.Button, "BackgroundColor3")
     end
 end
 
 ---
 -- Funções de Estado (Minimizar/Expandir) otimizadas
 ---
+
 function Tekscripts:Minimize()
-    if self.Blocked or self.MinimizedState then return end
+if self.Blocked or self.MinimizedState then return end
 
-    self.MinimizedState = "float"
-    self.LastWindowPosition = self.Window.Position
-    self.LastWindowSize = self.Window.Size
+self.MinimizedState = "float"
+self.LastWindowPosition = self.Window.Position
+self.LastWindowSize = self.Window.Size
 
-    if self._activeTween then self._activeTween:Cancel() end
+if self._activeTween then self._activeTween:Cancel() end
 
-    local minimizeTween = TweenService:Create(self.Window, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-        Size = UDim2.new(0, 0, 0, 0),
-        Position = UDim2.new(0.5, 0, 0.5, 0)
+local minimizeTween = TweenService:Create(self.Window, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+    Size = UDim2.new(0, 0, 0, 0),
+    Position = UDim2.new(0.5, 0, 0.5, 0)
+})
+
+self._activeTween = minimizeTween
+
+minimizeTween.Completed:Once(function()
+    self.Window.Visible = false
+    self.FloatButton.Visible = true
+    self._activeTween = TweenService:Create(self.FloatButton, TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+        Size = DESIGN.FloatButtonSize
     })
-    self._activeTween = minimizeTween
-
-    minimizeTween.Completed:Connect(function()
-        self.Window.Visible = false
-        self.FloatButton.Visible = true
-        local floatTween = TweenService:Create(self.FloatButton, TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
-            Size = DESIGN.FloatButtonSize
-        })
-        floatTween:Play()
+    self._activeTween:Play()
+    self._activeTween.Completed:Once(function()
         self._activeTween = nil
     end)
+end)
 
-    minimizeTween:Play()
+minimizeTween:Play()
 end
 
 function Tekscripts:ExpandFromFloat()
-    if self.MinimizedState ~= "float" or self.Blocked then return end
+if self.MinimizedState ~= "float" or self.Blocked then return end
 
-    local floatTween = TweenService:Create(self.FloatButton, TweenInfo.new(0.15, Enum.EasingStyle.Quad), {
-        Size = UDim2.new(0, 0, 0, 0)
+if self._activeTween then self._activeTween:Cancel() end
+
+local floatTween = TweenService:Create(self.FloatButton, TweenInfo.new(0.15, Enum.EasingStyle.Quad), {
+    Size = UDim2.new(0, 0, 0, 0)
+})
+
+self._activeTween = floatTween
+
+floatTween.Completed:Once(function()
+    self.FloatButton.Visible = false
+    self.Window.Visible = true
+    self._activeTween = nil
+
+    local screenSize = workspace.CurrentCamera.ViewportSize
+    local windowW = math.min(DESIGN.WindowSize.X.Offset, screenSize.X * 0.8)
+    local windowH = math.min(DESIGN.WindowSize.Y.Offset, screenSize.Y * 0.8)
+    
+    local newPos = UDim2.new(0.5, -windowW/2, 0.5, -windowH/2)
+    
+    local expandTween = TweenService:Create(self.Window, TweenInfo.new(0.3, Enum.EasingStyle.Back), {
+        Size = UDim2.new(0, windowW, 0, windowH),
+        Position = newPos
     })
-    floatTween:Play()
-
-    floatTween.Completed:Connect(function()
-        self.FloatButton.Visible = false
-        self.Window.Visible = true
-
-        local screenSize = workspace.CurrentCamera.ViewportSize
-        local windowW = math.min(DESIGN.WindowSize.X.Offset, screenSize.X * 0.8)
-        local windowH = math.min(DESIGN.WindowSize.Y.Offset, screenSize.Y * 0.8)
-        
-        local newPos = UDim2.new(0.5, -windowW/2, 0.5, -windowH/2)
-        
-        local expandTween = TweenService:Create(self.Window, TweenInfo.new(0.3, Enum.EasingStyle.Back), {
-            Size = UDim2.new(0, windowW, 0, windowH),
-            Position = newPos
-        })
-        expandTween:Play()
-        
+    
+    self._activeTween = expandTween
+    expandTween:Play()
+    
+    expandTween.Completed:Once(function()
         self.MinimizedState = nil
+        self._activeTween = nil
     end)
+end)
+
+floatTween:Play()
 end
+
 
 function Tekscripts:Block(state: boolean)
     self.Blocked = state
@@ -1430,6 +1818,7 @@ function Tekscripts:Request(options)
 end
 
 -- 🟩 FIM DA API REQUEST
+
 function Tekscripts:CreateFloatingButton(options: {
     BorderRadius: number?,
     Text: string?,
@@ -1441,8 +1830,8 @@ function Tekscripts:CreateFloatingButton(options: {
     Callback: ((boolean) -> ())?
 })
     options = options or {}
-    local width = 100 -- Largura fixa
-    local height = 100 -- Altura fixa
+    local width = 100 
+    local height = 100 
     local borderRadius = tonumber(options.BorderRadius) or 8
     local text = tostring(options.Text or "Clique Aqui")
     local title = tostring(options.Title or "Cabeçote")
@@ -1452,6 +1841,9 @@ function Tekscripts:CreateFloatingButton(options: {
     local block = options.Block == nil and false or options.Block
     local callback = options.Callback
 
+    -- Serviços
+    local UIS = game:GetService("UserInputService")
+    
     -- ScreenGui independente
     local screenGui = Instance.new("ScreenGui")
     screenGui.Name = "FloatingButtonGui"
@@ -1462,8 +1854,8 @@ function Tekscripts:CreateFloatingButton(options: {
     local container = Instance.new("Frame")
     container.Size = UDim2.new(0, width, 0, height + 25)
     container.Position = UDim2.new(0.5, -width/2, 0.5, -(height + 25)/2)
-    container.BackgroundColor3 = DESIGN.ComponentBackground -- Usando cor do DESIGN
-    -- AQUI 1: Aplica a transparência da janela/componente
+    -- A cor de fundo e transparência serão registradas na API pública
+    container.BackgroundColor3 = DESIGN.ComponentBackground
     container.BackgroundTransparency = DESIGN.WindowTransparency or DESIGN.TabContainerTransparency 
     container.Visible = visible
     container.Parent = screenGui
@@ -1477,10 +1869,10 @@ function Tekscripts:CreateFloatingButton(options: {
     header.Size = UDim2.new(1, 0, 0, 25)
     header.BackgroundTransparency = 1
     header.Text = title
+    RegisterThemeItem("TitleColor", header, "TextColor3")
     header.TextColor3 = DESIGN.TitleColor or Color3.fromRGB(255, 255, 255)
     header.TextSize = 16
     header.Font = Enum.Font.GothamBold
-    -- AQUI 2: Garante que o texto do cabeçalho caiba no Box
     header.TextScaled = true
     header.TextWrapped = true 
     header.Parent = container
@@ -1489,6 +1881,7 @@ function Tekscripts:CreateFloatingButton(options: {
     local divider = Instance.new("Frame")
     divider.Size = UDim2.new(1, 0, 0, 1)
     divider.Position = UDim2.new(0, 0, 0, 25)
+    RegisterThemeItem("DividerColor", divider, "BackgroundColor3")
     divider.BackgroundColor3 = DESIGN.DividerColor or Color3.fromRGB(60, 60, 60)
     divider.BorderSizePixel = 0
     divider.Parent = container
@@ -1497,8 +1890,10 @@ function Tekscripts:CreateFloatingButton(options: {
     local button = Instance.new("TextButton")
     button.Size = UDim2.new(1, 0, 1, -25)
     button.Position = UDim2.new(0, 0, 0, 25)
+    RegisterThemeItem("InputBackgroundColor", button, "BackgroundColor3")
     button.BackgroundColor3 = DESIGN.InputBackgroundColor or Color3.fromRGB(40, 40, 40)
     button.Text = text
+    RegisterThemeItem("InputTextColor", button, "TextColor3")
     button.TextColor3 = DESIGN.InputTextColor or Color3.fromRGB(255, 255, 255)
     button.Font = Enum.Font.GothamBold
     button.AutoButtonColor = not block
@@ -1513,7 +1908,6 @@ function Tekscripts:CreateFloatingButton(options: {
     -- Estado interno drag
     local dragging = false
     local dragInput, dragStart, startPos
-    local UIS = game:GetService("UserInputService")
 
     -- Atualizar visuais
     local function updateVisuals()
@@ -1535,7 +1929,7 @@ function Tekscripts:CreateFloatingButton(options: {
         end
     end)
 
-    -- Drag pelo cabeçote (com delta e lock no input inicial)
+    -- Lógica de Drag (mantida, não afetada por tema)
     if drag then
         header.InputBegan:Connect(function(input)
             if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
@@ -1584,6 +1978,13 @@ function Tekscripts:CreateFloatingButton(options: {
                 Block = block
             }
         end,
+        
+        -- Função auxiliar para reaplicar cores e transparências
+        _reapplyThemeColors = function()
+            container.BackgroundColor3 = DESIGN.ComponentBackground
+            container.BackgroundTransparency = DESIGN.WindowTransparency or DESIGN.TabContainerTransparency
+        end,
+
         Update = function(newOptions)
             if newOptions then
                 borderRadius = tonumber(newOptions.BorderRadius) or borderRadius
@@ -1605,6 +2006,11 @@ function Tekscripts:CreateFloatingButton(options: {
         end
     }
 
+    -- Registra a função auxiliar nas chaves de cor e transparência relevantes
+    RegisterThemeItem("ComponentBackground", publicApi, "_reapplyThemeColors")
+    RegisterThemeItem("WindowTransparency", publicApi, "_reapplyThemeColors")
+    RegisterThemeItem("TabContainerTransparency", publicApi, "_reapplyThemeColors")
+
     updateVisuals()
     return publicApi
 end
@@ -1619,10 +2025,9 @@ function Tekscripts:CreateSection(tab: any, options: { Title: string?, Open: boo
 
     local TweenService = game:GetService("TweenService")
 
-    -- (Todas as INSTÂNCIAS DE GUI permanecem as mesmas, incluindo a lógica de hover e a transparência aplicada anteriormente)
-    
     -- Container principal da section
     local sectionContainer = Instance.new("Frame")
+    RegisterThemeItem("ComponentBackground", sectionContainer, "BackgroundColor3")
     sectionContainer.BackgroundColor3 = DESIGN.ComponentBackground or Color3.fromRGB(30, 30, 30)
     sectionContainer.BackgroundTransparency = DESIGN.TabContainerTransparency
     sectionContainer.BorderSizePixel = 0
@@ -1635,6 +2040,7 @@ function Tekscripts:CreateSection(tab: any, options: { Title: string?, Open: boo
 
     -- Frame do título com fundo interativo
     local titleFrame = Instance.new("Frame")
+    -- A BackgroundColor3 será configurada via _reapplyBackgrounds
     titleFrame.BackgroundColor3 = DESIGN.ComponentBackground or Color3.fromRGB(40, 40, 40)
     titleFrame.BackgroundTransparency = 0.2 
     titleFrame.Size = UDim2.new(1, 0, 0, titleHeight)
@@ -1652,6 +2058,7 @@ function Tekscripts:CreateSection(tab: any, options: { Title: string?, Open: boo
     titleLabel.Text = options.Title or ""
     titleLabel.Font = Enum.Font.GothamBold
     titleLabel.TextSize = 18 
+    RegisterThemeItem("ComponentTextColor", titleLabel, "TextColor3")
     titleLabel.TextColor3 = DESIGN.ComponentTextColor or Color3.fromRGB(230, 230, 230) 
     titleLabel.TextXAlignment = Enum.TextXAlignment.Left
     titleLabel.BackgroundTransparency = 1
@@ -1665,6 +2072,7 @@ function Tekscripts:CreateSection(tab: any, options: { Title: string?, Open: boo
     arrowLabel.Text = "▼"
     arrowLabel.Font = Enum.Font.GothamBold
     arrowLabel.TextSize = 14
+    RegisterThemeItem("ComponentTextColor", arrowLabel, "TextColor3")
     arrowLabel.TextColor3 = DESIGN.ComponentTextColor or Color3.fromRGB(230, 230, 230)
     arrowLabel.BackgroundTransparency = 1
     arrowLabel.Size = UDim2.new(0, 20, 0, 20)
@@ -1675,6 +2083,7 @@ function Tekscripts:CreateSection(tab: any, options: { Title: string?, Open: boo
 
     -- Linha separadora
     local separatorLine = Instance.new("Frame")
+    RegisterThemeItem("HRColor", separatorLine, "BackgroundColor3")
     separatorLine.BackgroundColor3 = DESIGN.HRColor or Color3.fromRGB(100, 100, 100)
     separatorLine.Size = UDim2.new(1, -20, 0, 1)
     separatorLine.Position = UDim2.new(0, 10, 0, titleHeight - 1)
@@ -1682,10 +2091,11 @@ function Tekscripts:CreateSection(tab: any, options: { Title: string?, Open: boo
     separatorLine.ZIndex = 2
     separatorLine.Parent = sectionContainer
 
-    -- Lógica de Hover (mantida)
+    -- Lógica de Hover
     local function setHover(state)
         local targetTransparency = state and 0 or 0.2
         local targetTextSize = state and 20 or 18 
+        -- Usa DESIGN.ComponentHoverColor
         local targetColor = state and (DESIGN.ComponentHoverColor or Color3.fromRGB(200, 200, 200))
                             or (DESIGN.ComponentTextColor or Color3.fromRGB(230, 230, 230))
         
@@ -1693,6 +2103,10 @@ function Tekscripts:CreateSection(tab: any, options: { Title: string?, Open: boo
         TweenService:Create(titleLabel, TweenInfo.new(0.15, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), { TextSize = targetTextSize, TextColor3 = targetColor }):Play()
         TweenService:Create(arrowLabel, TweenInfo.new(0.15, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), { TextColor3 = targetColor }):Play()
     end
+    
+    -- Registra o hover para ComponentHoverColor
+    RegisterThemeItem("ComponentHoverColor", titleLabel, "TextColor3")
+    RegisterThemeItem("ComponentHoverColor", arrowLabel, "TextColor3")
 
     titleFrame.MouseEnter:Connect(function() setHover(true) end)
     titleFrame.MouseLeave:Connect(function() setHover(false) end)
@@ -1709,8 +2123,9 @@ function Tekscripts:CreateSection(tab: any, options: { Title: string?, Open: boo
     layout.Padding = UDim.new(0, 5)
     layout.Parent = contentContainer
     
-    -- Overlay de bloqueio (mantido)
+    -- Overlay de bloqueio
     local blockOverlay = Instance.new("Frame")
+    -- A BackgroundColor3 será configurada via _reapplyBackgrounds
     blockOverlay.BackgroundColor3 = DESIGN.ComponentBackground or Color3.fromRGB(20, 20, 20)
     blockOverlay.BackgroundTransparency = 0.6
     blockOverlay.Size = UDim2.new(1, 0, 0, 0)
@@ -1727,6 +2142,7 @@ function Tekscripts:CreateSection(tab: any, options: { Title: string?, Open: boo
     local blockLabel = Instance.new("TextLabel")
     blockLabel.Text = "Bloqueado"
     blockLabel.Font = Enum.Font.GothamBold
+    RegisterThemeItem("ComponentTextColor", blockLabel, "TextColor3")
     blockLabel.TextColor3 = DESIGN.ComponentTextColor or Color3.fromRGB(255, 255, 255)
     blockLabel.TextSize = 24
     blockLabel.TextScaled = false
@@ -1738,7 +2154,7 @@ function Tekscripts:CreateSection(tab: any, options: { Title: string?, Open: boo
     blockLabel.ZIndex = 6
     blockLabel.Parent = blockOverlay
     
-    -- Conexão para atualizar tamanho do overlay (mantida)
+    -- Conexão para atualizar tamanho do overlay
     local sizeConnection = contentContainer:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
         if blockOverlay.Visible then
             blockOverlay.Size = UDim2.new(1, 0, 0, contentContainer.AbsoluteSize.Y)
@@ -1779,15 +2195,26 @@ function Tekscripts:CreateSection(tab: any, options: { Title: string?, Open: boo
         Components = {},
         _blocked = false
     }
+    
+    -- Função para reaplicar cores com transparência dependente do ComponentBackground
+    function publicApi:_reapplyBackgrounds()
+        -- titleFrame: Usa ComponentBackground com BackgroundTransparency = 0.2
+        titleFrame.BackgroundColor3 = DESIGN.ComponentBackground or Color3.fromRGB(40, 40, 40)
+        
+        -- blockOverlay: Usa ComponentBackground com BackgroundTransparency = 0.6
+        blockOverlay.BackgroundColor3 = DESIGN.ComponentBackground or Color3.fromRGB(20, 20, 20)
+    end
+    
+    -- Registra a função para a chave ComponentBackground
+    RegisterThemeItem("ComponentBackground", publicApi, "_reapplyBackgrounds")
+
 
     --- API APRIMORADA DE USABILIDADE
     
-    -- Melhorado: Renomeado para AddComponent, focando na instância
     function publicApi:AddComponent(component)
         if component and component._instance then
             component._instance.Parent = contentContainer
             table.insert(publicApi.Components, component)
-            -- Use task.spawn para garantir que a atualização de altura não bloqueie a thread principal
             task.spawn(updateHeight)
             return component
         else
@@ -1799,23 +2226,19 @@ function Tekscripts:CreateSection(tab: any, options: { Title: string?, Open: boo
         titleLabel.Text = text or ""
     end
     
-    -- Adicionado: Método explícito para Abrir
     function publicApi:Open()
         if fixed or open then return end
         open = true
-        blockOverlay.Visible = publicApi._blocked -- Atualiza visibilidade do bloco ao abrir
+        blockOverlay.Visible = publicApi._blocked 
         updateHeight()
     end
     
-    -- Adicionado: Método explícito para Fechar
     function publicApi:Close()
         if fixed or not open then return end
         open = false
-        -- O updateHeight já trata a animação de esconder o overlay
         updateHeight()
     end
 
-    -- Toggle (Mantido, mas usa os novos métodos)
     function publicApi:Toggle()
         if open then
             publicApi:Close()
@@ -1824,7 +2247,6 @@ function Tekscripts:CreateSection(tab: any, options: { Title: string?, Open: boo
         end
     end
     
-    -- Ajuste de Evento (Mantido, usa o novo Toggle)
     titleFrame.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 or
            input.UserInputType == Enum.UserInputType.Touch then
@@ -1832,16 +2254,13 @@ function Tekscripts:CreateSection(tab: any, options: { Title: string?, Open: boo
         end
     end)
     
-    -- Melhorado: Força a atualização de visibilidade do overlay imediatamente
     function publicApi:Block(state: boolean, message: string?)
         publicApi._blocked = state
         blockLabel.Text = message or "Bloqueado"
         
-        -- Garante que o estado do overlay reflita o estado atual da seção
         blockOverlay.Visible = state and open
         
         if state and open then
-            -- Se for bloquear e estiver aberta, ajusta o tamanho imediatamente
             blockOverlay.Size = UDim2.new(1, 0, 0, contentContainer.AbsoluteSize.Y)
         elseif not state and not open then
              blockOverlay.Visible = false
@@ -1861,7 +2280,6 @@ function Tekscripts:CreateSection(tab: any, options: { Title: string?, Open: boo
     table.insert(tab.Components, publicApi)
     return publicApi
 end
-
 
 function Tekscripts:CreateSlider(tab: any, options: { 
     Text: string?, 
@@ -1904,9 +2322,10 @@ function Tekscripts:CreateSlider(tab: any, options: {
         FillChange = TweenInfo.new(0.2, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out)
     }
 
-    -- Base visual com sombra sutil
+    -- Base visual
     local box = Instance.new("Frame")
     box.Size = UDim2.new(1, 0, 0, DESIGN.ComponentHeight)
+    RegisterThemeItem("ComponentBackground", box, "BackgroundColor3")
     box.BackgroundColor3 = DESIGN.ComponentBackground
     box.BackgroundTransparency = DESIGN.TabContainerTransparency
     box.BorderSizePixel = 0
@@ -1914,7 +2333,7 @@ function Tekscripts:CreateSlider(tab: any, options: {
 
     Instance.new("UICorner", box).CornerRadius = UDim.new(0, DESIGN.CornerRadius)
     
-    -- Sombra sutil para profundidade
+    -- Sombra (Elemento não-temático: mantemos o padrão)
     local shadow = Instance.new("ImageLabel")
     shadow.Name = "Shadow"
     shadow.BackgroundTransparency = 1
@@ -1940,7 +2359,7 @@ function Tekscripts:CreateSlider(tab: any, options: {
     listLayout.VerticalAlignment = Enum.VerticalAlignment.Center
     listLayout.Padding = UDim.new(0, 6)
 
-    -- Header com melhor espaçamento
+    -- Header
     local headerFrame = Instance.new("Frame")
     headerFrame.Size = UDim2.new(1, 0, 0, 20)
     headerFrame.BackgroundTransparency = 1
@@ -1951,35 +2370,49 @@ function Tekscripts:CreateSlider(tab: any, options: {
     titleLabel.Size = UDim2.new(1, -70, 1, 0)
     titleLabel.Font = Enum.Font.GothamMedium
     titleLabel.TextSize = 14
+    RegisterThemeItem("ComponentTextColor", titleLabel, "TextColor3")
     titleLabel.TextColor3 = DESIGN.ComponentTextColor
     titleLabel.TextXAlignment = Enum.TextXAlignment.Left
     titleLabel.Text = title
     titleLabel.Parent = headerFrame
 
-    -- Badge para o valor com fundo
-    local valueBadge = Instance.new("Frame")
-    valueBadge.Size = UDim2.new(0, 65, 0, 22)
-    valueBadge.AnchorPoint = Vector2.new(1, 0)
-    valueBadge.Position = UDim2.new(1, 0, 0, -1)
-    valueBadge.BackgroundColor3 = DESIGN.SliderFillColor or Color3.fromRGB(88, 101, 242)
-    valueBadge.BorderSizePixel = 0
-    valueBadge.Parent = headerFrame
-    Instance.new("UICorner", valueBadge).CornerRadius = UDim.new(0, 6)
+    -- Badge para o valor
+-- Badge para o valor
+local valueBadge = Instance.new("Frame")
+valueBadge.Size = UDim2.new(0, 65, 0, 22)
+valueBadge.AnchorPoint = Vector2.new(1, 0)
+valueBadge.Position = UDim2.new(1, 0, 0, -1)
+valueBadge.BackgroundColor3 = DESIGN.SliderFillColor or Color3.fromRGB(88, 101, 242)
+valueBadge.BorderSizePixel = 0
+valueBadge.Parent = headerFrame
+Instance.new("UICorner", valueBadge).CornerRadius = UDim.new(0, 6)
 
-    local valueLabel = Instance.new("TextBox")
-    valueLabel.BackgroundTransparency = 1
-    valueLabel.Size = UDim2.new(1, -8, 1, 0)
-    valueLabel.Position = UDim2.new(0, 4, 0, 0)
-    valueLabel.Font = Enum.Font.GothamBold
-    valueLabel.TextSize = 13
-    valueLabel.TextColor3 = Color3.new(1, 1, 1)
-    valueLabel.TextXAlignment = Enum.TextXAlignment.Center
-    valueLabel.Text = tostring(value)
-    valueLabel.ClearTextOnFocus = false
-    valueLabel.TextEditable = true
-    valueLabel.Parent = valueBadge
+-- Detecta se a cor do fundo é clara ou escura
+local function isBright(color)
+    local r, g, b = color.R * 255, color.G * 255, color.B * 255
+    local brightness = (r * 0.299 + g * 0.587 + b * 0.114)
+    return brightness > 160
+end
 
-    -- Track com altura maior e melhor aparência
+-- Define a cor do texto automaticamente
+local autoTextColor = isBright(valueBadge.BackgroundColor3)
+    and Color3.fromRGB(20, 20, 20)   -- fundo claro → texto escuro
+    or Color3.fromRGB(255, 255, 255) -- fundo escuro → texto branco
+
+local valueLabel = Instance.new("TextBox")
+valueLabel.BackgroundTransparency = 1
+valueLabel.Size = UDim2.new(1, -8, 1, 0)
+valueLabel.Position = UDim2.new(0, 4, 0, 0)
+valueLabel.Font = Enum.Font.GothamBold
+valueLabel.TextSize = 13
+valueLabel.TextColor3 = autoTextColor
+valueLabel.TextXAlignment = Enum.TextXAlignment.Center
+valueLabel.Text = tostring(value)
+valueLabel.ClearTextOnFocus = false
+valueLabel.TextEditable = true
+valueLabel.Parent = valueBadge
+
+    -- Track
     local trackContainer = Instance.new("Frame")
     trackContainer.Size = UDim2.new(1, 0, 0, 12)
     trackContainer.BackgroundTransparency = 1
@@ -1989,21 +2422,23 @@ function Tekscripts:CreateSlider(tab: any, options: {
     track.Size = UDim2.new(1, 0, 0, 6)
     track.AnchorPoint = Vector2.new(0, 0.5)
     track.Position = UDim2.new(0, 0, 0.5, 0)
+    RegisterThemeItem("SliderTrackColor", track, "BackgroundColor3")
     track.BackgroundColor3 = DESIGN.SliderTrackColor or Color3.fromRGB(40, 40, 45)
     track.BorderSizePixel = 0
     track.Parent = trackContainer
     Instance.new("UICorner", track).CornerRadius = UDim.new(1, 0)
 
-    -- Fill com gradiente sutil
+    -- Fill
     local fill = Instance.new("Frame")
     fill.Size = UDim2.new((value - minv) / math.max(1, (maxv - minv)), 0, 1, 0)
+    -- Cor inicial será tratada pela função de tema
     fill.BackgroundColor3 = DESIGN.SliderFillColor or Color3.fromRGB(88, 101, 242)
     fill.BorderSizePixel = 0
     fill.ZIndex = 2
     fill.Parent = track
     Instance.new("UICorner", fill).CornerRadius = UDim.new(1, 0)
 
-    -- Gradiente no fill para dar profundidade
+    -- Gradiente (Elemento não-temático: mantemos o padrão)
     local gradient = Instance.new("UIGradient")
     gradient.Color = ColorSequence.new{
         ColorSequenceKeypoint.new(0, Color3.new(1, 1, 1)),
@@ -2012,22 +2447,24 @@ function Tekscripts:CreateSlider(tab: any, options: {
     gradient.Rotation = 90
     gradient.Parent = fill
 
-    -- Thumb moderno com sombra
+    -- Thumb
     local thumb = Instance.new("Frame")
     thumb.Size = UDim2.new(0, 20, 0, 20)
     thumb.AnchorPoint = Vector2.new(0.5, 0.5)
     thumb.Position = UDim2.new(fill.Size.X.Scale, 0, 0.5, 0)
+    -- Cor branca (fixada)
     thumb.BackgroundColor3 = Color3.new(1, 1, 1)
     thumb.BorderSizePixel = 0
     thumb.ZIndex = 3
     thumb.Parent = trackContainer
     Instance.new("UICorner", thumb).CornerRadius = UDim.new(1, 0)
 
-    -- Anel interno do thumb para destaque
+    -- Anel interno do thumb
     local thumbRing = Instance.new("Frame")
     thumbRing.Size = UDim2.new(0.5, 0, 0.5, 0)
     thumbRing.AnchorPoint = Vector2.new(0.5, 0.5)
     thumbRing.Position = UDim2.new(0.5, 0, 0.5, 0)
+    -- Cor inicial será tratada pela função de tema
     thumbRing.BackgroundColor3 = DESIGN.SliderFillColor or Color3.fromRGB(88, 101, 242)
     thumbRing.BorderSizePixel = 0
     thumbRing.ZIndex = 4
@@ -2045,6 +2482,19 @@ function Tekscripts:CreateSlider(tab: any, options: {
         _onChanged = {},
         _locked = false,
     }
+    
+    -- Função para reaplicar cores dependentes de SliderFillColor
+    function publicApi:_reapplyFillColors()
+        valueBadge.BackgroundColor3 = DESIGN.SliderFillColor
+        fill.BackgroundColor3 = DESIGN.SliderFillColor
+        thumbRing.BackgroundColor3 = DESIGN.SliderFillColor
+        
+        -- Garante que o estado de Lock seja reaplicado com as novas cores
+        publicApi.Lock(publicApi._locked) 
+    end
+    
+    -- Registra a função para os elementos que usam a cor de preenchimento
+    RegisterThemeItem("SliderFillColor", publicApi, "_reapplyFillColors")
 
     local function updateVisuals(animate)
         local denom = math.max(1, (maxv - minv))
@@ -2063,7 +2513,6 @@ function Tekscripts:CreateSlider(tab: any, options: {
             thumb.Position = UDim2.new(frac, 0, 0.5, 0)
         end
         
-        -- Animação do valor com bounce
         local formattedValue = tostring(math.floor((value or 0) * 100) / 100)
         valueLabel.Text = formattedValue
         
@@ -2104,7 +2553,7 @@ function Tekscripts:CreateSlider(tab: any, options: {
         if publicApi._locked then return end
         if input and (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) then
             dragging = true
-            -- Animação de pressão
+            -- Animação de pressão (cores fixas, não temáticas)
             TweenService:Create(thumb, ANIM.ThumbPress, {
                 Size = UDim2.new(0, 24, 0, 24)
             }):Play()
@@ -2120,9 +2569,10 @@ function Tekscripts:CreateSlider(tab: any, options: {
     end
 
     local function handleInputEnded(input)
+        -- CORREÇÃO APLICADA AQUI: input.UserInputType.UserInputType.Touch -> input.UserInputType == Enum.UserInputType.Touch
         if input and (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) then
             dragging = false
-            -- Animação de soltura
+            -- Animação de soltura (cores fixas, não temáticas)
             local targetSize = hovering and UDim2.new(0, 22, 0, 22) or UDim2.new(0, 20, 0, 20)
             TweenService:Create(thumb, ANIM.ThumbHover, {
                 Size = targetSize
@@ -2217,7 +2667,6 @@ function Tekscripts:CreateSlider(tab: any, options: {
         local newVal = clamp(roundToStep(tonumber(targetValue) or value))
         local denom = math.max(1, (maxv - minv))
         local frac = (newVal - minv) / denom
-        frac = math.clamp(frac, 0, 1)
         local dur = tonumber(duration) or 0.3
         
         pcall(function()
@@ -2246,21 +2695,26 @@ function Tekscripts:CreateSlider(tab: any, options: {
     function publicApi.Lock(state)
         publicApi._locked = state and true or false
         valueLabel.TextEditable = not publicApi._locked
-        local targetAlpha = publicApi._locked and 0.4 or 1
+        
+        -- Aplica transparência baseada no estado de lock
+        local fillColor = publicApi._locked and DESIGN.SliderFillColor:lerp(Color3.new(0, 0, 0), 0.5) or DESIGN.SliderFillColor
         
         TweenService:Create(thumb, ANIM.ThumbHover, {
             BackgroundTransparency = publicApi._locked and 0.5 or 0
         }):Play()
         TweenService:Create(thumbRing, ANIM.ThumbHover, {
+            BackgroundColor3 = fillColor,
             BackgroundTransparency = publicApi._locked and 0.7 or 0
         }):Play()
         TweenService:Create(fill, ANIM.ThumbHover, {
+            BackgroundColor3 = fillColor,
             BackgroundTransparency = publicApi._locked and 0.6 or 0
         }):Play()
         TweenService:Create(track, ANIM.ThumbHover, {
             BackgroundTransparency = publicApi._locked and 0.7 or 0
         }):Play()
         TweenService:Create(valueBadge, ANIM.ThumbHover, {
+            BackgroundColor3 = fillColor,
             BackgroundTransparency = publicApi._locked and 0.6 or 0
         }):Play()
         TweenService:Create(valueLabel, ANIM.ThumbHover, {
@@ -2302,7 +2756,6 @@ function Tekscripts:CreateSlider(tab: any, options: {
     return publicApi
 end
 
-
 -- Hover universal
 local function addHoverEffect(element, normalColor, hoverColor)
 	local tweenService = game:GetService("TweenService")
@@ -2330,6 +2783,7 @@ function Tekscripts:CreateTextBox(tab, options)
     -- // CONTAINER BASE
     local boxHolder = Instance.new("Frame")
     boxHolder.Name = "TextBox"
+    RegisterThemeItem("ComponentBackground", boxHolder, "BackgroundColor3")
     boxHolder.BackgroundColor3 = DESIGN.ComponentBackground
     boxHolder.Size = UDim2.new(1, 0, 0, desc and 140 or 120)
 
@@ -2338,6 +2792,7 @@ function Tekscripts:CreateTextBox(tab, options)
     corner.Parent = boxHolder
 
     local stroke = Instance.new("UIStroke")
+    RegisterThemeItem("HRColor", stroke, "Color")
     stroke.Color = DESIGN.HRColor
     stroke.Thickness = 1
     stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
@@ -2356,6 +2811,7 @@ function Tekscripts:CreateTextBox(tab, options)
     titleLabel.BackgroundTransparency = 1
     titleLabel.Text = title
     titleLabel.Font = Enum.Font.Gotham
+    RegisterThemeItem("ComponentTextColor", titleLabel, "TextColor3")
     titleLabel.TextColor3 = DESIGN.ComponentTextColor
     titleLabel.TextSize = 15
     titleLabel.TextXAlignment = Enum.TextXAlignment.Left
@@ -2369,6 +2825,8 @@ function Tekscripts:CreateTextBox(tab, options)
         sub.BackgroundTransparency = 1
         sub.Text = desc
         sub.Font = Enum.Font.GothamSemibold
+        -- A cor do subtítulo (150, 150, 150) é fixada, mas pode ser registrada em uma chave de texto secundária se existir.
+        -- Vou manter como fixada aqui, ou usar EmptyStateTextColor se for semanticamente correto.
         sub.TextColor3 = Color3.fromRGB(150, 150, 150)
         sub.TextSize = 12
         sub.TextXAlignment = Enum.TextXAlignment.Left
@@ -2381,11 +2839,13 @@ function Tekscripts:CreateTextBox(tab, options)
     -- // CONTAINER DO TEXTO (com scroll)
     local scroll = Instance.new("ScrollingFrame")
     scroll.Name = "Scroll"
-    scroll.BackgroundColor3 = DESIGN.InputBackgroundColor
+    -- BackgroundColor3 e ScrollBarImageColor3 serão definidas/atualizadas em updateInteractivity
+    scroll.BackgroundColor3 = DESIGN.InputBackgroundColor 
     scroll.BorderSizePixel = 0
     scroll.Position = UDim2.new(0, 0, 0, currentY + 6)
     scroll.Size = UDim2.new(1, 0, 1, desc and -currentY - 14 or -28)
     scroll.ScrollBarThickness = 4
+    RegisterThemeItem("SliderTrackColor", scroll, "ScrollBarImageColor3")
     scroll.ScrollBarImageColor3 = DESIGN.SliderTrackColor
     scroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
     scroll.CanvasSize = UDim2.new(0, 0, 0, 0)
@@ -2413,6 +2873,7 @@ function Tekscripts:CreateTextBox(tab, options)
     -- // TEXTO PRINCIPAL
     local textLabel = Instance.new("TextLabel")
     textLabel.BackgroundTransparency = 1
+    RegisterThemeItem("InputTextColor", textLabel, "TextColor3")
     textLabel.TextColor3 = DESIGN.InputTextColor
     textLabel.Font = Enum.Font.Code
     textLabel.TextSize = 13
@@ -2428,9 +2889,16 @@ function Tekscripts:CreateTextBox(tab, options)
     local function updateInteractivity()
         local blocked = self.Blocked or readonly
         scroll.Active = not blocked
+        -- TextTransparency: não precisa de registro de tema
         textLabel.TextTransparency = blocked and 0.5 or 0
-        scroll.BackgroundColor3 = blocked and DESIGN.WindowColor2 or DESIGN.InputBackgroundColor
-        scrollStroke.Color = blocked and DESIGN.HRColor or DESIGN.SliderTrackColor
+        
+        -- BackgroundColor3 do Scroll
+        local scrollBgColor = blocked and DESIGN.WindowColor2 or DESIGN.InputBackgroundColor
+        scroll.BackgroundColor3 = scrollBgColor
+        
+        -- StrokeColor do Scroll
+        local scrollStrokeColor = blocked and DESIGN.HRColor or DESIGN.SliderTrackColor
+        scrollStroke.Color = scrollStrokeColor
     end
 
     updateInteractivity()
@@ -2442,6 +2910,18 @@ function Tekscripts:CreateTextBox(tab, options)
         _label = textLabel,
         _readonly = readonly
     }
+
+    -- Função para forçar a reaplicação de cores dinâmicas
+    function publicApi:_reapplyThemeColors()
+        updateInteractivity()
+    end
+
+    -- Registra para que a cor de fundo/contorno do scroll seja restaurada quando o tema muda
+    RegisterThemeItem("InputBackgroundColor", publicApi, "_reapplyThemeColors")
+    RegisterThemeItem("WindowColor2", publicApi, "_reapplyThemeColors")
+    RegisterThemeItem("SliderTrackColor", publicApi, "_reapplyThemeColors")
+    RegisterThemeItem("HRColor", publicApi, "_reapplyThemeColors")
+
 
     function publicApi:SetText(newText)
         textLabel.Text = tostring(newText)
@@ -2485,6 +2965,7 @@ function Tekscripts:CreateTextBox(tab, options)
     return publicApi
 end
 
+
 function Tekscripts:CreateBind(tab, options)
 	assert(type(tab) == "table" and tab.Container, "Invalid Tab object provided to CreateBind")
 	assert(type(options) == "table" and type(options.Text) == "string", "Invalid arguments for CreateBind")
@@ -2495,12 +2976,13 @@ function Tekscripts:CreateBind(tab, options)
 	local callback = typeof(options.Callback) == "function" and options.Callback or function() end
 
 	local UserInputService = game:GetService("UserInputService")
+	local TweenService = game:GetService("TweenService") -- Necessário para a animação de erro
 
 	-- CRIAÇÃO DE ELEMENTOS
 	local box = Instance.new("Frame")
 	box.Name = "BindBox"
+	RegisterThemeItem("ComponentBackground", box, "BackgroundColor3")
 	box.BackgroundColor3 = DESIGN.ComponentBackground
-    -- AQUI ESTÁ A MUDANÇA: Usando a transparência da aba para o componente de fundo.
     box.BackgroundTransparency = DESIGN.TabContainerTransparency
 	box.Size = UDim2.new(1, 0, 0, desc and DESIGN.ComponentHeight + 10 or DESIGN.ComponentHeight)
 	box.ClipsDescendants = true
@@ -2510,6 +2992,7 @@ function Tekscripts:CreateBind(tab, options)
 	corner.Parent = box
 
 	local stroke = Instance.new("UIStroke")
+	RegisterThemeItem("HRColor", stroke, "Color")
 	stroke.Color = DESIGN.HRColor
 	stroke.Thickness = 1
 	stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
@@ -2531,6 +3014,7 @@ function Tekscripts:CreateBind(tab, options)
 	label.BackgroundTransparency = 1
 	label.Text = title
 	label.Font = Enum.Font.Gotham
+	RegisterThemeItem("ComponentTextColor", label, "TextColor3")
 	label.TextColor3 = DESIGN.ComponentTextColor
 	label.TextSize = 14
 	label.TextXAlignment = Enum.TextXAlignment.Left
@@ -2543,6 +3027,7 @@ function Tekscripts:CreateBind(tab, options)
 		sub.BackgroundTransparency = 1
 		sub.Text = desc
 		sub.Font = Enum.Font.GothamSemibold
+		RegisterThemeItem("EmptyStateTextColor", sub, "TextColor3")
 		sub.TextColor3 = DESIGN.EmptyStateTextColor
 		sub.TextSize = 12
 		sub.TextXAlignment = Enum.TextXAlignment.Left
@@ -2555,15 +3040,18 @@ function Tekscripts:CreateBind(tab, options)
 	button.AnchorPoint = Vector2.new(1, 0.5)
 	button.Position = UDim2.new(1, -DESIGN.ComponentPadding, 0.5, 0)
 	button.Size = UDim2.new(0, 80, 0, DESIGN.ComponentHeight * 0.5)
+	RegisterThemeItem("InputBackgroundColor", button, "BackgroundColor3")
 	button.BackgroundColor3 = DESIGN.InputBackgroundColor
-	button.Text = defaultKey.Name
+	RegisterThemeItem("InputTextColor", button, "TextColor3")
 	button.TextColor3 = DESIGN.InputTextColor
+	button.Text = defaultKey.Name
 	button.Font = Enum.Font.Gotham
 	button.TextSize = 13
 	button.AutoButtonColor = false
 	button.Parent = holder
 
 	local btnStroke = Instance.new("UIStroke")
+	RegisterThemeItem("HRColor", btnStroke, "Color")
 	btnStroke.Color = DESIGN.HRColor
 	btnStroke.Thickness = 1
 	btnStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
@@ -2597,6 +3085,10 @@ function Tekscripts:CreateBind(tab, options)
 		if listening or destroyed then return end
 		listening = true
 		button.Text = "Pressione..."
+		
+		-- Tween para cor de listening
+		local oldColor = button.BackgroundColor3
+		TweenService:Create(button, TweenInfo.new(0.2), { BackgroundColor3 = Color3.fromRGB(255, 170, 0) }):Play()
 
 		local inputConn
 		inputConn = safeConnect(UserInputService.InputBegan, function(input, processed)
@@ -2604,7 +3096,10 @@ function Tekscripts:CreateBind(tab, options)
 			if input.UserInputType == Enum.UserInputType.Keyboard then
 				currentKey = input.KeyCode
 				pcall(function()
-					if button then button.Text = currentKey.Name end
+					if button then 
+						button.Text = currentKey.Name 
+						TweenService:Create(button, TweenInfo.new(0.2), { BackgroundColor3 = DESIGN.InputBackgroundColor }):Play()
+					end
 				end)
 				listening = false
 				if inputConn and inputConn.Connected then
@@ -2616,13 +3111,15 @@ function Tekscripts:CreateBind(tab, options)
 
 	-- FEEDBACK SEGURO
 	safeConnect(button.MouseEnter, function()
-		if button and not destroyed then
+		if button and not destroyed and not listening then
+			-- Lê DESIGN.ItemHoverColor
 			button.BackgroundColor3 = DESIGN.ItemHoverColor
 		end
 	end)
 
 	safeConnect(button.MouseLeave, function()
-		if button and not destroyed then
+		if button and not destroyed and not listening then
+			-- Retorna para DESIGN.InputBackgroundColor
 			button.BackgroundColor3 = DESIGN.InputBackgroundColor
 		end
 	end)
@@ -2639,10 +3136,12 @@ function Tekscripts:CreateBind(tab, options)
 				warn("[BindError]:", err)
 				pcall(function()
 					if button and not destroyed then
-						button.BackgroundColor3 = Color3.fromRGB(200, 80, 80)
+						-- Animação de erro
+						TweenService:Create(button, TweenInfo.new(0.1), { BackgroundColor3 = Color3.fromRGB(200, 80, 80) }):Play()
 						task.delay(0.25, function()
 							if button and not destroyed then
-								button.BackgroundColor3 = DESIGN.InputBackgroundColor
+								-- Retorna para a cor normal (DESIGN.InputBackgroundColor)
+								TweenService:Create(button, TweenInfo.new(0.2), { BackgroundColor3 = DESIGN.InputBackgroundColor }):Play()
 							end
 						end)
 					end
@@ -2656,6 +3155,16 @@ function Tekscripts:CreateBind(tab, options)
 		_instance = box,
 		_connections = connections,
 	}
+
+	-- Função para forçar a cor normal após troca de tema
+	function publicApi:_reapplyButtonColor()
+		if button and not destroyed and not listening then
+			button.BackgroundColor3 = DESIGN.InputBackgroundColor
+		end
+	end
+	-- Registra para que a cor normal seja restaurada quando o tema muda
+	RegisterThemeItem("InputBackgroundColor", publicApi, "_reapplyButtonColor")
+	RegisterThemeItem("ItemHoverColor", publicApi, "_reapplyButtonColor")
 
 	function publicApi:GetKey()
 		return currentKey
@@ -2715,9 +3224,10 @@ function Tekscripts:CreateDropdown(tab: any, options: {
     MaxVisibleItems: number?,
     InitialValues: {string}?
 })
-    -- Validações rápidas
     assert(type(tab) == "table" and tab.Container, "Objeto 'tab' inválido")
     assert(type(options) == "table" and type(options.Title) == "string" and type(options.Values) == "table", "Argumentos inválidos")
+
+    local TweenService = game:GetService("TweenService")
 
     local multiSelect = options.MultiSelect or false
     local maxVisibleItems = math.min(options.MaxVisibleItems or 5, 8)
@@ -2725,12 +3235,12 @@ function Tekscripts:CreateDropdown(tab: any, options: {
     local imagePadding = 8
     local imageSize = itemHeight - (imagePadding * 2)
     
-    -- Container principal
     local box = Instance.new("Frame")
     box.AutomaticSize = Enum.AutomaticSize.Y
     box.Size = UDim2.new(1, 0, 0, 0)
+    -- REGISTRO DE TEMA PADRÃO
+    RegisterThemeItem("ComponentBackground", box, "BackgroundColor3")
     box.BackgroundColor3 = DESIGN.ComponentBackground
-    -- AQUI 1: Aplica a transparência da aba ao container principal
     box.BackgroundTransparency = DESIGN.TabContainerTransparency
     box.BorderSizePixel = 0
     box.Parent = tab.Container
@@ -2741,7 +3251,6 @@ function Tekscripts:CreateDropdown(tab: any, options: {
     boxLayout.SortOrder = Enum.SortOrder.LayoutOrder
     boxLayout.Parent = box
     
-    -- Header
     local main = Instance.new("Frame")
     main.Size = UDim2.new(1, 0, 0, 50)
     main.BackgroundTransparency = 1
@@ -2760,6 +3269,8 @@ function Tekscripts:CreateDropdown(tab: any, options: {
     title.Text = options.Title
     title.Size = UDim2.new(1, -110, 1, 0)
     title.BackgroundTransparency = 1
+    -- REGISTRO DE TEMA PADRÃO
+    RegisterThemeItem("ComponentTextColor", title, "TextColor3")
     title.TextColor3 = DESIGN.ComponentTextColor
     title.Font = Enum.Font.GothamBold
     title.TextSize = 15
@@ -2772,15 +3283,17 @@ function Tekscripts:CreateDropdown(tab: any, options: {
     botaoText.Name = "BotaoText"
     botaoText.Position = UDim2.new(1, -100, 0, 0)
     botaoText.TextSize = 13
+    -- **ASSUMINDO** que 'createButton' já faz o registro para cores de texto e fundo/hover do botão.
     botaoText.Parent = main
 
-    -- ScrollingFrame para itens
     local lister = Instance.new("ScrollingFrame")
     lister.Name = "Lister"
     lister.Size = UDim2.new(1, 0, 0, 0)
     lister.BackgroundTransparency = 1
     lister.BorderSizePixel = 0
     lister.ClipsDescendants = true
+    -- REGISTRO DE TEMA PADRÃO (Barra de rolagem)
+    RegisterThemeItem("AccentColor", lister, "ScrollBarImageColor3")
     lister.ScrollBarImageColor3 = DESIGN.AccentColor
     lister.ScrollBarThickness = 5
     lister.ScrollingDirection = Enum.ScrollingDirection.Y
@@ -2801,14 +3314,12 @@ function Tekscripts:CreateDropdown(tab: any, options: {
     listerPadding.PaddingBottom = UDim.new(0, 12)
     listerPadding.Parent = lister
 
-    -- Estado interno
     local isOpen = false
     local selectedValues = {}
     local connections = {}
     local itemElements = {}
     local itemOrder = {}
 
-    -- Formata valores selecionados
     local function formatSelectedValues(values)
         if multiSelect then
             if #values == 0 then return "Nenhum item selecionado" end
@@ -2818,7 +3329,6 @@ function Tekscripts:CreateDropdown(tab: any, options: {
         end
     end
 
-    -- Atualiza texto do botão
     local function updateButtonText()
         local arrow = isOpen and "▲" or "▼"
         if #selectedValues == 0 then
@@ -2832,7 +3342,6 @@ function Tekscripts:CreateDropdown(tab: any, options: {
         end
     end
 
-    -- Toggle dropdown
     local function toggleDropdown()
         isOpen = not isOpen
         local numItems = #itemOrder
@@ -2840,6 +3349,7 @@ function Tekscripts:CreateDropdown(tab: any, options: {
         local maxHeight = (maxVisibleItems * itemHeight) + ((maxVisibleItems - 1) * listerLayout.Padding.Offset)
         local targetHeight = isOpen and math.min(totalItemHeight + listerPadding.PaddingTop.Offset + listerPadding.PaddingBottom.Offset, maxHeight + listerPadding.PaddingTop.Offset + listerPadding.PaddingBottom.Offset) or 0
         
+        -- Atualiza CanvasSize antes de fazer a transição de tamanho do lister para garantir a barra de rolagem correta
         lister.CanvasSize = UDim2.new(0, 0, 0, listerLayout.AbsoluteContentSize.Y)
         
         local tweenInfo = TweenInfo.new(0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
@@ -2847,7 +3357,6 @@ function Tekscripts:CreateDropdown(tab: any, options: {
         updateButtonText()
     end
 
-    -- Atualiza estado visual do item
     local function setItemSelected(valueName, isSelected)
         local elements = itemElements[valueName]
         if not elements then return end
@@ -2856,10 +3365,15 @@ function Tekscripts:CreateDropdown(tab: any, options: {
         local tweenInfo = TweenInfo.new(0.2, Enum.EasingStyle.Quad)
         TweenService:Create(elements.container, tweenInfo, { BackgroundColor3 = targetColor }):Play()
         
-        if elements.indicator then elements.indicator.Visible = isSelected end
+        -- Garante que o indicador use a cor atualizada do tema AccentColor
+        if elements.indicator then
+            elements.indicator.Visible = isSelected
+            if isSelected then
+                elements.indicator.BackgroundColor3 = DESIGN.AccentColor
+            end
+        end
     end
 
-    -- Alterna seleção de item
     local function toggleItemSelection(valueName)
         local isCurrentlySelected = table.find(selectedValues, valueName)
         
@@ -2872,6 +3386,7 @@ function Tekscripts:CreateDropdown(tab: any, options: {
                 setItemSelected(valueName, true)
             end
         else
+            -- Deseleciona todos os itens para o modo single select
             for name, _ in pairs(itemElements) do setItemSelected(name, false) end
             if isCurrentlySelected then
                 selectedValues = {}
@@ -2879,6 +3394,7 @@ function Tekscripts:CreateDropdown(tab: any, options: {
                 selectedValues = { valueName }
                 setItemSelected(valueName, true)
             end
+            -- Adicionado um pequeno atraso para a animação do tween ter tempo de começar antes de fechar.
             if isOpen and not isCurrentlySelected then task.delay(0.15, toggleDropdown) end
         end
         
@@ -2887,15 +3403,15 @@ function Tekscripts:CreateDropdown(tab: any, options: {
         if options.Callback then options.Callback(selected) end
     end
 
-    -- Cria item
     local function createItem(valueInfo, index)
         local hasImage = valueInfo.Image and valueInfo.Image ~= ""
         
         local itemContainer = Instance.new("TextButton")
         itemContainer.Name = "Item_" .. index
         itemContainer.Size = UDim2.new(1, 0, 0, itemHeight)
+        -- REGISTRO DE TEMA PADRÃO
+        RegisterThemeItem("ComponentBackground", itemContainer, "BackgroundColor3")
         itemContainer.BackgroundColor3 = DESIGN.ComponentBackground
-        -- AQUI 2: Aplica a transparência da aba ao container de cada item
         itemContainer.BackgroundTransparency = DESIGN.TabContainerTransparency 
         itemContainer.BorderSizePixel = 0
         itemContainer.Text = ""
@@ -2919,6 +3435,8 @@ function Tekscripts:CreateDropdown(tab: any, options: {
             indicator = Instance.new("Frame")
             indicator.Size = UDim2.new(0, 18, 0, 18)
             indicator.Position = UDim2.new(1, -18, 0.5, -9)
+            -- REGISTRO DE TEMA PADRÃO
+            RegisterThemeItem("AccentColor", indicator, "BackgroundColor3")
             indicator.BackgroundColor3 = DESIGN.AccentColor
             indicator.BorderSizePixel = 0
             indicator.Visible = false
@@ -2929,7 +3447,8 @@ function Tekscripts:CreateDropdown(tab: any, options: {
             checkIcon.Size = UDim2.new(1, 0, 1, 0)
             checkIcon.BackgroundTransparency = 1
             checkIcon.Text = "✓"
-            checkIcon.TextColor3 = Color3.fromRGB(255, 255, 255)
+            -- Cor branca ou uma cor que garanta contraste no AccentColor
+            checkIcon.TextColor3 = Color3.fromRGB(255, 255, 255) 
             checkIcon.Font = Enum.Font.GothamBold
             checkIcon.TextSize = 14
             checkIcon.Parent = indicator
@@ -2937,6 +3456,8 @@ function Tekscripts:CreateDropdown(tab: any, options: {
             indicator = Instance.new("Frame")
             indicator.Size = UDim2.new(0, 8, 0, 8)
             indicator.Position = UDim2.new(1, -8, 0.5, -4)
+            -- REGISTRO DE TEMA PADRÃO
+            RegisterThemeItem("AccentColor", indicator, "BackgroundColor3")
             indicator.BackgroundColor3 = DESIGN.AccentColor
             indicator.BorderSizePixel = 0
             indicator.Visible = false
@@ -2966,6 +3487,8 @@ function Tekscripts:CreateDropdown(tab: any, options: {
         itemText.Position = UDim2.new(0, textXOffset, 0, 0)
         itemText.BackgroundTransparency = 1
         itemText.Text = valueInfo.Name
+        -- REGISTRO DE TEMA PADRÃO
+        RegisterThemeItem("ComponentTextColor", itemText, "TextColor3")
         itemText.TextColor3 = DESIGN.ComponentTextColor
         itemText.Font = Enum.Font.Gotham
         itemText.TextSize = 14
@@ -2973,61 +3496,85 @@ function Tekscripts:CreateDropdown(tab: any, options: {
         itemText.TextYAlignment = Enum.TextYAlignment.Center
         itemText.TextTruncate = Enum.TextTruncate.AtEnd
         itemText.Parent = contentFrame
+        
+        -- **[MUDANÇA CRUCIAL]** Função que aplica a cor do tema SEM animação (TweenService)
+        local function forceItemColorUpdate(selectedState)
+            local targetColor = selectedState and DESIGN.AccentColor or DESIGN.ComponentBackground
+            itemContainer.BackgroundColor3 = targetColor
+            if indicator then 
+                indicator.Visible = selectedState 
+                -- Garante que o indicador (AccentColor) se atualize imediatamente também
+                if multiSelect and selectedState then indicator.BackgroundColor3 = DESIGN.AccentColor end 
+            end
+        end
 
         itemElements[valueInfo.Name] = {
             container = itemContainer,
             indicator = indicator,
             text = itemText,
             foto = foto,
+            forceColorUpdate = forceItemColorUpdate, -- **[MUDANÇA CRUCIAL]** Adiciona a função para ser chamada na mudança de tema
             connections = {}
         }
 
-        -- Eventos do item
         itemElements[valueInfo.Name].connections.MouseClick = itemContainer.MouseButton1Click:Connect(function()
             toggleItemSelection(valueInfo.Name)
         end)
 
         itemElements[valueInfo.Name].connections.MouseEnter = itemContainer.MouseEnter:Connect(function()
             if not table.find(selectedValues, valueInfo.Name) then
-                -- O hover deve ter uma cor ligeiramente diferente, mas ainda respeitar a transparência base.
-                -- A cor de BackgroundColor3 será interpolada pelo TweenService
-                TweenService:Create(itemContainer, TweenInfo.new(0.15), { BackgroundColor3 = DESIGN.ItemHoverColor or Color3.fromRGB(45, 45, 50) }):Play()
+                -- Usa o ItemHoverColor, registrado para o tema
+                local hoverColor = DESIGN.ItemHoverColor or Color3.fromRGB(45, 45, 50) 
+                TweenService:Create(itemContainer, TweenInfo.new(0.15), { BackgroundColor3 = hoverColor }):Play()
             end
         end)
 
         itemElements[valueInfo.Name].connections.MouseLeave = itemContainer.MouseLeave:Connect(function()
             if not table.find(selectedValues, valueInfo.Name) then
-                -- Retorna para a cor de fundo original, que tem a transparência já definida.
+                -- Volta para ComponentBackground, registrado para o tema
                 TweenService:Create(itemContainer, TweenInfo.new(0.15), { BackgroundColor3 = DESIGN.ComponentBackground }):Play()
             end
         end)
     end
 
-    -- Cria itens iniciais
     for index, valueInfo in ipairs(options.Values) do
         table.insert(itemOrder, valueInfo.Name)
         createItem(valueInfo, index)
     end
 
-    -- Inicializa seleção
     if options.InitialValues then
         for _, valueToSelect in ipairs(options.InitialValues) do
             if itemElements[valueToSelect] then
                 table.insert(selectedValues, valueToSelect)
-                setItemSelected(valueToSelect, true)
+                -- **[MUDANÇA APLICADA]** Agora usa a função forceItemColorUpdate para aplicar a cor inicial SEM tween (evitando o flash do ComponentBackground)
+                itemElements[valueToSelect].forceColorUpdate(true)
             end
         end
         updateButtonText()
     end
 
-    -- Evento do botão principal
     connections.ButtonClick = botaoText.MouseButton1Click:Connect(toggleDropdown)
 
-    -- API pública
     local publicApi = {
         _instance = box,
-        _connections = connections
+        _connections = connections,
+        _itemElements = itemElements,
     }
+    
+    -- **[MUDANÇA CRUCIAL]** Função de re-aplicação de cores para o tema (sem animação para ser imediato)
+    function publicApi:_reapplyItemColors()
+        for name, elements in pairs(publicApi._itemElements) do
+            local isSelected = table.find(selectedValues, name)
+            -- Chama a função que define a cor **sem** tweening
+            elements.forceColorUpdate(isSelected) 
+        end
+    end
+
+    -- **[MUDANÇA CRUCIAL]** Registra a publicApi para que a função de re-aplicação seja chamada quando as cores AccentColor e ComponentBackground mudarem
+    RegisterThemeItem("AccentColor", publicApi, "_reapplyItemColors")
+    RegisterThemeItem("ComponentBackground", publicApi, "_reapplyItemColors")
+    -- ItemHoverColor só afeta MouseEnter, mas pode ser registrado para consistência, embora o mais importante seja Accent e ComponentBackground
+    RegisterThemeItem("ItemHoverColor", publicApi, "_reapplyItemColors")
 
     function publicApi:AddItem(valueInfo, position)
         assert(type(valueInfo) == "table" and type(valueInfo.Name) == "string", "valueInfo inválido")
@@ -3043,16 +3590,22 @@ function Tekscripts:CreateDropdown(tab: any, options: {
             if itemElements[name] then itemElements[name].container.LayoutOrder = i end
         end
         
-        if isOpen then toggleDropdown() toggleDropdown() end
+        -- Alterna para reativar o dropdown com o novo tamanho (fluente)
+        if isOpen then toggleDropdown() task.delay(0.3, toggleDropdown) end
     end
 
     function publicApi:RemoveItem(valueName)
         assert(type(valueName) == "string", "valueName deve ser string")
         if itemElements[valueName] then
             local elements = itemElements[valueName]
+            -- Desconecta e remove registros de tema do item
             for _, conn in pairs(elements.connections) do
                 if conn and conn.Connected then conn:Disconnect() end
             end
+            RegisterThemeItem("ComponentBackground", elements.container, "BackgroundColor3", true)
+            RegisterThemeItem("ComponentTextColor", elements.text, "TextColor3", true)
+            if elements.indicator then RegisterThemeItem("AccentColor", elements.indicator, "BackgroundColor3", true) end
+
             elements.container:Destroy()
             itemElements[valueName] = nil
             
@@ -3066,24 +3619,37 @@ function Tekscripts:CreateDropdown(tab: any, options: {
             local selected = multiSelect and selectedValues or (selectedValues[1] or nil)
             if options.Callback then options.Callback(selected) end
             
-            if isOpen then toggleDropdown() toggleDropdown() end
+            -- Alterna para reativar o dropdown com o novo tamanho (fluente)
+            if isOpen then toggleDropdown() task.delay(0.3, toggleDropdown) end
         end
     end
 
     function publicApi:ClearItems()
+        -- Usa 'self' para chamar a função RemoveItem, garantindo a desassociação do tema
         while #itemOrder > 0 do self:RemoveItem(itemOrder[1]) end
     end
 
     function publicApi:Destroy()
         if self._instance then
+            -- Remove a publicApi dos registros de tema
+            RegisterThemeItem("AccentColor", self, "_reapplyItemColors", true)
+            RegisterThemeItem("ComponentBackground", self, "_reapplyItemColors", true)
+            RegisterThemeItem("ItemHoverColor", self, "_reapplyItemColors", true)
+
             for _, conn in pairs(self._connections) do
                 if conn and conn.Connected then conn:Disconnect() end
             end
-            for _, elements in pairs(itemElements) do
-                for _, conn in pairs(elements.connections) do
-                    if conn and conn.Connected then conn:Disconnect() end
-                end
+            
+            -- Remove registros de tema e desconecta conexões dos elementos do item
+            for name, _ in pairs(itemElements) do
+                self:RemoveItem(name) -- Reutiliza RemoveItem para limpar tudo corretamente
             end
+
+            -- Remove registros de tema dos elementos principais (box, title, lister)
+            RegisterThemeItem("ComponentBackground", box, "BackgroundColor3", true)
+            RegisterThemeItem("ComponentTextColor", title, "TextColor3", true)
+            RegisterThemeItem("AccentColor", lister, "ScrollBarImageColor3", true)
+
             self._instance:Destroy()
             self._instance = nil
             itemElements = {}
@@ -3101,6 +3667,7 @@ function Tekscripts:CreateDropdown(tab: any, options: {
     end
 
     function publicApi:SetSelected(values)
+        -- Deseleciona todos os itens **com** tween (para dar um feedback visual)
         for name, _ in pairs(itemElements) do setItemSelected(name, false) end
         selectedValues = {}
         
@@ -3108,6 +3675,7 @@ function Tekscripts:CreateDropdown(tab: any, options: {
         for _, value in ipairs(valuesToSet) do
             if itemElements[value] then
                 table.insert(selectedValues, value)
+                -- Seleciona os novos itens **com** tween
                 setItemSelected(value, true)
             end
         end
@@ -3129,6 +3697,7 @@ function Tekscripts:CreateDropdown(tab: any, options: {
     return publicApi
 end
 
+
 function Tekscripts:CreateToggle(tab: any, options: { Text: string, Desc: string?, Callback: (state: boolean) -> (), Type: "Toggle" | "CheckBox" | nil })
     assert(type(tab) == "table" and tab.Container, "Invalid Tab object provided to CreateToggle")
     assert(type(options) == "table" and type(options.Text) == "string", "Invalid arguments for CreateToggle")
@@ -3139,18 +3708,16 @@ function Tekscripts:CreateToggle(tab: any, options: { Text: string, Desc: string
     local componentType = options.Type and string.lower(options.Type) == "checkbox" and "CheckBox" or "Toggle"
 
     local padding = 6
-    local descMinHeight = 18 -- Altura mínima por linha da descrição (para o cálculo inicial)
+    local descMinHeight = 18 
     local descHeight
     
-    -- Calcula uma estimativa de altura para o texto da descrição
     if options.Desc then
         local textSize = TextService:GetTextSize(
             options.Desc, 
-            14, -- TextSize
+            14, 
             Enum.Font.Roboto, 
-            Vector2.new(tab.Container.AbsoluteSize.X * 0.7 - 10, 1000) -- Largura máxima
+            Vector2.new(tab.Container.AbsoluteSize.X * 0.7 - 10, 1000)
         )
-        -- Altura total da descrição, arredondada para o próximo múltiplo de descMinHeight + um pequeno padding
         descHeight = math.ceil(textSize.Y / descMinHeight) * descMinHeight + padding
     else
         descHeight = 0
@@ -3158,40 +3725,36 @@ function Tekscripts:CreateToggle(tab: any, options: { Text: string, Desc: string
     
     local totalHeight = DESIGN.ComponentHeight + descHeight + padding
     
-    -- Se o cálculo não for preciso, garante uma altura mínima se houver descrição.
     if options.Desc and totalHeight < DESIGN.ComponentHeight + descMinHeight * 2 then
         totalHeight = DESIGN.ComponentHeight + descMinHeight * 2
     end
 
-    -- Outer box
     local outerBox = Instance.new("Frame")
     outerBox.Size = UDim2.new(1, 0, 0, totalHeight)
+    RegisterThemeItem("ComponentBackground", outerBox, "BackgroundColor3")
     outerBox.BackgroundColor3 = DESIGN.ComponentBackground
-    -- AQUI: Aplica a transparência definida no DESIGN
     outerBox.BackgroundTransparency = DESIGN.TabContainerTransparency 
     outerBox.BorderSizePixel = 0
     outerBox.Parent = tab.Container
     addRoundedCorners(outerBox, DESIGN.CornerRadius)
 
-    -- Internal container (usa UIListLayout para empilhar Label e Desc)
     local container = Instance.new("Frame")
     container.Size = UDim2.new(1, -DESIGN.ComponentPadding*2, 1, 0)
     container.Position = UDim2.new(0, DESIGN.ComponentPadding, 0, 0)
     container.BackgroundTransparency = 1
     container.Parent = outerBox
     
-    -- Layout para organizar Text e DescLabel
     local listLayout = Instance.new("UIListLayout")
     listLayout.Padding = UDim.new(0, 0)
     listLayout.HorizontalAlignment = Enum.HorizontalAlignment.Left
     listLayout.VerticalAlignment = Enum.VerticalAlignment.Top
     listLayout.Parent = container
 
-    -- Label
     local label = Instance.new("TextLabel")
     label.Text = options.Text
     label.Size = UDim2.new(0.7, -10, 0, DESIGN.ComponentHeight)
     label.BackgroundTransparency = 1
+    RegisterThemeItem("ComponentTextColor", label, "TextColor3")
     label.TextColor3 = DESIGN.ComponentTextColor
     label.Font = Enum.Font.Roboto
     label.TextScaled = false
@@ -3199,12 +3762,10 @@ function Tekscripts:CreateToggle(tab: any, options: { Text: string, Desc: string
     label.TextXAlignment = Enum.TextXAlignment.Left
     label.Parent = container
 
-    -- Description
     local descLabel
     if options.Desc then
         descLabel = Instance.new("TextLabel")
         descLabel.Text = options.Desc
-        -- Altura relativa dentro do espaço calculado
         descLabel.Size = UDim2.new(0.7, -10, 0, descHeight - padding) 
         descLabel.BackgroundTransparency = 1
         descLabel.TextColor3 = Color3.fromRGB(160, 160, 160)
@@ -3212,30 +3773,26 @@ function Tekscripts:CreateToggle(tab: any, options: { Text: string, Desc: string
         descLabel.TextScaled = false
         descLabel.TextSize = 14
         descLabel.TextXAlignment = Enum.TextXAlignment.Left
-        -- NOVIDADE: Habilita quebra de linha
         descLabel.TextWrapped = true
         descLabel.Parent = container
     end
 
-    -- Switch/Checkbox Control
     local controlSize = componentType == "CheckBox" and Vector2.new(24, 24) or Vector2.new(50, 24)
-    local controlCornerRadius = componentType == "CheckBox" and 2 or 100 -- Canto quadrado para CheckBox
+    local controlCornerRadius = componentType == "CheckBox" and 2 or 100
 
     local control = Instance.new("TextButton")
     control.Size = UDim2.new(0, controlSize.X, 0, controlSize.Y)
-    -- Centraliza verticalmente
     control.Position = UDim2.new(1, -controlSize.X - DESIGN.ComponentPadding, 0.5, -controlSize.Y/2) 
+    RegisterThemeItem("InactiveToggleColor", control, "BackgroundColor3")
     control.BackgroundColor3 = DESIGN.InactiveToggleColor
     control.Text = ""
     control.AutoButtonColor = false
     control.ClipsDescendants = true
-    control.Parent = outerBox -- Colocado em outerBox para ignorar o UIListLayout
+    control.Parent = outerBox
     addRoundedCorners(control, controlCornerRadius)
     
-    -- Knob/Checkmark
     local knob
     if componentType == "Toggle" then
-        -- Toggle Knob
         knob = Instance.new("Frame")
         knob.Size = UDim2.new(0, 20, 0, 20)
         knob.Position = UDim2.new(0, 2, 0, 2)
@@ -3243,7 +3800,6 @@ function Tekscripts:CreateToggle(tab: any, options: { Text: string, Desc: string
         knob.Parent = control
         addRoundedCorners(knob, 100)
     else 
-        -- CheckBox Checkmark
         knob = Instance.new("TextLabel")
         knob.Text = "✔"
         knob.Size = UDim2.new(1, 0, 1, 0)
@@ -3251,13 +3807,12 @@ function Tekscripts:CreateToggle(tab: any, options: { Text: string, Desc: string
         knob.TextColor3 = Color3.fromRGB(255, 255, 255)
         knob.Font = Enum.Font.Roboto
         knob.TextScaled = true
-        knob.TextSize = 24 -- Apenas um valor base, TextScaled fará o trabalho
+        knob.TextSize = 24 
         knob.TextWrapped = true
-        knob.Visible = false -- Fica visível apenas quando 'state' for true
+        knob.Visible = false 
         knob.Parent = control
     end
 
-    -- Error indicator (Mantido no control/switch)
     local errorIndicator = Instance.new("Frame")
     errorIndicator.Size = UDim2.new(0, 8, 0, 8)
     errorIndicator.Position = UDim2.new(1, -10, 0, 2)
@@ -3266,7 +3821,6 @@ function Tekscripts:CreateToggle(tab: any, options: { Text: string, Desc: string
     errorIndicator.Parent = control
     addRoundedCorners(errorIndicator, 100)
 
-    -- Internal state
     local state = false
     local locked = false
     local inError = false
@@ -3287,16 +3841,12 @@ function Tekscripts:CreateToggle(tab: any, options: { Text: string, Desc: string
                 Position = newState and UDim2.new(1, -22, 0, 2) or UDim2.new(0, 2, 0, 2)
             }):Play()
         else
-            -- CheckBox: Visibilidade e cor do fundo
             knob.Visible = newState
             if newState then
-                -- CheckBox ativo usa a cor de ativo
                 TweenService:Create(control, TweenInfo.new(0.25, Enum.EasingStyle.Quad), {
                     BackgroundColor3 = activeColor
                 }):Play()
             else
-                -- CheckBox inativo usa a cor de inativo ou background.
-                -- Vou manter a cor inativa para consistência com o Toggle quando inativo.
                 TweenService:Create(control, TweenInfo.new(0.25, Enum.EasingStyle.Quad), {
                     BackgroundColor3 = inactiveColor
                 }):Play()
@@ -3334,17 +3884,14 @@ function Tekscripts:CreateToggle(tab: any, options: { Text: string, Desc: string
         toggle(not state)
     end)
 
-    -- Hover logic respecting error
     connections.Enter = control.MouseEnter:Connect(function()
         if not locked then
             local hoverColor = inError and Color3.fromRGB(255,60,60) 
                             or (state and DESIGN.ActiveToggleColor or DESIGN.ComponentHoverColor)
                             
             if componentType == "CheckBox" and not state then
-                -- CheckBox inativo no hover pode ter uma cor de fundo sutil
                 hoverColor = DESIGN.ComponentHoverColor 
             elseif componentType == "CheckBox" and state then
-                -- CheckBox ativo no hover mantém a cor ativa
                 hoverColor = DESIGN.ActiveToggleColor 
             end
 
@@ -3360,10 +3907,11 @@ function Tekscripts:CreateToggle(tab: any, options: { Text: string, Desc: string
         end
     end)
 
-    -- Public API
     local publicApi = {
         _instance = outerBox,
-        _connections = connections
+        _connections = connections,
+        -- Adicionando o método para forçar a reanimação após uma troca de tema
+        _reanimate = function() animateControl(state) end 
     }
 
     function publicApi:SetState(newState: boolean) toggle(newState, true) end
@@ -3373,10 +3921,6 @@ function Tekscripts:CreateToggle(tab: any, options: { Text: string, Desc: string
     function publicApi:SetDesc(newDesc: string) 
         if descLabel then 
             descLabel.Text = newDesc 
-            -- Note: O ajuste de altura do componente pai (outerBox) é mais complexo e 
-            -- pode precisar de lógica adicional para redimensionar o outerBox após a mudança de texto.
-            -- Para este escopo, a quebra de linha está habilitada, mas o redimensionamento dinâmico
-            -- do componente pai (outerBox) não é automático.
         end 
     end
     function publicApi:SetCallback(newCallback)
@@ -3406,7 +3950,7 @@ function Tekscripts:CreateToggle(tab: any, options: { Text: string, Desc: string
     table.insert(tab.Components, publicApi)
     return publicApi
 end
---suportes a api destrói onace
+
 function Tekscripts:CreateDialog(options) 
     assert(type(options) == "table", "Invalid options")
 
@@ -3424,23 +3968,33 @@ function Tekscripts:CreateDialog(options)
     screen.ResetOnSpawn = false
     screen.Parent = PlayerGui
 
-    -- NOVO: Overlay (Fundo semi-transparente que cobre a tela)
     local overlay = Instance.new("Frame")
     overlay.Name = "Overlay"
     overlay.Size = UDim2.new(1, 0, 1, 0)
-    overlay.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Fundo escuro
-    -- AQUI: Usando a transparência da janela para o overlay
-    overlay.BackgroundTransparency = 1 - DESIGN.WindowTransparency -- Ajusta a transparência
-    overlay.ZIndex = 999 -- Fica abaixo da caixa de diálogo
+    overlay.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    -- O overlay será registrado separadamente para recalcular sua transparência
+    overlay.BackgroundTransparency = 1 - DESIGN.WindowTransparency
+    overlay.ZIndex = 999 
     overlay.Parent = screen
+    
+    -- Função auxiliar para o overlay, que usa 1 - DESIGN.WindowTransparency
+    local function updateOverlayTransparency()
+        if overlay and overlay.Parent then
+            overlay.BackgroundTransparency = 1 - DESIGN.WindowTransparency
+        end
+    end
+    -- Registra o overlay em uma chave customizada para a transparência
+    RegisterThemeItem("WindowTransparency", {object = {BackgroundTransparency = overlay.BackgroundTransparency}, property = "BackgroundTransparency"}, updateOverlayTransparency)
+
 
     local box = Instance.new("Frame")
     box.Name = "DialogBox"
     box.Size = UDim2.new(0, 340, 0, 0)
     box.AnchorPoint = Vector2.new(0.5, 0.5)
     box.Position = UDim2.new(0.5, 0, 0.5, 0)
+    RegisterThemeItem("ComponentBackground", box, "BackgroundColor3")
     box.BackgroundColor3 = DESIGN.ComponentBackground
-    -- AQUI: Aplicando a transparência da janela ao DialogBox
+    RegisterThemeItem("WindowTransparency", box, "BackgroundTransparency")
     box.BackgroundTransparency = DESIGN.WindowTransparency 
     box.AutomaticSize = Enum.AutomaticSize.Y
     box.ZIndex = 1000
@@ -3463,12 +4017,12 @@ function Tekscripts:CreateDialog(options)
     padding.PaddingRight = UDim.new(0, DESIGN.ComponentPadding)
     padding.Parent = box
 
-    -- Título
     local title = Instance.new("TextLabel")
     title.Name = "Title"
     title.Text = titleText
     title.Size = UDim2.new(1, 0, 0, DESIGN.TitleHeight)
     title.BackgroundTransparency = 1
+    RegisterThemeItem("TitleColor", title, "TextColor3")
     title.TextColor3 = DESIGN.TitleColor
     title.Font = Enum.Font.GothamBold
     title.TextSize = 18
@@ -3478,17 +4032,16 @@ function Tekscripts:CreateDialog(options)
     title.LayoutOrder = 1
     title.Parent = box
 
-    -- Linha separadora (HR)
     local hr = Instance.new("Frame")
     hr.Name = "TitleDivider"
     hr.Size = UDim2.new(1, 0, 0, 2)
+    RegisterThemeItem("DividerColor", hr, "BackgroundColor3")
     hr.BackgroundColor3 = DESIGN.DividerColor or Color3.fromRGB(200,200,200)
     hr.BorderSizePixel = 0
     hr.ZIndex = 1001
     hr.LayoutOrder = 2
     hr.Parent = box
 
-    -- Mensagem
     local message = Instance.new("TextLabel")
     message.Name = "Message"
     message.Text = messageText
@@ -3496,6 +4049,7 @@ function Tekscripts:CreateDialog(options)
     message.AutomaticSize = Enum.AutomaticSize.Y
     message.BackgroundTransparency = 1
     message.TextWrapped = true
+    RegisterThemeItem("ComponentTextColor", message, "TextColor3")
     message.TextColor3 = DESIGN.ComponentTextColor
     message.Font = Enum.Font.Gotham
     message.TextSize = 14
@@ -3505,7 +4059,6 @@ function Tekscripts:CreateDialog(options)
     message.LayoutOrder = 3
     message.Parent = box
 
-    -- Botões
     local buttonHolder = Instance.new("Frame")
     buttonHolder.Name = "ButtonHolder"
     buttonHolder.Size = UDim2.new(1, 0, 0, 36)
@@ -3522,11 +4075,18 @@ function Tekscripts:CreateDialog(options)
     btnLayout.Parent = buttonHolder
 
     local connections = {}
+    
+    -- Lista de referências para forçar o re-hover (necessário quando o tema muda)
+    local buttonsApi = {} 
 
     for i, btnInfo in ipairs(buttons) do
         local btn = Instance.new("TextButton")
         btn.Name = btnInfo.Text or ("Button" .. i)
         btn.Size = UDim2.new(0, 100, 0, 30)
+        
+        RegisterThemeItem("InputBackgroundColor", btn, "BackgroundColor3")
+        RegisterThemeItem("InputTextColor", btn, "TextColor3")
+        
         btn.BackgroundColor3 = DESIGN.InputBackgroundColor
         btn.TextColor3 = DESIGN.InputTextColor
         btn.Font = Enum.Font.Gotham
@@ -3540,12 +4100,29 @@ function Tekscripts:CreateDialog(options)
         btnCorner.CornerRadius = UDim.new(0, DESIGN.CornerRadius / 2)
         btnCorner.Parent = btn
 
-        btn.MouseEnter:Connect(function()
+        local function mouseEnter()
             btn.BackgroundColor3 = DESIGN.ComponentHoverColor
-        end)
-        btn.MouseLeave:Connect(function()
+        end
+        local function mouseLeave()
             btn.BackgroundColor3 = DESIGN.InputBackgroundColor
-        end)
+        end
+        
+        local enterConn = btn.MouseEnter:Connect(mouseEnter)
+        local leaveConn = btn.MouseLeave:Connect(mouseLeave)
+
+        table.insert(connections, enterConn)
+        table.insert(connections, leaveConn)
+        
+        -- API interna do botão para forçar o Leave/Re-apply
+        local buttonApi = {
+            instance = btn,
+            reapplyTheme = function()
+                mouseLeave() -- Força o botão para a cor normal (InputBackgroundColor)
+            end
+        }
+        table.insert(buttonsApi, buttonApi)
+        
+        RegisterThemeItem("ComponentHoverColor", buttonApi, "reapplyTheme")
 
         table.insert(connections, btn.MouseButton1Click:Connect(function()
             if btnInfo.Callback then pcall(btnInfo.Callback) end
@@ -3568,6 +4145,7 @@ function Tekscripts:CreateDialog(options)
     return api
 end
 
+
 function Tekscripts:CreateInput(tab, options)
 	assert(type(tab) == "table" and tab.Container, "Invalid Tab object provided to CreateInput")
 	assert(type(options) == "table" and type(options.Text) == "string", "Invalid arguments for CreateInput")
@@ -3576,8 +4154,8 @@ function Tekscripts:CreateInput(tab, options)
 
 	local box = Instance.new("Frame")
 	box.Size = UDim2.new(1, 0, 0, DESIGN.ComponentHeight + 30)
+	RegisterThemeItem("ComponentBackground", box, "BackgroundColor3")
 	box.BackgroundColor3 = DESIGN.ComponentBackground
-	-- AQUI ESTÁ A MUDANÇA: Usando a transparência do contêiner de abas
 	box.BackgroundTransparency = DESIGN.TabContainerTransparency
 	box.Parent = tab.Container
 	addRoundedCorners(box, DESIGN.CornerRadius)
@@ -3614,14 +4192,17 @@ function Tekscripts:CreateInput(tab, options)
 	title.Font = Enum.Font.GothamBold
 	title.TextScaled = true
 	title.TextXAlignment = Enum.TextXAlignment.Left
+	RegisterThemeItem("ComponentTextColor", title, "TextColor3")
 	title.TextColor3 = DESIGN.ComponentTextColor
 	title.Parent = topRow
 
 	local textbox = Instance.new("TextBox")
 	textbox.Size = UDim2.new(0.6, 0, 1, 0)
+	RegisterThemeItem("InputBackgroundColor", textbox, "BackgroundColor3")
 	textbox.BackgroundColor3 = DESIGN.InputBackgroundColor
 	textbox.PlaceholderText = options.Placeholder or ""
 	textbox.PlaceholderColor3 = Color3.fromRGB(140, 140, 140)
+	RegisterThemeItem("InputTextColor", textbox, "TextColor3")
 	textbox.TextColor3 = DESIGN.InputTextColor
 	textbox.TextScaled = true
 	textbox.Font = Enum.Font.Roboto
@@ -3632,9 +4213,8 @@ function Tekscripts:CreateInput(tab, options)
 	textbox.ClipsDescendants = true
 	textbox.Parent = topRow
 	addRoundedCorners(textbox, DESIGN.CornerRadius)
-	addHoverEffect(textbox, DESIGN.InputBackgroundColor, DESIGN.InputHoverColor)
+	local hoverConnections = addHoverEffect(textbox, DESIGN.InputBackgroundColor, DESIGN.InputHoverColor)
 
-	-- Bloqueio visual
 	local blockOverlay = Instance.new("Frame")
 	blockOverlay.Size = UDim2.new(1, 0, 1, 0)
 	blockOverlay.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
@@ -3656,7 +4236,6 @@ function Tekscripts:CreateInput(tab, options)
 	blockText.ZIndex = blockOverlay.ZIndex + 1
 	blockText.Parent = blockOverlay
 
-	-- Indicador de erro
 	local errorIndicator = Instance.new("Frame")
 	errorIndicator.Size = UDim2.new(0, 8, 0, 8)
 	errorIndicator.Position = UDim2.new(1, -10, 0, 2)
@@ -3666,7 +4245,6 @@ function Tekscripts:CreateInput(tab, options)
 	addRoundedCorners(errorIndicator, 100)
 	errorIndicator.Parent = textbox
 
-	-- Desc
 	local desc
 	if options.Desc then
 		desc = Instance.new("TextLabel")
@@ -3677,13 +4255,33 @@ function Tekscripts:CreateInput(tab, options)
 		desc.TextScaled = true
 		desc.TextWrapped = true
 		desc.TextXAlignment = Enum.TextXAlignment.Left
+		-- Não registramos diretamente, mas dependemos da ComponentTextColor, garantindo a tonalidade
 		desc.TextColor3 = DESIGN.ComponentTextColor:lerp(Color3.new(0.7, 0.7, 0.7), 0.6)
 		desc.Parent = box
 	end
 
 	local connections = {}
-	local publicApi = { _instance = box, _connections = connections, Blocked = false }
+	local publicApi = { _instance = box, _connections = connections, Blocked = false, _hoverConnections = hoverConnections }
 	local inError = false
+	
+	-- Função para reaplicar hover após tema. Assume que addHoverEffect tem um destrutor/reaplicador interno
+	local function reapplyHoverEffect()
+		if publicApi._hoverConnections then
+			for _, conn in pairs(publicApi._hoverConnections) do
+				if conn and conn.Connected then conn:Disconnect() end
+			end
+		end
+		-- Reaplica o efeito com as cores atuais do DESIGN
+		publicApi._hoverConnections = addHoverEffect(textbox, DESIGN.InputBackgroundColor, DESIGN.InputHoverColor)
+	end
+	
+	-- Adiciona o hook para reativar o hover após o tema mudar
+	RegisterThemeItem("InputHoverColor", publicApi, "_reapplyHover")
+	
+	function publicApi:_reapplyHover()
+	    reapplyHoverEffect()
+	end
+
 
 	local function pulseError()
 		if not textbox then return end
@@ -3694,6 +4292,7 @@ function Tekscripts:CreateInput(tab, options)
 			if textbox and not publicApi.Blocked then
 				inError = false
 				errorIndicator.Visible = false
+				-- Usa DESIGN.InputBackgroundColor para reverter para a cor correta do tema atual
 				TweenService:Create(textbox, TweenInfo.new(0.2), { BackgroundColor3 = DESIGN.InputBackgroundColor }):Play()
 			end
 		end)
@@ -3743,6 +4342,7 @@ function Tekscripts:CreateInput(tab, options)
 				desc = Instance.new("TextLabel")
 				desc.Size = UDim2.new(1, 0, 0, 14)
 				desc.BackgroundTransparency = 1
+				-- Recria a cor do texto do desc
 				desc.TextColor3 = DESIGN.ComponentTextColor:lerp(Color3.new(0.7, 0.7, 0.7), 0.6)
 				desc.Font = Enum.Font.Gotham
 				desc.TextScaled = true
@@ -3763,6 +4363,12 @@ function Tekscripts:CreateInput(tab, options)
 			end
 			self._connections = nil
 		end
+		if self._hoverConnections then
+			for _, conn in pairs(self._hoverConnections) do
+				if conn and conn.Connected then conn:Disconnect() end
+			end
+			self._hoverConnections = nil
+		end
 		if self._instance then
 			self._instance:Destroy()
 			self._instance = nil
@@ -3773,30 +4379,38 @@ function Tekscripts:CreateInput(tab, options)
 	return publicApi
 end
 
+
 function Tekscripts:CreateButton(tab, options)
-    -- // VALIDAÇÃO
     assert(typeof(tab) == "table" and tab.Container, "CreateButton: 'tab' inválido ou sem Container.")
     assert(typeof(options) == "table" and typeof(options.Text) == "string", "CreateButton: 'options' inválido.")
 
-    -- // SERVIÇOS
     local TweenService = game:GetService("TweenService")
 
-    -- // CONFIG
     local callback = typeof(options.Callback) == "function" and options.Callback or function() end
     local debounceTime = tonumber(options.Debounce or 0.25)
     local lastClick = 0
-    local btnColor = DESIGN.ComponentBackground
-    local hoverColor = DESIGN.ComponentHoverColor
+    
     local errorColor = Color3.fromRGB(255, 60, 60)
+    
+    local function getColors()
+        return {
+            btn = self._blocked and Color3.fromRGB(60, 60, 60) or DESIGN.ComponentBackground,
+            hover = DESIGN.ComponentHoverColor
+        }
+    end
 
-    -- // INSTÂNCIA
     local btn = Instance.new("TextButton")
     btn.Name = "Button"
     btn.Size = UDim2.new(1, 0, 0, DESIGN.ComponentHeight)
-    btn.BackgroundColor3 = btnColor
-    -- AQUI ESTÁ A MUDANÇA: Aplica a transparência definida no DESIGN
+    
+    RegisterThemeItem("ComponentBackground", btn, "BackgroundColor3")
+    btn.BackgroundColor3 = DESIGN.ComponentBackground
+    
     btn.BackgroundTransparency = DESIGN.TabContainerTransparency
+    
+    RegisterThemeItem("ComponentTextColor", btn, "TextColor3")
     btn.TextColor3 = DESIGN.ComponentTextColor
+    
     btn.Font = Enum.Font.Gotham
     btn.TextSize = 14
     btn.Text = options.Text
@@ -3804,18 +4418,17 @@ function Tekscripts:CreateButton(tab, options)
     btn.ClipsDescendants = true
     btn.Parent = tab.Container
 
-    -- // VISUAL
     local corner = Instance.new("UICorner")
     corner.CornerRadius = UDim.new(0, DESIGN.CornerRadius)
     corner.Parent = btn
 
     local stroke = Instance.new("UIStroke")
+    RegisterThemeItem("HRColor", stroke, "Color")
     stroke.Color = DESIGN.HRColor
     stroke.Thickness = 1
     stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
     stroke.Parent = btn
 
-    -- // ANIMAÇÕES
     local function tweenTo(props, duration)
         if not btn or not btn.Parent then return end
         local tween = TweenService:Create(btn, TweenInfo.new(duration or 0.15, Enum.EasingStyle.Quad), props)
@@ -3826,21 +4439,20 @@ function Tekscripts:CreateButton(tab, options)
     local function pulseError()
         tweenTo({BackgroundColor3 = errorColor}, 0.1)
         task.delay(0.2, function()
-            tweenTo({BackgroundColor3 = btnColor}, 0.2)
+            tweenTo({BackgroundColor3 = getColors().btn}, 0.2)
         end)
     end
 
-    -- // EVENTOS
     local hoverConn = btn.MouseEnter:Connect(function()
-        if not self.Blocked then tweenTo({BackgroundColor3 = hoverColor}) end
+        if not self._blocked then tweenTo({BackgroundColor3 = getColors().hover}) end
     end)
 
     local leaveConn = btn.MouseLeave:Connect(function()
-        if not self.Blocked then tweenTo({BackgroundColor3 = btnColor}) end
+        if not self._blocked then tweenTo({BackgroundColor3 = getColors().btn}) end
     end)
 
     local clickConn = btn.MouseButton1Click:Connect(function()
-        if self.Blocked then return end
+        if self._blocked then return end
         if tick() - lastClick < debounceTime then return end
         lastClick = tick()
 
@@ -3861,18 +4473,24 @@ function Tekscripts:CreateButton(tab, options)
         end)
     end)
 
-    -- // API PÚBLICA
     local publicApi = {
         _instance = btn,
         _connections = {clickConn, hoverConn, leaveConn},
         _blocked = false,
-        _callback = callback
+        _callback = callback,
+        -- Adicionando método para forçar a reaplicação de cor em caso de troca de tema
+        _reapplyTheme = function() 
+            if not self._blocked then
+                -- Força a cor normal do botão
+                tweenTo({BackgroundColor3 = getColors().btn}, 0.1) 
+            end
+        end
     }
 
     function publicApi:SetBlocked(state)
         self._blocked = state
         self._instance.Active = not state
-        local color = state and Color3.fromRGB(60, 60, 60) or btnColor
+        local color = getColors().btn
         tweenTo({BackgroundColor3 = color}, 0.15)
     end
 
@@ -3912,7 +4530,6 @@ function Tekscripts:CreateLabel(tab, options)
 
     local TweenService = game:GetService("TweenService")
 
-    -- Valores padrão
     local defaultOptions = {
         Title = options.Title,
         Desc = options.Desc,
@@ -3920,12 +4537,11 @@ function Tekscripts:CreateLabel(tab, options)
         TitleColor = DESIGN.ComponentTextColor,
         DescColor = Color3.fromRGB(200, 200, 200),
         Align = options.Align or Enum.TextXAlignment.Left,
-        Highlight = options.Highlight or false
     }
 
-    -- Box principal
     local outerBox = Instance.new("Frame")
     outerBox.Size = UDim2.new(1, 0, 0, 0)
+    RegisterThemeItem("ComponentBackground", outerBox, "BackgroundColor3")
     outerBox.BackgroundColor3 = DESIGN.ComponentBackground
     outerBox.BackgroundTransparency = DESIGN.TabContainerTransparency 
     outerBox.BorderSizePixel = 0
@@ -3933,7 +4549,6 @@ function Tekscripts:CreateLabel(tab, options)
     outerBox.Parent = tab.Container
     addRoundedCorners(outerBox, DESIGN.CornerRadius)
 
-    -- Sombra (mantida)
     local shadow = Instance.new("Frame")
     shadow.Size = UDim2.new(1, 0, 1, 0)
     shadow.Position = UDim2.new(0, 0, 0, 2)
@@ -3944,7 +4559,6 @@ function Tekscripts:CreateLabel(tab, options)
     addRoundedCorners(shadow, DESIGN.CornerRadius)
     shadow.Parent = outerBox
 
-    -- CONTAINER INTERNO (Vertical)
     local container = Instance.new("Frame")
     container.Size = UDim2.new(1, -DESIGN.ComponentPadding * 2, 1, -DESIGN.ComponentPadding * 2)
     container.Position = UDim2.new(0, DESIGN.ComponentPadding, 0, DESIGN.ComponentPadding)
@@ -3953,14 +4567,13 @@ function Tekscripts:CreateLabel(tab, options)
     container.Parent = outerBox
 
     local listLayout = Instance.new("UIListLayout")
-    listLayout.Padding = UDim.new(0, 6) -- Padding menor para elementos verticais
+    listLayout.Padding = UDim.new(0, 6) 
     listLayout.SortOrder = Enum.SortOrder.LayoutOrder
-    listLayout.HorizontalAlignment = Enum.HorizontalAlignment.Left -- Alinhamento na box
+    listLayout.HorizontalAlignment = Enum.HorizontalAlignment.Left 
     listLayout.Parent = container
 
-    -- NOVA LINHA DE TÍTULO (Horizontal)
     local titleRow = Instance.new("Frame")
-    titleRow.Size = UDim2.new(1, 0, 0, 24) -- Altura fixa para o título/ícone
+    titleRow.Size = UDim2.new(1, 0, 0, 24) 
     titleRow.BackgroundTransparency = 1
     titleRow.Parent = container
 
@@ -3970,7 +4583,6 @@ function Tekscripts:CreateLabel(tab, options)
     rowLayout.VerticalAlignment = Enum.VerticalAlignment.Center
     rowLayout.Parent = titleRow
 
-    -- ÍCONE (Opcional - lado a lado com o Título)
     local iconContainer
     local iconLabel
     if defaultOptions.Icon then
@@ -3987,12 +4599,11 @@ function Tekscripts:CreateLabel(tab, options)
         iconLabel.Parent = iconContainer
     end
 
-    -- TÍTULO (Lado a lado com o Ícone)
     local titleLabel = Instance.new("TextLabel")
     titleLabel.Text = defaultOptions.Title
-    -- Ajusta o tamanho do título para preencher o restante da row
     titleLabel.Size = UDim2.new(1, iconContainer and -24 or 0, 1, 0) 
     titleLabel.BackgroundTransparency = 1
+    RegisterThemeItem("ComponentTextColor", titleLabel, "TextColor3")
     titleLabel.TextColor3 = defaultOptions.TitleColor
     titleLabel.Font = Enum.Font.GothamBold
     titleLabel.TextSize = 18
@@ -4001,18 +4612,6 @@ function Tekscripts:CreateLabel(tab, options)
     titleLabel.Parent = titleRow
     titleLabel.LayoutOrder = 2
 
-    -- Linha de destaque (Opcional)
-    local highlightLine
-    if defaultOptions.Highlight then
-        highlightLine = Instance.new("Frame")
-        highlightLine.Size = UDim2.new(0, 40, 0, 2)
-        highlightLine.BackgroundColor3 = DESIGN.AccentColor or Color3.fromRGB(100, 180, 255)
-        highlightLine.Position = UDim2.new(0, 0, 1, 4)
-        highlightLine.Parent = titleLabel
-        addRoundedCorners(highlightLine, 1)
-    end
-
-    -- DESCRIÇÃO (Abaixo da titleRow)
     local descLabel
     if defaultOptions.Desc then
         descLabel = Instance.new("TextLabel")
@@ -4020,6 +4619,8 @@ function Tekscripts:CreateLabel(tab, options)
         descLabel.Size = UDim2.new(1, 0, 0, 0)
         descLabel.AutomaticSize = Enum.AutomaticSize.Y
         descLabel.BackgroundTransparency = 1
+        -- Nota: A cor da descrição é fixa, mas se você adicionar uma chave "DescriptionTextColor" ao DESIGN, registre aqui:
+        -- RegisterThemeItem("DescriptionTextColor", descLabel, "TextColor3")
         descLabel.TextColor3 = defaultOptions.DescColor
         descLabel.Font = Enum.Font.GothamMedium
         descLabel.TextSize = 15
@@ -4030,7 +4631,6 @@ function Tekscripts:CreateLabel(tab, options)
         descLabel.LayoutOrder = 3
     end
 
-    -- Ajuste automático de altura (Conecta ao layout VERTICAL principal)
     local layoutConnection = listLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
         local totalHeight = listLayout.AbsoluteContentSize.Y + DESIGN.ComponentPadding * 2
         outerBox.Size = UDim2.new(1, 0, 0, totalHeight)
@@ -4039,12 +4639,10 @@ function Tekscripts:CreateLabel(tab, options)
         end
     end)
     
-    -- Se houver ícone, ajusta a largura do label do título
     if iconContainer then
         titleLabel.Size = UDim2.new(1, -iconContainer.Size.X.Offset - rowLayout.Padding.Offset, 1, 0)
     end
 
-    -- API pública (funções de atualização ajustadas para novos containers)
     local publicApi = {
         _instance = outerBox,
         _connections = { layoutConnection },
@@ -4053,9 +4651,6 @@ function Tekscripts:CreateLabel(tab, options)
         _iconLabel = iconLabel
     }
 
-    -- ... (O restante das funções de API como SetTitle, SetDesc, SetIcon, etc., não precisa de grandes mudanças
-    -- desde que elas usem _titleLabel, _descLabel e _iconLabel)
-    
     function publicApi.SetTitle(newTitle, color)
         if not newTitle then return end
         titleLabel.Text = newTitle
@@ -4085,6 +4680,8 @@ function Tekscripts:CreateLabel(tab, options)
             descLabel.LineHeight = 1.15
             descLabel.Parent = container
             descLabel.LayoutOrder = 3
+            -- Se for criado dinamicamente, também deve ser registrado se usar uma cor dinâmica do tema.
+            -- RegisterThemeItem("DescriptionTextColor", descLabel, "TextColor3")
         end
 
         descLabel.Text = newDesc
@@ -4109,7 +4706,6 @@ function Tekscripts:CreateLabel(tab, options)
                 iconLabel.Parent = iconContainer
                 publicApi._iconLabel = iconLabel
                 
-                -- Ajusta o tamanho do Título
                 titleLabel.Size = UDim2.new(1, -iconContainer.Size.X.Offset - rowLayout.Padding.Offset, 1, 0)
                 titleLabel.LayoutOrder = 2
 
@@ -4123,7 +4719,6 @@ function Tekscripts:CreateLabel(tab, options)
                 iconLabel = nil
                 publicApi._iconLabel = nil
                 
-                -- Ajusta o tamanho do Título para preencher a linha toda
                 titleLabel.Size = UDim2.new(1, 0, 1, 0)
             end
         end
@@ -4135,15 +4730,11 @@ function Tekscripts:CreateLabel(tab, options)
         if descLabel then
             descLabel.TextXAlignment = align
         end
-        -- O alinhamento do listLayout principal (container) deve ser sempre Left se houver ícone/descrição.
-        -- Se não houver, podemos ajustar o HorizontalAlignment da titleRow.
         if not iconContainer then
             rowLayout.HorizontalAlignment = align == Enum.TextXAlignment.Center and Enum.HorizontalAlignment.Center or Enum.HorizontalAlignment.Left
         end
     end
     
-    -- O resto das funções (Update e Destroy) permanecem as mesmas.
-
     function publicApi.Update(newOptions)
         if newOptions.Title ~= nil then
             publicApi.SetTitle(newOptions.Title, newOptions.TitleColor)
@@ -4176,5 +4767,4 @@ function Tekscripts:CreateLabel(tab, options)
     table.insert(tab.Components, publicApi)
     return publicApi
 end
-
 return Tekscripts
