@@ -1229,7 +1229,7 @@ function GetAvailableThemesJson()
     local jsonString = "[\"" .. table.concat(themeNames, "\",\"") .. "\"]"
     return jsonString
 end
-SetTheme(PRESETS.Oceanic)
+SetTheme(PRESETS.CrimsonDusk)
 ---
 -- Funções de Criação de Componentes
 ---
@@ -1329,10 +1329,6 @@ end
 local Tab = {}
 Tab.__index = Tab
 
--- ** CONSTANTES DE VIRTUALIZAÇÃO **
--- Margem extra para evitar pop-in/pop-out ao rolar rapidamente
-local VIRTUALIZATION_PADDING = 100 
-
 function Tab.new(name: string, parent: Instance)
     local self = setmetatable({}, Tab)
 
@@ -1347,8 +1343,7 @@ function Tab.new(name: string, parent: Instance)
     c.ScrollBarThickness = 6
     -- Cor da barra de rolagem será registrada na API pública
     c.ScrollBarImageColor3 = DESIGN.ComponentHoverColor
-    -- MANTEMOS AutomaticCanvasSize.Y para que o layout calcule o tamanho total
-    c.AutomaticCanvasSize = Enum.AutomaticSize.Y 
+    c.AutomaticCanvasSize = Enum.AutomaticSize.Y
     c.CanvasSize = UDim2.new(0, 0, 0, 0)
     c.ScrollingDirection = Enum.ScrollingDirection.Y
     c.ClipsDescendants = true
@@ -1364,13 +1359,11 @@ function Tab.new(name: string, parent: Instance)
 
     -- Layout dos componentes
     local listLayout = Instance.new("UIListLayout")
-    self._listLayout = listLayout -- Salva referência para uso posterior
     listLayout.Padding = UDim.new(0, DESIGN.ComponentPadding)
     listLayout.SortOrder = Enum.SortOrder.LayoutOrder
     listLayout.Parent = c
 
     self.Components = {}
-    self._connections = {} -- Inicializa a tabela de conexões
 
     -- 🧱 Camada fixa acima do conteúdo para o box vazio
     local overlay = Instance.new("Frame")
@@ -1380,8 +1373,6 @@ function Tab.new(name: string, parent: Instance)
     overlay.ZIndex = 5
     overlay.Parent = c
 
-    -- ... [Resto da criação do EmptyBox (emptyBox, corner, stroke, emptyText) é mantido] ...
-    
     -- Box centralizado
     local emptyBox = Instance.new("Frame")
     self.EmptyBox = emptyBox
@@ -1424,7 +1415,7 @@ function Tab.new(name: string, parent: Instance)
 
     self._overlay = overlay
 
-    -- Função de reaplicação de cores para temas (MANTIDA)
+    -- Função de reaplicação de cores para temas
     function self:_reapplyScrollAndEmptyColors()
         -- 1. Barra de Rolagem
         c.ScrollBarImageColor3 = DESIGN.ComponentHoverColor
@@ -1436,252 +1427,57 @@ function Tab.new(name: string, parent: Instance)
         stroke.Color = DESIGN.EmptyStateBorderColor or Color3.fromRGB(80, 80, 80)
     end
     
-    -- Registra a função para as chaves de tema relevantes (MANTIDA)
+    -- Registra a função para as chaves de tema relevantes
     RegisterThemeItem("ComponentHoverColor", self, "_reapplyScrollAndEmptyColors")
     RegisterThemeItem("EmptyStateBoxColor", self, "_reapplyScrollAndEmptyColors")
     RegisterThemeItem("EmptyStateBorderColor", self, "_reapplyScrollAndEmptyColors")
 
-    -- ** FUNÇÃO PRINCIPAL DE VIRTUALIZAÇÃO **
-    -- Oculta componentes fora da vista para otimizar a renderização.
-    function self:UpdateComponentVisibility()
-        if not c.Visible or #self.Components == 0 then return end
-        
-        local containerHeight = c.AbsoluteSize.Y
-        local scrollPosition = c.CanvasPosition.Y
-        
-        -- A área visível vai de:
-        local minY = scrollPosition - VIRTUALIZATION_PADDING
-        -- Até:
-        local maxY = scrollPosition + containerHeight + VIRTUALIZATION_PADDING
 
-        local paddingY = DESIGN.ContainerPadding -- Padding Top
-        local listPadding = listLayout.Padding.Offset -- Espaçamento entre itens
-
-        for i, component in ipairs(self.Components) do
-            local instance = component.Instance or component -- Assume que o objeto componente tem uma propriedade Instance (ou é a Instance)
-            
-            -- Posição vertical do topo do componente DENTRO do Canvas
-            -- Posição: (Padding Superior) + (Altura Acumulada dos itens anteriores) + (Espaçamento Acumulado)
-            local componentY = instance.AbsolutePosition.Y - c.AbsolutePosition.Y + scrollPosition
-
-            -- O cálculo usando AbsolutePosition e CanvasPosition é mais robusto após a renderização inicial
-            -- e já inclui o padding do layout.
-            
-            -- No caso de UIListLayout, o AbsolutePosition (do topo esquerdo do objeto)
-            -- é a posição de onde ele começa no Canvas.
-
-            local compTop = componentY - c.CanvasPosition.Y
-            local compBottom = compTop + instance.AbsoluteSize.Y
-
-            -- Verifica se o componente está dentro da área visível + margem
-            local isVisible = (compBottom >= minY) and (compTop <= maxY)
-
-            -- Somente altera a visibilidade se for diferente para evitar mudanças desnecessárias de propriedade
-            if instance.Visible ~= isVisible then
-                instance.Visible = isVisible
-            end
-        end
-    end
-    
-    -- ** CONEXÕES **
-    
-    -- Conecta a função de visibilidade ao evento de rolagem
-    table.insert(self._connections, c:GetPropertyChangedSignal("CanvasPosition"):Connect(function()
-        if c.Visible then -- Somente atualiza se a aba estiver visível
-            self:UpdateComponentVisibility()
-        end
-    end))
-
-    -- Conecta a função de visibilidade ao evento de mudança de tamanho do container
-    table.insert(self._connections, c:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
-        if c.Visible then
-            self:UpdateComponentVisibility()
-        end
-    end))
-
-    -- Controle automático de visibilidade do EmptyBox (MANTIDO E LIGEIRAMENTE AJUSTADO)
-    table.insert(self._connections, listLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+    -- Controle automático de visibilidade
+    listLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
         local hasComponents = #self.Components > 0
         overlay.Visible = not hasComponents
 
         local totalContentHeight = listLayout.AbsoluteContentSize.Y + (DESIGN.ContainerPadding * 2)
         local containerHeight = c.AbsoluteSize.Y
         c.ScrollBarImageTransparency = totalContentHeight > containerHeight and 0 or 1
-        
-        -- Dispara a virtualização após o layout ser refeito (para garantir que AbsolutePosition está correto)
-        if c.Visible then
-            self:UpdateComponentVisibility()
-        end
-    end))
-    
-    -- No início, todos os componentes são criados, mas a visibilidade é gerida
-    -- pela função UpdateComponentVisibility quando a aba se torna visível (SetActiveTab).
+    end)
 
     return self
 end
 
--- ** ADIÇÃO DE FUNÇÃO PARA INSERÇÃO DE COMPONENTES NA TAB **
--- Seus componentes Labary existentes provavelmente já fazem isso,
--- mas é bom ter uma função explícita para gerenciamento.
-function Tab:AddComponent(component)
-    table.insert(self.Components, component)
-    
-    -- Assumindo que 'component' tem uma propriedade 'Instance' ou é a própria Instance do Roblox
-    local instance = component.Instance or component
-    instance.Parent = self.Container
-    
-    -- Importante: Marca o componente como invisível no início. 
-    -- Ele só se tornará visível na próxima chamada de UpdateComponentVisibility.
-    instance.Visible = false 
-
-    -- Dispara a atualização do layout e visibilidade
-    if self.Container.Visible then
-        self:UpdateComponentVisibility()
-    end
-end
-
--- ** SOBRESCRITA DA FUNÇÃO Destroy DA TAB **
-function Tab:Destroy()
-    if self._destroyed then return end
-    self._destroyed = true
-    local parent = self._parentRef
-    self._parentRef = nil
-
-    -- Desconecta TODAS as conexões, incluindo as de virtualização
-    for _, c in ipairs(self._connections) do
-        if c.Connected then c:Disconnect() end
-    end
-    self._connections = {}
-
-    for _, comp in pairs(self.Components or {}) do
-        if typeof(comp) == "table" and comp.Destroy then
-            comp:Destroy()
-        end
-    end
-    self.Components = nil
-
-    if self.Container then self.Container:Destroy() end
-    if self.Button then self.Button:Destroy() end
-
-    if parent and parent.Tabs then
-        parent.Tabs[self.Name] = nil
-
-        if parent.CurrentTab == self then
-            local nextTabKey = next(parent.Tabs)
-            local nextTab = nextTabKey and parent.Tabs[nextTabKey] or nil
-
-            parent.CurrentTab = nextTab
-            parent.NoTabsLabel.Visible = nextTab == nil
-
-            if nextTab then
-                parent:SetActiveTab(nextTab)
-            end
-        end
-    end
-
-    table.clear(self)
-end
-
-
 ---
 -- Lógica de Abas (com lazy visibility para performance)
 ---
--- Supondo que a tabela 'icones' está definida neste escopo ou é acessível (globalmente).
--- Exemplo de tabela de ícones (que você disse que já existe):
--- local icones = {
---         accessibility = 10709751939,
---         activity = 10709752035,
---         -- ...
--- }
-
-function Tekscripts:CreateTab(options: { Title: string, icon: string? })
+function Tekscripts:CreateTab(options: { Title: string })
     local title = assert(options.Title, "CreateTab: argumento 'Title' inválido")
     assert(type(title) == "string", "CreateTab: argumento 'Title' deve ser string")
-    
-    local iconName = options.icon -- Pega o nome do ícone, se existir
-    local iconAssetId = iconName and icones[iconName] -- Busca o ID do Asset na tabela 'icones'
 
     local tab = Tab.new(title, self.TabContentContainer)
+    tab._connections = {}
     self.Tabs[title] = tab
     tab._parentRef = self
 
     local button = Instance.new("TextButton")
     button.Name = title
-    
-    -- Configurações visuais do botão
+    button.Text = title
     button.Size = UDim2.new(1, 0, 0, DESIGN.TabButtonHeight)
+    button.TextColor3 = DESIGN.ComponentTextColor
     button.BackgroundColor3 = DESIGN.TabInactiveColor -- Cor inicial INATIVA
+    button.Font = Enum.Font.Roboto
+    button.TextScaled = true
     button.BorderSizePixel = 0
     button.AutoButtonColor = false
     button.ZIndex = 3
     button.Parent = self.TabContainer
     tab.Button = button
     
-    -- Configurações para CENTRALIZAR e garantir que o texto não seja processado pelo botão
-    button.Text = "" -- Limpa o texto principal do botão
-    button.TextScaled = false
-    
+    RegisterThemeItem("ComponentTextColor", button, "TextColor3") -- Mantém o registro para cor do texto
+
     addRoundedCorners(button, DESIGN.CornerRadius)
     addHoverEffect(button, DESIGN.TabInactiveColor, DESIGN.ComponentHoverColor, function()
         return self.CurrentTab ~= tab
     end)
-
-    -- 📐 CONTAINER PARA ORGANIZAR ÍCONE E TEXTO (Flex Layout)
-    local contentFrame = Instance.new("Frame")
-    contentFrame.Size = UDim2.new(1, -20, 1, -10) -- Tamanho do botão menos um padding
-    contentFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
-    contentFrame.AnchorPoint = Vector2.new(0.5, 0.5)
-    contentFrame.BackgroundTransparency = 1
-    contentFrame.ZIndex = 4
-    contentFrame.Parent = button
-
-    -- ⚙️ LAYOUT: Horizontal para Ícone e Título
-    local listLayout = Instance.new("UIListLayout")
-    listLayout.FillDirection = Enum.FillDirection.Horizontal -- Coloca lado a lado
-    listLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center -- Centraliza no eixo X
-    listLayout.VerticalAlignment = Enum.VerticalAlignment.Center -- Centraliza no eixo Y
-    listLayout.Padding = UDim.new(0, 5) -- Espaço entre ícone e texto
-    listLayout.Parent = contentFrame
-
-    -- 📝 CRIAÇÃO DO TÍTULO COMO TEXTLABEL (para melhor controle com layout)
-    local titleLabel = Instance.new("TextLabel")
-    titleLabel.Name = "TitleLabel"
-    titleLabel.Text = title
-    titleLabel.Size = UDim2.new(0, 0, 1, 0) -- Tamanho automático no eixo X e ocupa toda a altura
-    titleLabel.BackgroundTransparency = 1
-    titleLabel.TextColor3 = DESIGN.ComponentTextColor
-    titleLabel.Font = Enum.Font.Roboto
-    titleLabel.TextScaled = true
-    titleLabel.TextWrapped = true
-    titleLabel.ZIndex = 5
-    titleLabel.AutomaticSize = Enum.AutomaticSize.X -- Permite que o texto se ajuste ao layout
-    titleLabel.TextXAlignment = Enum.TextXAlignment.Left
-    titleLabel.Parent = contentFrame
-
-    RegisterThemeItem("ComponentTextColor", titleLabel, "TextColor3") 
-    tab._titleLabel = titleLabel -- Salva a referência para possível uso futuro
-
-    -- 🖼️ ADIÇÃO DO ÍCONE (Se existir)
-    if iconAssetId then
-        
-        local icon = Instance.new("ImageLabel")
-        icon.Name = "TabIcon"
-        icon.BackgroundTransparency = 1
-        icon.Image = "rbxassetid://" .. iconAssetId
-        icon.ImageColor3 = DESIGN.ComponentTextColor 
-        
-        -- Configurações de tamanho do ícone (fixo e quadrado)
-        local iconSize = DESIGN.TabButtonHeight * 0.6 
-        icon.Size = UDim2.new(0, iconSize, 0, iconSize) 
-        
-        icon.ZIndex = 5
-        icon.Parent = contentFrame
-        
-        -- Garante que a cor do ícone seja atualizada com o tema
-        RegisterThemeItem("ComponentTextColor", icon, "ImageColor3")
-
-        tab._icon = icon -- Salva a referência
-    end
 
     table.insert(tab._connections, button.MouseButton1Click:Connect(function()
         if not self.Blocked then
@@ -1696,7 +1492,47 @@ function Tekscripts:CreateTab(options: { Title: string, icon: string? })
     end
 
     self.NoTabsLabel.Visible = next(self.Tabs) == nil
-    
+
+    function tab:Destroy()
+        if self._destroyed then return end
+        self._destroyed = true
+        local parent = self._parentRef
+        self._parentRef = nil
+
+        for _, c in ipairs(self._connections) do
+            if c.Connected then c:Disconnect() end
+        end
+        self._connections = {}
+
+        for _, comp in pairs(self.Components or {}) do
+            if typeof(comp) == "table" and comp.Destroy then
+                comp:Destroy()
+            end
+        end
+        self.Components = nil
+
+        if self.Container then self.Container:Destroy() end
+        if self.Button then self.Button:Destroy() end
+
+        if parent and parent.Tabs then
+            parent.Tabs[title] = nil
+
+            if parent.CurrentTab == self then
+                local nextTabKey = next(parent.Tabs)
+                local nextTab = nextTabKey and parent.Tabs[nextTabKey] or nil
+
+                parent.CurrentTab = nextTab
+                parent.NoTabsLabel.Visible = nextTab == nil
+
+                if nextTab then
+                    parent:SetActiveTab(nextTab)
+                end
+            end
+        end
+
+        table.clear(self)
+    end
+
     table.insert(tab._connections, button.AncestryChanged:Connect(function(_, p)
         if not p and not tab._destroyed then
             tab:Destroy()
@@ -1710,37 +1546,16 @@ function Tekscripts:SetActiveTab(tab)
     if self.CurrentTab then
         self.CurrentTab.Container.Visible = false
         self.CurrentTab.Button.BackgroundColor3 = DESIGN.TabInactiveColor -- Define como INATIVA
-        
-        -- 💡 Atualiza a cor do ícone e do texto da aba desativada (se existirem)
-        if self.CurrentTab._icon then
-            self.CurrentTab._icon.ImageColor3 = DESIGN.ComponentTextColor
-        end
-        if self.CurrentTab._titleLabel then
-             self.CurrentTab._titleLabel.TextColor3 = DESIGN.ComponentTextColor
-        end
+        -- REMOVIDO: RegisterThemeItem("TabInactiveColor", self.CurrentTab.Button, "BackgroundColor3")
     end
 
     self.CurrentTab = tab
     if tab then
         tab.Container.Visible = true
         tab.Button.BackgroundColor3 = DESIGN.TabActiveColor -- Define como ATIVA
-        
-        -- 💡 Atualiza a cor do ícone e do texto da aba ativada (se existirem)
-        local activeIconColor = DESIGN.TabActiveIconColor or DESIGN.ComponentTextColor
-        local activeTextColor = DESIGN.TabActiveTextColor or DESIGN.ComponentTextColor
-
-        if tab._icon then
-            tab._icon.ImageColor3 = activeIconColor
-        end
-        if tab._titleLabel then
-            tab._titleLabel.TextColor3 = activeTextColor
-        end
-        
-        -- ** CHAMA A VIRTUALIZAÇÃO AO ATIVAR A ABA **
-        tab:UpdateComponentVisibility() 
+        -- REMOVIDO: RegisterThemeItem("TabActiveColor", tab.Button, "BackgroundColor3")
     end
 end
-
 
 ---
 -- Construtor da GUI
@@ -4428,6 +4243,7 @@ function Tekscripts:CreateDropdown(tab: any, options: {
     return publicApi
 end
 
+
 function Tekscripts:CreateDialog(options) 
     assert(type(options) == "table", "Invalid options")
 
@@ -5882,7 +5698,7 @@ Tekscripts.Localization = {
     end
 }
 
-function Tekscripts:CreateSection(tab: any, options: { Title: string?, Open: boolean?, Fixed: boolean?, EmptyMessage: string? })
+function Tekscripts:CreateSection(tab: any, options: { Title: string?, Open: boolean?, Fixed: boolean? })
     assert(type(tab) == "table" and tab.Container, "Invalid Tab object provided to CreateSection")
 
     local DESIGN = DESIGN or {}
@@ -5891,9 +5707,6 @@ function Tekscripts:CreateSection(tab: any, options: { Title: string?, Open: boo
     local contentPadding = 10 
 
     local TweenService = game:GetService("TweenService")
-    
-    -- Mensagem padrão para seção vazia
-    local defaultEmptyMessage = options.EmptyMessage or "Parece que não tem nada aqui ainda"
 
     -- Container principal da section
     local sectionContainer = Instance.new("Frame")
@@ -5994,26 +5807,6 @@ function Tekscripts:CreateSection(tab: any, options: { Title: string?, Open: boo
     layout.Padding = UDim.new(0, 5)
     layout.Parent = contentContainer
 
-    -- Mensagem de Vazio (NOVO)
-    local emptyMessageLabel = Instance.new("TextLabel")
-    emptyMessageLabel.Text = defaultEmptyMessage
-    emptyMessageLabel.Font = Enum.Font.GothamBold
-    emptyMessageLabel.TextSize = 16
-    RegisterThemeItem("ComponentTextColor", emptyMessageLabel, "TextColor3")
-    emptyMessageLabel.TextColor3 = DESIGN.ComponentTextColor or Color3.fromRGB(150, 150, 150)
-    emptyMessageLabel.TextTransparency = 0.5
-    emptyMessageLabel.BackgroundTransparency = 1
-    emptyMessageLabel.Size = UDim2.new(1, 0, 0, 40) -- Altura fixa para a mensagem
-    emptyMessageLabel.TextXAlignment = Enum.TextXAlignment.Center
-    emptyMessageLabel.TextYAlignment = Enum.TextYAlignment.Center
-    emptyMessageLabel.TextWrapped = true
-    emptyMessageLabel.ZIndex = 1
-    emptyMessageLabel.Visible = false -- Inicia invisível
-    emptyMessageLabel.Parent = contentContainer
-
-    -- Override do UIListLayout para a mensagem de vazio (garante que ela fique no topo e não seja afetada pelo layout se outros itens existirem)
-    emptyMessageLabel.LayoutOrder = -100 -- Garante que seja o primeiro item
-
     -- Overlay de bloqueio
     local blockOverlay = Instance.new("Frame")
     blockOverlay.BackgroundColor3 = DESIGN.ComponentBackground or Color3.fromRGB(20, 20, 20)
@@ -6054,37 +5847,9 @@ function Tekscripts:CreateSection(tab: any, options: { Title: string?, Open: boo
     local open = options.Open ~= false
     local fixed = options.Fixed == true
 
-    local function updateEmptyMessageVisibility()
-        -- Verifica se existem componentes além da própria mensagem de vazio
-        local componentCount = 0
-        for _, child in ipairs(contentContainer:GetChildren()) do
-            if child ~= layout and child ~= emptyMessageLabel then
-                componentCount = componentCount + 1
-            end
-        end
-
-        local isEmpty = componentCount == 0
-        emptyMessageLabel.Visible = isEmpty
-        
-        -- Garante que a mensagem de vazio não contribua para o tamanho do layout se não houver componentes
-        -- Se estiver vazio, a altura do layout será a altura da mensagem + padding
-        -- Se não estiver vazio, o layout será ajustado pelos componentes
-        if isEmpty then
-            layout.Padding = UDim.new(0, 0) -- Ajusta o padding para 0 para a mensagem de vazio usar a altura dela
-            emptyMessageLabel.Size = UDim2.new(1, 0, 0, 40) -- Garante altura de 40px para a mensagem
-        else
-            layout.Padding = UDim.new(0, 5) -- Retorna o padding normal
-            emptyMessageLabel.Size = UDim2.new(1, 0, 0, 0) -- Força a altura para 0 para ser ignorada pelo layout
-        end
-    end
-
     local function updateHeight()
-        updateEmptyMessageVisibility() -- Chama antes de calcular a altura
-        
-        -- Se a seção estiver vazia, a altura do conteúdo será a altura da EmptyMessage (40)
-        local contentHeight = layout.AbsoluteContentSize.Y 
-        
-        local targetOpenHeight = titleHeight + contentHeight + (contentHeight > 0 and contentPadding or 0)
+        local contentHeight = layout.AbsoluteContentSize.Y
+        local targetOpenHeight = titleHeight + contentHeight + contentPadding
         local targetHeight = open and targetOpenHeight or minClosedHeight
         
         local tweenInfo = TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
@@ -6144,12 +5909,6 @@ function Tekscripts:CreateSection(tab: any, options: { Title: string?, Open: boo
         titleLabel.Text = text or ""
     end
 
-    -- NOVO: Permite mudar a mensagem de vazio
-    function publicApi:SetEmptyMessage(text: string)
-        emptyMessageLabel.Text = text or ""
-        task.spawn(updateHeight)
-    end
-
     function publicApi:Open()
         if fixed or open then return end
         open = true
@@ -6202,7 +5961,6 @@ function Tekscripts:CreateSection(tab: any, options: { Title: string?, Open: boo
     table.insert(tab.Components, publicApi)
     return publicApi
 end
-
 
 function Tekscripts:CreateTabContainer(parentTab: any, options: { Title: string?, TabBarHeight: number? })
     assert(type(parentTab) == "table" and parentTab.Container, "Invalid parent Tab object provided to CreateTabContainer")
@@ -6470,5 +6228,191 @@ function Tekscripts:CreateTabContainer(parentTab: any, options: { Title: string?
 
     return publicApi
 end
+
+-- MUDANÇA ESSENCIAL: Torna a função um método público da tabela Tekscripts
+function Tekscripts:Notify(options)
+    -- === 1. DECLARAÇÕES DE ESCOPO SUPERIOR ===
+    local themeItem 
+    local DESIGN = DESIGN or {
+        ComponentPadding = 10,
+        NotifyWidth = 250,
+        NotifyHeight = 60,
+        CornerRadius = 6,
+        AnimationSpeed = 0.3,
+        WindowTransparency = 0.1,
+        NotifyBackground = Color3.fromRGB(30, 30, 30),
+        NotifyTextColor = Color3.new(1, 1, 1),
+    }
+    local RegisterThemeItem = RegisterThemeItem or function(a, b, c) return {Connection = nil} end 
+    
+    local Title = options.Title or "Notificação"
+    local Desc = options.Desc or "Sem descrição."
+    local Duration = options.Duration or 5 
+    
+    local Players = game:GetService("Players")
+    local TweenService = game:GetService("TweenService")
+    local LocalPlayer = Players.LocalPlayer 
+    
+    local box -- Declarado no escopo superior para cleanup
+    local fadeOutConnection
+    
+    -- === 2. FUNÇÃO DE LIMPEZA (CLEANUP) ===
+    local function cleanup()
+        -- 1. Desconecta o monitor de tema
+        if themeItem and themeItem.Connection and themeItem.Connection.Disconnect then
+            themeItem.Connection:Disconnect() 
+        end
+        -- 2. Desconecta a conexão do fadeOut
+        if fadeOutConnection and fadeOutConnection.Connected then
+            fadeOutConnection:Disconnect()
+        end
+        -- 3. Destrói o objeto
+        if box and box.Parent then
+            box:Destroy()
+        end
+    end
+
+    -- === 3. CRIAÇÃO DO HOLDER (Omitido por brevidade, código mantido) ===
+    local NotificationsHolder = (function()
+        if not LocalPlayer then return warn("Tekscripts:Notify só pode ser chamado em um Script Local (Client Side).") end
+        
+        local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
+        local container = PlayerGui:FindFirstChild("TekScriptsNotificationsContainer")
+        
+        if not container then
+            container = Instance.new("ScreenGui")
+            container.Name = "TekScriptsNotificationsContainer"
+            container.IgnoreGuiInset = true
+            container.DisplayOrder = 999 
+            container.Parent = PlayerGui
+            
+            local holder = Instance.new("Frame")
+            holder.Name = "Holder"
+            holder.BackgroundTransparency = 1
+            holder.AnchorPoint = Vector2.new(1, 1)
+            holder.Position = UDim2.new(1, - (DESIGN.ComponentPadding), 1, - (DESIGN.ComponentPadding))
+            holder.Size = UDim2.new(0, DESIGN.NotifyWidth, 0, 0)
+            
+            local layout = Instance.new("UIListLayout")
+            layout.HorizontalAlignment = Enum.HorizontalAlignment.Right
+            layout.VerticalAlignment = Enum.VerticalAlignment.Bottom
+            layout.SortOrder = Enum.SortOrder.LayoutOrder
+            layout.Padding = UDim.new(0, DESIGN.ComponentPadding)
+            layout.Parent = holder
+            
+            holder.Parent = container
+        end
+        return container:FindFirstChild("Holder")
+    end)()
+
+    if not NotificationsHolder then return end
+
+    -- === 4. CRIAÇÃO DA NOTIFICAÇÃO (UI e Layout) ===
+    box = Instance.new("Frame") -- Atribuição ao 'box' do escopo superior
+    box.Name = "Notification"
+    box.LayoutOrder = 1
+    RegisterThemeItem("NotifyBackground", box, "BackgroundColor3")
+    box.BackgroundColor3 = DESIGN.NotifyBackground
+    box.Size = UDim2.new(1, 0, 0, DESIGN.NotifyHeight) 
+    box.Position = UDim2.new(1.5, 0, 0, 0) 
+    box.ClipsDescendants = true
+    box.Parent = NotificationsHolder 
+    
+    -- CORREÇÃO: Inicializa a transparência do box para o fade out funcionar
+    local initialTransparency = DESIGN.WindowTransparency
+    box.BackgroundTransparency = initialTransparency or 0.1 
+
+    local function applyTransparency()
+        initialTransparency = DESIGN.WindowTransparency
+        box.BackgroundTransparency = initialTransparency 
+    end
+    themeItem = RegisterThemeItem("WindowTransparency", {object = {Parent = true, _reapplyTransparency = applyTransparency}, property = "_reapplyTransparency"}, "BackgroundTransparency")
+    applyTransparency() 
+
+    -- Estrutura de Layout Interno (UICorner, UIPadding, UIListLayout)
+    -- ... (Componentes de UI e Layout omitidos por brevidade, mantidos iguais) ...
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, DESIGN.CornerRadius)
+    corner.Parent = box
+    local padding = Instance.new("UIPadding")
+    padding.PaddingTop = UDim.new(0, DESIGN.ComponentPadding)
+    padding.PaddingBottom = UDim.new(0, DESIGN.ComponentPadding)
+    padding.PaddingLeft = UDim.new(0, DESIGN.ComponentPadding)
+    padding.PaddingRight = UDim.new(0, DESIGN.ComponentPadding)
+    padding.Parent = box
+    local layout = Instance.new("UIListLayout")
+    layout.FillDirection = Enum.FillDirection.Vertical 
+    layout.Padding = UDim.new(0, 2)
+    layout.HorizontalAlignment = Enum.HorizontalAlignment.Left
+    layout.Parent = box
+
+    local titleLabel = Instance.new("TextLabel")
+    titleLabel.Text = Title
+    titleLabel.Font = Enum.Font.GothamSemibold
+    RegisterThemeItem("NotifyTextColor", titleLabel, "TextColor3")
+    titleLabel.TextColor3 = DESIGN.NotifyTextColor
+    titleLabel.TextSize = 15
+    titleLabel.TextXAlignment = Enum.TextXAlignment.Left 
+    titleLabel.BackgroundTransparency = 1 
+    titleLabel.Size = UDim2.new(1, 0, 0, 15) 
+    titleLabel.Parent = box
+
+    local descLabel = Instance.new("TextLabel")
+    descLabel.Text = Desc
+    descLabel.Font = Enum.Font.Gotham
+    RegisterThemeItem("NotifyTextColor", descLabel, "TextColor3")
+    descLabel.TextColor3 = DESIGN.NotifyTextColor
+    descLabel.TextTransparency = 0.2
+    descLabel.TextSize = 13
+    descLabel.TextXAlignment = Enum.TextXAlignment.Left
+    descLabel.BackgroundTransparency = 1 
+    descLabel.Size = UDim2.new(1, 0, 0, 13)
+    descLabel.TextWrapped = true
+    descLabel.Parent = box
+
+
+    -- === 5. ANIMAÇÃO CORRIGIDA COM FADE OUT DE TRANSPARÊNCIA ===
+    local animationSpeed = DESIGN.AnimationSpeed
+    
+    -- Tween de entrada (apenas posição)
+    local fadeIn = TweenService:Create(box, TweenInfo.new(animationSpeed), { Position = UDim2.new(0, 0, 0, 0) })
+    
+    -- Tween de saída: Posição fora da tela E Transparência do fundo para 1.
+    local fadeOut = TweenService:Create(box, TweenInfo.new(animationSpeed), { 
+        Position = UDim2.new(1.5, 0, 0, 0), -- Move para fora
+        BackgroundTransparency = 1,          -- Fundo some
+    })
+    
+    -- Tween de fade out para o texto (opcional, mas melhora o efeito)
+    local fadeOutText = TweenService:Create(titleLabel, TweenInfo.new(animationSpeed), { TextTransparency = 1 })
+    local fadeOutDesc = TweenService:Create(descLabel, TweenInfo.new(animationSpeed), { TextTransparency = 1 })
+
+
+    fadeIn:Play()
+    
+    -- Lógica de Espera e Fade Out
+    task.delay(Duration, function()
+        if box and box.Parent then
+            
+            -- Armazena a conexão para que a função 'cleanup' possa desconectá-la
+            fadeOutConnection = fadeOut.Completed:Connect(cleanup)
+            
+            -- Inicia todos os tweens de saída
+            fadeOut:Play()
+            fadeOutText:Play()
+            fadeOutDesc:Play()
+            
+        else
+            -- Se o box já foi destruído (ex: manualmente), apenas limpa os recursos restantes
+            cleanup()
+        end
+    end)
+    
+    return {
+        _instance = box,
+        Destroy = cleanup -- Permite a destruição manual (que chama cleanup)
+    }
+end
+
 
 return Tekscripts
