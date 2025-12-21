@@ -831,404 +831,404 @@ local icones = {
         zoomin = 10747384552,
         zoomout = 10747384679
 }
----
--- Tabela de Constantes de Design (Tema Dark Clean com mais contraste)
----
+
+-- > {INTENÇÃO}
+-- Organizar e limpar o código de gerenciamento de temas da UI
+-- - Remover comentários excessivos ou "anormais"
+-- - Usar comentários claros, concisos e bem estruturados
+-- - Melhorar legibilidade e facilitar manutenção futura
+-- - Manter a funcionalidade idêntica
+
+-----------------------------------------------------------------------
+-- Tabela de Constantes de Design (Tema Dark Clean com alto contraste)
+-----------------------------------------------------------------------
 local DESIGN = {
-    -- Janelas e planos de fundo
-    WindowColor1 = Color3.fromRGB(25, 26, 28),
-    WindowColor2 = Color3.fromRGB(20, 21, 23),
-    BlockScreenColor = Color3.fromRGB(0, 0, 0, 0.65),
-    WindowTransparency = 0.4,
-    TabContainerTransparency = 0.15,
+	-- Cores principais
+	WindowColor1          = Color3.fromRGB(25, 26, 28),
+	WindowColor2          = Color3.fromRGB(20, 21, 23),
+	BlockScreenColor      = Color3.fromRGB(0, 0, 0, 0.65),
+	WindowTransparency    = 0.4,
+	TabContainerTransparency = 0.15,
 
-    -- Tipografia
-    TitleColor = Color3.fromRGB(240, 240, 245),
-    ComponentTextColor = Color3.fromRGB(215, 215, 220),
-    InputTextColor = Color3.fromRGB(230, 230, 235),
-    NotifyTextColor = Color3.fromRGB(220, 220, 225),
-    EmptyStateTextColor = Color3.fromRGB(150, 150, 155),
+	TitleColor            = Color3.fromRGB(240, 240, 245),
+	ComponentTextColor    = Color3.fromRGB(215, 215, 220),
+	InputTextColor        = Color3.fromRGB(230, 230, 235),
+	NotifyTextColor       = Color3.fromRGB(220, 220, 225),
+	EmptyStateTextColor   = Color3.fromRGB(150, 150, 155),
 
-    -- Fundos e componentes
-    ComponentBackground = Color3.fromRGB(34, 35, 38),
-    InputBackgroundColor = Color3.fromRGB(42, 43, 47),
-    AccentColor = Color3.fromRGB(90, 160, 255),
-    ItemHoverColor = Color3.fromRGB(50, 52, 57),
-    ComponentHoverColor = Color3.fromRGB(65, 68, 75),
+	ComponentBackground   = Color3.fromRGB(34, 35, 38),
+	InputBackgroundColor  = Color3.fromRGB(42, 43, 47),
 
-    -- Botões e toggles
-    ActiveToggleColor = Color3.fromRGB(90, 160, 255),
-    InactiveToggleColor = Color3.fromRGB(55, 56, 60),
-    MinimizeButtonColor = Color3.fromRGB(180, 180, 185),
-    CloseButtonColor = Color3.fromRGB(255, 85, 100),
-    FloatButtonColor = Color3.fromRGB(45, 46, 52),
+	AccentColor           = Color3.fromRGB(90, 160, 255),
+	ItemHoverColor        = Color3.fromRGB(50, 52, 57),
+	ComponentHoverColor   = Color3.fromRGB(65, 68, 75),
 
-    -- Dropdown
-    DropdownBackground = Color3.fromRGB(32, 33, 37),
-    DropdownItemHover = Color3.fromRGB(55, 57, 63),
+	ActiveToggleColor     = Color3.fromRGB(90, 160, 255),
+	InactiveToggleColor   = Color3.fromRGB(55, 56, 60),
 
-    -- Tabs
-    TabActiveColor = Color3.fromRGB(90, 160, 255),
-    TabInactiveColor = Color3.fromRGB(36, 37, 41),
+	MinimizeButtonColor   = Color3.fromRGB(180, 180, 185),
+	CloseButtonColor      = Color3.fromRGB(255, 85, 100),
+	FloatButtonColor      = Color3.fromRGB(45, 46, 52),
 
-    -- Slider
-    SliderTrackColor = Color3.fromRGB(58, 59, 63),
-    SliderFillColor = Color3.fromRGB(90, 160, 255),
-    ThumbColor = Color3.fromRGB(240, 240, 245),
-    ThumbOutlineColor = Color3.fromRGB(45, 46, 50),
+	DropdownBackground    = Color3.fromRGB(32, 33, 37),
+	DropdownItemHover     = Color3.fromRGB(55, 57, 63),
 
-    -- Outros elementos
-    HRColor = Color3.fromRGB(75, 76, 82),
-    ResizeHandleColor = Color3.fromRGB(60, 61, 66),
-    NotifyBackground = Color3.fromRGB(38, 39, 43),
-    TagBackground = Color3.fromRGB(90, 160, 255),
+	TabActiveColor        = Color3.fromRGB(90, 160, 255),
+	TabInactiveColor      = Color3.fromRGB(36, 37, 41),
 
-    -- Dimensões e layout
-    WindowSize = UDim2.new(0, 520, 0, 370),
-    MinWindowSize = Vector2.new(520, 370),
-    MaxWindowSize = Vector2.new(520, 370),
-    TitleHeight = 44,
-    TitlePadding = 10,
+	SliderTrackColor      = Color3.fromRGB(58, 59, 63),
+	SliderFillColor       = Color3.fromRGB(90, 160, 255),
+	ThumbColor            = Color3.fromRGB(240, 240, 245),
+	ThumbOutlineColor     = Color3.fromRGB(45, 46, 50),
 
-    ComponentHeight = 30,
-    ComponentPadding = 10,
-    ContainerPadding = 3,
-    CornerRadius = 9,
-    ButtonIconSize = 24,
-    IconSize = 28,
+	HRColor               = Color3.fromRGB(75, 76, 82),
+	ResizeHandleColor     = Color3.fromRGB(60, 61, 66),
+	NotifyBackground      = Color3.fromRGB(38, 39, 43),
+	TagBackground         = Color3.fromRGB(90, 160, 255),
 
-    TabButtonWidth = 140,
-    TabButtonHeight = 40,
+	-- Dimensões e layout (otimizadas para telas menores)
+	WindowSize            = UDim2.new(0, 450, 0, 300),
+	MinWindowSize         = Vector2.new(320, 260),
+	MaxWindowSize         = Vector2.new(520, 370),
 
-    FloatButtonSize = UDim2.new(0, 140, 0, 46),
-    ResizeHandleSize = 16,
-    NotifyWidth = 280,
-    NotifyHeight = 72,
-    TagHeight = 30,
-    TagWidth = 115,
+	TitleHeight           = 32,
+	TitlePadding          = 10,
 
-    HRHeight = 2,
-    HRTextPadding = 14,
-    HRMinTextSize = 20,
-    HRMaxTextSize = 30,
+	ComponentHeight       = 32,
+	ComponentPadding      = 6,
+	ContainerPadding      = 5,
+	CornerRadius          = 6,
 
-    DropdownWidth = 150,
-    DropdownItemHeight = 35,
+	ButtonIconSize        = 20,
+	IconSize              = 24,
 
-    BlurEffectSize = 10,
-    AnimationSpeed = 0.25,
+	TabButtonWidth        = 110,
+	TabButtonHeight       = 36,
 
-    EdgeThreshold = 15,
-    EdgeButtonSize = 40,
-    EdgeButtonPadding = 5,
-    EdgeButtonCornerRadius = 6,
+	FloatButtonSize       = UDim2.new(0, 130, 0, 42),
+	ResizeHandleSize      = 14,
+
+	NotifyWidth           = 250,
+	NotifyHeight          = 65,
+	TagHeight             = 28,
+	TagWidth              = 100,
+
+	HRHeight              = 1,
+	HRTextPadding         = 10,
+	HRMinTextSize         = 16,
+	HRMaxTextSize         = 24,
+
+	DropdownWidth         = 140,
+	DropdownItemHeight    = 32,
+
+	BlurEffectSize        = 8,
+	AnimationSpeed        = 0.2,
 }
+
+-- Armazena objetos que dependem de cada chave do tema para atualização dinâmica
 local THEME_BINDINGS = {}
 
--- Função utilitária simples para clonar o design padrão
-local function ShallowCopy(original)
-    local copy = {}
-    for key, value in pairs(original) do
-        copy[key] = value
-    end
-    return copy
+-- > {UTILITÁRIO}
+-- Cópia superficial de tabela (usada para criar presets independentes)
+local function ShallowCopy(original: table): table
+	local copy = {}
+	for key, value in pairs(original) do
+		copy[key] = value
+	end
+	return copy
 end
 
+-- > {REGISTRO DE COMPONENTES}
+-- Registra um objeto UI para ser atualizado automaticamente quando a chave do tema mudar
+local function RegisterThemeItem(key: string, object: Instance, property: string)
+	if not THEME_BINDINGS[key] then
+		THEME_BINDINGS[key] = {}
+	end
 
-function RegisterThemeItem(key, object, property)
-    if not THEME_BINDINGS[key] then
-        THEME_BINDINGS[key] = {}
-    end
-    table.insert(THEME_BINDINGS[key], {object = object, property = property})
-    if DESIGN[key] ~= nil then
-        object[property] = DESIGN[key]
-    end
+	table.insert(THEME_BINDINGS[key], { object = object, property = property })
+
+	-- Aplica valor inicial se já existir no DESIGN
+	if DESIGN[key] ~= nil then
+		object[property] = DESIGN[key]
+	end
 end
 
-function ApplyThemeChange(key, newValue)
-    DESIGN[key] = newValue
-    if THEME_BINDINGS[key] then
-        for _, data in ipairs(THEME_BINDINGS[key]) do
-            if data.object and data.object.Parent then
-                data.object[data.property] = newValue
-            end
-        end
-    end
+-- > {ATUALIZAÇÃO DINÂMICA}
+-- Aplica uma nova cor/dimensão a todos os objetos registrados para a chave
+local function ApplyThemeChange(key: string, newValue: any)
+	DESIGN[key] = newValue
+
+	if THEME_BINDINGS[key] then
+		for _, data in ipairs(THEME_BINDINGS[key]) do
+			if data.object and data.object.Parent then
+				data.object[data.property] = newValue
+			end
+		end
+	end
 end
 
-function SetThemeKey(key, value)
-    if DESIGN[key] == nil then
-        warn("DESIGN key não existe:", key)
-        return
-    end
-    ApplyThemeChange(key, value)
+-- Atualiza uma chave específica do tema (com validação)
+local function SetThemeKey(key: string, value: any)
+	if DESIGN[key] == nil then
+		warn("[Theme] Chave inexistente no DESIGN:", key)
+		return
+	end
+	ApplyThemeChange(key, value)
 end
 
-PRESETS = {
-    -- O TEMA PADRÃO ESTÁ AQUI, CLONADO COMO "Default"
-    ["Default"] = ShallowCopy(DESIGN),
-    
-    Oceanic = {
-    WindowColor1 = Color3.fromRGB(18, 24, 32),
-    WindowColor2 = Color3.fromRGB(13, 18, 25),
-    BlockScreenColor = Color3.fromRGB(0, 0, 0),
-    WindowTransparency = 0.1,
-    TabContainerTransparency = 0.12,
+-- > {PRESETS DE TEMAS}
+local PRESETS = {
+	Default = ShallowCopy(DESIGN),
 
-    TitleColor = Color3.fromRGB(220, 235, 245),
-    ComponentTextColor = Color3.fromRGB(210, 225, 235),
-    InputTextColor = Color3.fromRGB(225, 235, 240),
-    NotifyTextColor = Color3.fromRGB(215, 230, 240),
-    EmptyStateTextColor = Color3.fromRGB(150, 170, 175),
+	Oceanic = {
+		WindowColor1          = Color3.fromRGB(18, 24, 32),
+		WindowColor2          = Color3.fromRGB(13, 18, 25),
+		BlockScreenColor      = Color3.fromRGB(0, 0, 0),
+		WindowTransparency    = 0.1,
+		TabContainerTransparency = 0.12,
 
-    ComponentBackground = Color3.fromRGB(26, 34, 44),
-    InputBackgroundColor = Color3.fromRGB(30, 38, 50),
+		TitleColor            = Color3.fromRGB(220, 235, 245),
+		ComponentTextColor    = Color3.fromRGB(210, 225, 235),
+		InputTextColor        = Color3.fromRGB(225, 235, 240),
+		NotifyTextColor       = Color3.fromRGB(215, 230, 240),
+		EmptyStateTextColor   = Color3.fromRGB(150, 170, 175),
 
-    AccentColor = Color3.fromRGB(42, 160, 200),      -- teal/sky accent
-    ItemHoverColor = Color3.fromRGB(34, 44, 57),
-    ComponentHoverColor = Color3.fromRGB(40, 52, 68),
+		ComponentBackground   = Color3.fromRGB(26, 34, 44),
+		InputBackgroundColor  = Color3.fromRGB(30, 38, 50),
 
-    ActiveToggleColor = Color3.fromRGB(42, 160, 200),
-    InactiveToggleColor = Color3.fromRGB(60, 66, 74),
+		AccentColor           = Color3.fromRGB(42, 160, 200),
+		ItemHoverColor        = Color3.fromRGB(34, 44, 57),
+		ComponentHoverColor   = Color3.fromRGB(40, 52, 68),
 
-    MinimizeButtonColor = Color3.fromRGB(185, 190, 195),
-    CloseButtonColor = Color3.fromRGB(230, 90, 90),
-    FloatButtonColor = Color3.fromRGB(28, 34, 42),
+		ActiveToggleColor     = Color3.fromRGB(42, 160, 200),
+		InactiveToggleColor   = Color3.fromRGB(60, 66, 74),
 
-    DropdownBackground = Color3.fromRGB(24, 32, 42),
-    DropdownItemHover = Color3.fromRGB(36, 46, 60),
+		MinimizeButtonColor   = Color3.fromRGB(185, 190, 195),
+		CloseButtonColor      = Color3.fromRGB(230, 90, 90),
+		FloatButtonColor      = Color3.fromRGB(28, 34, 42),
 
-    TabActiveColor = Color3.fromRGB(42, 160, 200),
-    TabInactiveColor = Color3.fromRGB(38, 44, 50),
+		DropdownBackground    = Color3.fromRGB(24, 32, 42),
+		DropdownItemHover     = Color3.fromRGB(36, 46, 60),
 
-    SliderTrackColor = Color3.fromRGB(52, 60, 70),
-    SliderFillColor = Color3.fromRGB(42, 160, 200),
-    ThumbColor = Color3.fromRGB(235, 245, 250),
-    ThumbOutlineColor = Color3.fromRGB(48, 56, 64),
+		TabActiveColor        = Color3.fromRGB(42, 160, 200),
+		TabInactiveColor      = Color3.fromRGB(38, 44, 50),
 
-    HRColor = Color3.fromRGB(64, 76, 90),
-    ResizeHandleColor = Color3.fromRGB(56, 62, 70),
-    NotifyBackground = Color3.fromRGB(26, 34, 44),
-    TagBackground = Color3.fromRGB(42, 160, 200),
-  },
-  
-  Slate = {
-    WindowColor1 = Color3.fromRGB(28, 30, 34),
-    WindowColor2 = Color3.fromRGB(22, 24, 28),
-    BlockScreenColor = Color3.fromRGB(0, 0, 0),
-    WindowTransparency = 0.12,
-    TabContainerTransparency = 0.16,
+		SliderTrackColor      = Color3.fromRGB(52, 60, 70),
+		SliderFillColor       = Color3.fromRGB(42, 160, 200),
+		ThumbColor            = Color3.fromRGB(235, 245, 250),
+		ThumbOutlineColor     = Color3.fromRGB(48, 56, 64),
 
-    TitleColor = Color3.fromRGB(235, 238, 240),
-    ComponentTextColor = Color3.fromRGB(220, 224, 226),
-    InputTextColor = Color3.fromRGB(230, 233, 235),
-    NotifyTextColor = Color3.fromRGB(225, 228, 230),
-    EmptyStateTextColor = Color3.fromRGB(155, 160, 165),
+		HRColor               = Color3.fromRGB(64, 76, 90),
+		ResizeHandleColor     = Color3.fromRGB(56, 62, 70),
+		NotifyBackground      = Color3.fromRGB(26, 34, 44),
+		TagBackground         = Color3.fromRGB(42, 160, 200),
+	},
 
-    ComponentBackground = Color3.fromRGB(36, 38, 42),
-    InputBackgroundColor = Color3.fromRGB(42, 44, 48),
+	Slate = {
+		WindowColor1          = Color3.fromRGB(28, 30, 34),
+		WindowColor2          = Color3.fromRGB(22, 24, 28),
+		BlockScreenColor      = Color3.fromRGB(0, 0, 0),
+		WindowTransparency    = 0.12,
+		TabContainerTransparency = 0.16,
 
-    AccentColor = Color3.fromRGB(84, 185, 150),      -- verde suave
-    ItemHoverColor = Color3.fromRGB(46, 48, 52),
-    ComponentHoverColor = Color3.fromRGB(52, 56, 60),
+		TitleColor            = Color3.fromRGB(235, 238, 240),
+		ComponentTextColor    = Color3.fromRGB(220, 224, 226),
+		InputTextColor        = Color3.fromRGB(230, 233, 235),
+		NotifyTextColor       = Color3.fromRGB(225, 228, 230),
+		EmptyStateTextColor   = Color3.fromRGB(155, 160, 165),
 
-    ActiveToggleColor = Color3.fromRGB(84, 185, 150),
-    InactiveToggleColor = Color3.fromRGB(64, 66, 70),
+		ComponentBackground   = Color3.fromRGB(36, 38, 42),
+		InputBackgroundColor  = Color3.fromRGB(42, 44, 48),
 
-    MinimizeButtonColor = Color3.fromRGB(190, 190, 195),
-    CloseButtonColor = Color3.fromRGB(255, 95, 95),
-    FloatButtonColor = Color3.fromRGB(34, 36, 40),
+		AccentColor           = Color3.fromRGB(84, 185, 150),
+		ItemHoverColor        = Color3.fromRGB(46, 48, 52),
+		ComponentHoverColor   = Color3.fromRGB(52, 56, 60),
 
-    DropdownBackground = Color3.fromRGB(32, 34, 38),
-    DropdownItemHover = Color3.fromRGB(48, 50, 54),
+		ActiveToggleColor     = Color3.fromRGB(84, 185, 150),
+		InactiveToggleColor   = Color3.fromRGB(64, 66, 70),
 
-    TabActiveColor = Color3.fromRGB(84, 185, 150),
-    TabInactiveColor = Color3.fromRGB(40, 42, 46),
+		MinimizeButtonColor   = Color3.fromRGB(190, 190, 195),
+		CloseButtonColor      = Color3.fromRGB(255, 95, 95),
+		FloatButtonColor      = Color3.fromRGB(34, 36, 40),
 
-    SliderTrackColor = Color3.fromRGB(58, 60, 64),
-    SliderFillColor = Color3.fromRGB(84, 185, 150),
-    ThumbColor = Color3.fromRGB(244, 246, 246),
-    ThumbOutlineColor = Color3.fromRGB(50, 52, 56),
+		DropdownBackground    = Color3.fromRGB(32, 34, 38),
+		DropdownItemHover     = Color3.fromRGB(48, 50, 54),
 
-    HRColor = Color3.fromRGB(80, 84, 88),
-    ResizeHandleColor = Color3.fromRGB(60, 62, 66),
-    NotifyBackground = Color3.fromRGB(34, 36, 40),
-    TagBackground = Color3.fromRGB(84, 185, 150),
-  },
-  
-    -- NOVO TEMA: MonoDark (Monocromático) ⚫
-    MonoDark = {
-        WindowColor1 = Color3.fromRGB(30, 30, 30),
-        WindowColor2 = Color3.fromRGB(20, 20, 20),
+		TabActiveColor        = Color3.fromRGB(84, 185, 150),
+		TabInactiveColor      = Color3.fromRGB(40, 42, 46),
 
-        BlockScreenColor = Color3.fromRGB(0, 0, 0, 0.6),
-        WindowTransparency = 0.1,
-        TabContainerTransparency = 0.15,
+		SliderTrackColor      = Color3.fromRGB(58, 60, 64),
+		SliderFillColor       = Color3.fromRGB(84, 185, 150),
+		ThumbColor            = Color3.fromRGB(244, 246, 246),
+		ThumbOutlineColor     = Color3.fromRGB(50, 52, 56),
 
-        TitleColor = Color3.fromRGB(255, 255, 255),
-        ComponentTextColor = Color3.fromRGB(210, 210, 210),
-        InputTextColor = Color3.fromRGB(230, 230, 230),
-        NotifyTextColor = Color3.fromRGB(220, 220, 220),
-        EmptyStateTextColor = Color3.fromRGB(140, 140, 140),
+		HRColor               = Color3.fromRGB(80, 84, 88),
+		ResizeHandleColor     = Color3.fromRGB(60, 62, 66),
+		NotifyBackground      = Color3.fromRGB(34, 36, 40),
+		TagBackground         = Color3.fromRGB(84, 185, 150),
+	},
 
-        ComponentBackground = Color3.fromRGB(40, 40, 40),
-        InputBackgroundColor = Color3.fromRGB(50, 50, 50),
+	MonoDark = {
+		WindowColor1          = Color3.fromRGB(30, 30, 30),
+		WindowColor2          = Color3.fromRGB(20, 20, 20),
+		BlockScreenColor      = Color3.fromRGB(0, 0, 0, 0.6),
+		WindowTransparency    = 0.1,
+		TabContainerTransparency = 0.15,
 
-        AccentColor = Color3.fromRGB(255, 255, 255),     -- Acento Branco Puro
-        ItemHoverColor = Color3.fromRGB(60, 60, 60),
-        ComponentHoverColor = Color3.fromRGB(75, 75, 75),
+		TitleColor            = Color3.fromRGB(255, 255, 255),
+		ComponentTextColor    = Color3.fromRGB(210, 210, 210),
+		InputTextColor        = Color3.fromRGB(230, 230, 230),
+		NotifyTextColor       = Color3.fromRGB(220, 220, 220),
+		EmptyStateTextColor   = Color3.fromRGB(140, 140, 140),
 
-        ActiveToggleColor = Color3.fromRGB(255, 255, 255),
-        InactiveToggleColor = Color3.fromRGB(60, 60, 60),
+		ComponentBackground   = Color3.fromRGB(40, 40, 40),
+		InputBackgroundColor  = Color3.fromRGB(50, 50, 50),
 
-        MinimizeButtonColor = Color3.fromRGB(180, 180, 180),
-        CloseButtonColor = Color3.fromRGB(255, 80, 80),
-        FloatButtonColor = Color3.fromRGB(35, 35, 35),
+		AccentColor           = Color3.fromRGB(255, 255, 255),
+		ItemHoverColor        = Color3.fromRGB(60, 60, 60),
+		ComponentHoverColor   = Color3.fromRGB(75, 75, 75),
 
-        DropdownBackground = Color3.fromRGB(30, 30, 30),
-        DropdownItemHover = Color3.fromRGB(55, 55, 55),
+		ActiveToggleColor     = Color3.fromRGB(255, 255, 255),
+		InactiveToggleColor   = Color3.fromRGB(60, 60, 60),
 
-        TabActiveColor = Color3.fromRGB(255, 255, 255),
-        TabInactiveColor = Color3.fromRGB(45, 45, 45),
+		MinimizeButtonColor   = Color3.fromRGB(180, 180, 180),
+		CloseButtonColor      = Color3.fromRGB(255, 80, 80),
+		FloatButtonColor      = Color3.fromRGB(35, 35, 35),
 
-        SliderTrackColor = Color3.fromRGB(70, 70, 70),
-        SliderFillColor = Color3.fromRGB(255, 255, 255),
-        ThumbColor = Color3.fromRGB(255, 255, 255),
-        ThumbOutlineColor = Color3.fromRGB(50, 50, 50),
+		DropdownBackground    = Color3.fromRGB(30, 30, 30),
+		DropdownItemHover     = Color3.fromRGB(55, 55, 55),
 
-        HRColor = Color3.fromRGB(85, 85, 85),
-        ResizeHandleColor = Color3.fromRGB(65, 65, 65),
-        NotifyBackground = Color3.fromRGB(45, 45, 45),
-        TagBackground = Color3.fromRGB(255, 255, 255),
-    },
-    
-    -- NOVO TEMA: Forest (Verde Musgo e Terra) 🌳
-    Forest = {
-        WindowColor1 = Color3.fromRGB(20, 28, 20),
-        WindowColor2 = Color3.fromRGB(15, 22, 15),
+		TabActiveColor        = Color3.fromRGB(255, 255, 255),
+		TabInactiveColor      = Color3.fromRGB(45, 45, 45),
 
-        BlockScreenColor = Color3.fromRGB(0, 0, 0, 0.7),
-        WindowTransparency = 0.5,
-        TabContainerTransparency = 0.10,
+		SliderTrackColor      = Color3.fromRGB(70, 70, 70),
+		SliderFillColor       = Color3.fromRGB(255, 255, 255),
+		ThumbColor            = Color3.fromRGB(255, 255, 255),
+		ThumbOutlineColor     = Color3.fromRGB(50, 50, 50),
 
-        TitleColor = Color3.fromRGB(230, 245, 230),
-        ComponentTextColor = Color3.fromRGB(200, 220, 200),
-        InputTextColor = Color3.fromRGB(210, 230, 210),
-        NotifyTextColor = Color3.fromRGB(205, 225, 205),
-        EmptyStateTextColor = Color3.fromRGB(130, 160, 130),
+		HRColor               = Color3.fromRGB(85, 85, 85),
+		ResizeHandleColor     = Color3.fromRGB(65, 65, 65),
+		NotifyBackground      = Color3.fromRGB(45, 45, 45),
+		TagBackground         = Color3.fromRGB(255, 255, 255),
+	},
 
-        ComponentBackground = Color3.fromRGB(30, 42, 30),
-        InputBackgroundColor = Color3.fromRGB(40, 55, 40),
+	Forest = {
+		WindowColor1          = Color3.fromRGB(20, 28, 20),
+		WindowColor2          = Color3.fromRGB(15, 22, 15),
+		BlockScreenColor      = Color3.fromRGB(0, 0, 0, 0.7),
+		WindowTransparency    = 0.5,
+		TabContainerTransparency = 0.10,
 
-        AccentColor = Color3.fromRGB(100, 170, 100),     -- Verde Floresta
-        ItemHoverColor = Color3.fromRGB(40, 55, 40),
-        ComponentHoverColor = Color3.fromRGB(50, 70, 50),
+		TitleColor            = Color3.fromRGB(230, 245, 230),
+		ComponentTextColor    = Color3.fromRGB(200, 220, 200),
+		InputTextColor        = Color3.fromRGB(210, 230, 210),
+		NotifyTextColor       = Color3.fromRGB(205, 225, 205),
+		EmptyStateTextColor   = Color3.fromRGB(130, 160, 130),
 
-        ActiveToggleColor = Color3.fromRGB(100, 170, 100),
-        InactiveToggleColor = Color3.fromRGB(50, 65, 50),
+		ComponentBackground   = Color3.fromRGB(30, 42, 30),
+		InputBackgroundColor  = Color3.fromRGB(40, 55, 40),
 
-        MinimizeButtonColor = Color3.fromRGB(170, 190, 170),
-        CloseButtonColor = Color3.fromRGB(255, 90, 90),
-        FloatButtonColor = Color3.fromRGB(25, 35, 25),
+		AccentColor           = Color3.fromRGB(100, 170, 100),
+		ItemHoverColor        = Color3.fromRGB(40, 55, 40),
+		ComponentHoverColor   = Color3.fromRGB(50, 70, 50),
 
-        DropdownBackground = Color3.fromRGB(20, 30, 20),
-        DropdownItemHover = Color3.fromRGB(45, 60, 45),
+		ActiveToggleColor     = Color3.fromRGB(100, 170, 100),
+		InactiveToggleColor   = Color3.fromRGB(50, 65, 50),
 
-        TabActiveColor = Color3.fromRGB(100, 170, 100),
-        TabInactiveColor = Color3.fromRGB(35, 45, 35),
+		MinimizeButtonColor   = Color3.fromRGB(170, 190, 170),
+		CloseButtonColor      = Color3.fromRGB(255, 90, 90),
+		FloatButtonColor      = Color3.fromRGB(25, 35, 25),
 
-        SliderTrackColor = Color3.fromRGB(60, 80, 60),
-        SliderFillColor = Color3.fromRGB(100, 170, 100),
-        ThumbColor = Color3.fromRGB(230, 245, 230),
-        ThumbOutlineColor = Color3.fromRGB(50, 65, 50),
+		DropdownBackground    = Color3.fromRGB(20, 30, 20),
+		DropdownItemHover     = Color3.fromRGB(45, 60, 45),
 
-        HRColor = Color3.fromRGB(75, 100, 75),
-        ResizeHandleColor = Color3.fromRGB(60, 80, 60),
-        NotifyBackground = Color3.fromRGB(35, 45, 35),
-        TagBackground = Color3.fromRGB(100, 170, 100),
-    },
-    
-    -- NOVO TEMA: Crimson Dusk (Crepúsculo Carmesim) 🌙
-  CrimsonDusk = {
-    -- Janelas e planos de fundo
-    WindowColor1 = Color3.fromRGB(15, 17, 21), -- Fundo principal bem escuro
-    WindowColor2 = Color3.fromRGB(10, 12, 15), -- Fundo secundário (mais escuro ainda)
-    BlockScreenColor = Color3.fromRGB(0, 0, 0, 0.7),
-    WindowTransparency = 0.1,
-    TabContainerTransparency = 0.15,
+		TabActiveColor        = Color3.fromRGB(100, 170, 100),
+		TabInactiveColor      = Color3.fromRGB(35, 45, 35),
 
-    -- Tipografia (Claro, vibrante e legível)
-    TitleColor = Color3.fromRGB(250, 250, 255),
-    ComponentTextColor = Color3.fromRGB(220, 225, 230),
-    InputTextColor = Color3.fromRGB(240, 240, 245),
-    NotifyTextColor = Color3.fromRGB(230, 235, 240),
-    EmptyStateTextColor = Color3.fromRGB(130, 140, 150),
+		SliderTrackColor      = Color3.fromRGB(60, 80, 60),
+		SliderFillColor       = Color3.fromRGB(100, 170, 100),
+		ThumbColor            = Color3.fromRGB(230, 245, 230),
+		ThumbOutlineColor     = Color3.fromRGB(50, 65, 50),
 
-    -- Fundos e componentes
-    ComponentBackground = Color3.fromRGB(24, 28, 34), -- Componentes cinza/azul escuro
-    InputBackgroundColor = Color3.fromRGB(30, 35, 42), -- Campo de input levemente mais claro
-    
-    AccentColor = Color3.fromRGB(220, 50, 80),      -- Acento: Carmesim Vibrante
-    
-    ItemHoverColor = Color3.fromRGB(35, 40, 50),    -- Hover mais escuro
-    ComponentHoverColor = Color3.fromRGB(45, 50, 60), -- Componente hover mais escuro
+		HRColor               = Color3.fromRGB(75, 100, 75),
+		ResizeHandleColor     = Color3.fromRGB(60, 80, 60),
+		NotifyBackground      = Color3.fromRGB(35, 45, 35),
+		TagBackground         = Color3.fromRGB(100, 170, 100),
+	},
 
-    -- Botões e toggles
-    ActiveToggleColor = Color3.fromRGB(220, 50, 80),
-    InactiveToggleColor = Color3.fromRGB(45, 50, 58), -- Inativo discreto
+	CrimsonDusk = {
+		WindowColor1          = Color3.fromRGB(15, 17, 21),
+		WindowColor2          = Color3.fromRGB(10, 12, 15),
+		BlockScreenColor      = Color3.fromRGB(0, 0, 0, 0.7),
+		WindowTransparency    = 0.1,
+		TabContainerTransparency = 0.15,
 
-    MinimizeButtonColor = Color3.fromRGB(190, 195, 200), -- Ícones brancos/claros
-    CloseButtonColor = Color3.fromRGB(255, 80, 80),      -- Vermelho padrão para fechar
-    FloatButtonColor = Color3.fromRGB(20, 23, 28),
+		TitleColor            = Color3.fromRGB(250, 250, 255),
+		ComponentTextColor    = Color3.fromRGB(220, 225, 230),
+		InputTextColor        = Color3.fromRGB(240, 240, 245),
+		NotifyTextColor       = Color3.fromRGB(230, 235, 240),
+		EmptyStateTextColor   = Color3.fromRGB(130, 140, 150),
 
-    -- Dropdown
-    DropdownBackground = Color3.fromRGB(20, 22, 26),
-    DropdownItemHover = Color3.fromRGB(40, 45, 55),
+		ComponentBackground   = Color3.fromRGB(24, 28, 34),
+		InputBackgroundColor  = Color3.fromRGB(30, 35, 42),
 
-    -- Tabs
-    TabActiveColor = Color3.fromRGB(220, 50, 80),
-    TabInactiveColor = Color3.fromRGB(30, 34, 40),
+		AccentColor           = Color3.fromRGB(220, 50, 80),
+		ItemHoverColor        = Color3.fromRGB(35, 40, 50),
+		ComponentHoverColor   = Color3.fromRGB(45, 50, 60),
 
-    -- Slider
-    SliderTrackColor = Color3.fromRGB(50, 55, 65),
-    SliderFillColor = Color3.fromRGB(220, 50, 80),
-    ThumbColor = Color3.fromRGB(250, 250, 255),
-    ThumbOutlineColor = Color3.fromRGB(40, 45, 52),
+		ActiveToggleColor     = Color3.fromRGB(220, 50, 80),
+		InactiveToggleColor   = Color3.fromRGB(45, 50, 58),
 
-    -- Outros elementos
-    HRColor = Color3.fromRGB(70, 80, 95),
-    ResizeHandleColor = Color3.fromRGB(60, 70, 85),
-    NotifyBackground = Color3.fromRGB(24, 28, 34),
-    TagBackground = Color3.fromRGB(220, 50, 80),
-},
-    
+		MinimizeButtonColor   = Color3.fromRGB(190, 195, 200),
+		CloseButtonColor      = Color3.fromRGB(255, 80, 80),
+		FloatButtonColor      = Color3.fromRGB(20, 23, 28),
+
+		DropdownBackground    = Color3.fromRGB(20, 22, 26),
+		DropdownItemHover     = Color3.fromRGB(40, 45, 55),
+
+		TabActiveColor        = Color3.fromRGB(220, 50, 80),
+		TabInactiveColor      = Color3.fromRGB(30, 34, 40),
+
+		SliderTrackColor      = Color3.fromRGB(50, 55, 65),
+		SliderFillColor       = Color3.fromRGB(220, 50, 80),
+		ThumbColor            = Color3.fromRGB(250, 250, 255),
+		ThumbOutlineColor     = Color3.fromRGB(40, 45, 52),
+
+		HRColor               = Color3.fromRGB(70, 80, 95),
+		ResizeHandleColor     = Color3.fromRGB(60, 70, 85),
+		NotifyBackground      = Color3.fromRGB(24, 28, 34),
+		TagBackground         = Color3.fromRGB(220, 50, 80),
+	},
 }
 
-function SetTheme(presetTable)
-    if type(presetTable) ~= "table" then
-        warn("Preset inválido em SetTheme")
-        return
-    end
+-- > {APLICAÇÃO DE TEMA}
+-- Aplica um preset completo, atualizando apenas as chaves que mudaram
+local function SetTheme(presetTable: table)
+	if type(presetTable) ~= "table" then
+		warn("[Theme] Preset inválido fornecido para SetTheme")
+		return
+	end
 
-    for key, val in pairs(presetTable) do
-        -- Apenas aplica a mudança se o novo valor for diferente do valor atual no DESIGN.
-        if DESIGN[key] ~= nil and DESIGN[key] ~= val then 
-            ApplyThemeChange(key, val)
-        end
-    end
+	for key, value in pairs(presetTable) do
+		if DESIGN[key] ~= nil and DESIGN[key] ~= value then
+			ApplyThemeChange(key, value)
+		end
+	end
 end
 
-function GetAvailableThemesJson()
-    local themeNames = {}
-    for name, _ in pairs(PRESETS) do
-        table.insert(themeNames, name)
-    end
-    
-    table.sort(themeNames)
+-- > {UTILITÁRIO EXTRA}
+-- Retorna uma string JSON com a lista de nomes de temas disponíveis (ordenada)
+local function GetAvailableThemesJson(): string
+	local themeNames = {}
+	for name, _ in pairs(PRESETS) do
+		table.insert(themeNames, name)
+	end
 
-    local jsonString = "[\"" .. table.concat(themeNames, "\",\"") .. "\"]"
-    return jsonString
+	table.sort(themeNames)
+	return '[\"' .. table.concat(themeNames, '\",\"') .. '\"]'
 end
+
+-- Tema inicial aplicado ao carregar o módulo
 SetTheme(PRESETS.Oceanic)
 ---
 -- Funções de Criação de Componentes
@@ -1323,71 +1323,75 @@ local function createButton(text: string, size: UDim2?, parent: Instance)
 	return btn
 end
 
----
--- Lógica do Tab
----
-local TweenService = game:GetService("TweenService")
-local UserInputService = game:GetService("UserInputService")
-local Players = game:GetService("Players")
-local localPlayer = Players.LocalPlayer
-
--- Supondo que Tekscripts e DESIGN já estejam definidos no escopo acima ou neste módulo
--- Se for um ModuleScript, certifique-se de que Tekscripts = {} e DESIGN = {...} existam.
-
 local Tab = {}
 Tab.__index = Tab
 
+-- > Construtor de uma aba individual
 function Tab.new(name: string, parent: Instance)
     local self = setmetatable({}, Tab)
 
     self.Name = name
+    self.Components = {}
+    self._connections = {}
 
-    -- Container principal (ScrollingFrame)
-    local c = Instance.new("ScrollingFrame")
-    self.Container = c
-    c.Size = UDim2.new(1, 0, 1, 0)
-    c.BackgroundTransparency = 1
-    c.BorderSizePixel = 0
-    c.ScrollBarThickness = 6
-    -- Cor da barra de rolagem será registrada na API pública
-    c.ScrollBarImageColor3 = DESIGN.ComponentHoverColor
-    c.AutomaticCanvasSize = Enum.AutomaticSize.Y
-    c.CanvasSize = UDim2.new(0, 0, 0, 0)
-    c.ScrollingDirection = Enum.ScrollingDirection.Y
-    c.ClipsDescendants = true
-    c.Parent = parent
+    -- > Cria o container principal (ScrollingFrame) da aba
+    self:_CreateContainer(parent)
 
-    -- Padding interno
+    -- > Configura o overlay e box de estado vazio
+    self:_SetupEmptyState()
+
+    -- > Configura reaplicação de cores do tema para elementos da aba
+    self:_SetupThemeReapplication()
+
+    -- > Controle automático de visibilidade do empty state e scrollbar
+    self:_SetupVisibilityControl()
+
+    return self
+end
+
+-- > Cria o ScrollingFrame principal da aba
+function Tab:_CreateContainer(parent)
+    local container = Instance.new("ScrollingFrame")
+    self.Container = container
+    container.Size = UDim2.new(1, 0, 1, 0)
+    container.BackgroundTransparency = 1
+    container.BorderSizePixel = 0
+    container.ScrollBarThickness = 6
+    container.ScrollBarImageColor3 = DESIGN.ComponentHoverColor
+    container.AutomaticCanvasSize = Enum.AutomaticSize.Y
+    container.CanvasSize = UDim2.new(0, 0, 0, 0)
+    container.ScrollingDirection = Enum.ScrollingDirection.Y
+    container.ClipsDescendants = true
+    container.Parent = parent
+
     local padding = Instance.new("UIPadding")
     padding.PaddingTop = UDim.new(0, DESIGN.ContainerPadding)
     padding.PaddingLeft = UDim.new(0, DESIGN.ContainerPadding)
     padding.PaddingRight = UDim.new(0, DESIGN.ContainerPadding)
     padding.PaddingBottom = UDim.new(0, DESIGN.ContainerPadding)
-    padding.Parent = c
+    padding.Parent = container
 
-    -- Layout dos componentes
     local listLayout = Instance.new("UIListLayout")
     listLayout.Padding = UDim.new(0, DESIGN.ComponentPadding)
     listLayout.SortOrder = Enum.SortOrder.LayoutOrder
-    listLayout.Parent = c
+    listLayout.Parent = container
+    self._listLayout = listLayout
+end
 
-    self.Components = {}
-
-    -- 🧱 Camada fixa acima do conteúdo para o box vazio
+-- > Configura o overlay com box de "aba vazia"
+function Tab:_SetupEmptyState()
     local overlay = Instance.new("Frame")
     overlay.Size = UDim2.new(1, 0, 1, 0)
-    overlay.Position = UDim2.new(0, 0, 0, 0)
     overlay.BackgroundTransparency = 1
     overlay.ZIndex = 5
-    overlay.Parent = c
+    overlay.Parent = self.Container
+    self._overlay = overlay
 
-    -- Box centralizado
     local emptyBox = Instance.new("Frame")
     self.EmptyBox = emptyBox
     emptyBox.Size = UDim2.new(0.6, 0, 0.2, 0)
     emptyBox.AnchorPoint = Vector2.new(0.5, 0.5)
     emptyBox.Position = UDim2.new(0.5, 0, 0.5, 0)
-    -- Cor será registrada na API pública
     emptyBox.BackgroundColor3 = DESIGN.EmptyStateBoxColor or Color3.fromRGB(30, 30, 30)
     emptyBox.BackgroundTransparency = 0.2
     emptyBox.BorderSizePixel = 0
@@ -1401,10 +1405,10 @@ function Tab.new(name: string, parent: Instance)
 
     local stroke = Instance.new("UIStroke")
     stroke.Thickness = 1
-    -- Cor será registrada na API pública
     stroke.Color = DESIGN.EmptyStateBorderColor or Color3.fromRGB(80, 80, 80)
     stroke.Transparency = 0.3
     stroke.Parent = emptyBox
+    self._emptyStroke = stroke
 
     local emptyText = Instance.new("TextLabel")
     self.EmptyText = emptyText
@@ -1413,7 +1417,6 @@ function Tab.new(name: string, parent: Instance)
     emptyText.Position = UDim2.new(0.5, 0, 0.5, 0)
     emptyText.BackgroundTransparency = 1
     emptyText.Text = "Parece que ainda não há nada aqui."
-    RegisterThemeItem("EmptyStateTextColor", emptyText, "TextColor3")
     emptyText.TextColor3 = DESIGN.EmptyStateTextColor or Color3.fromRGB(180, 180, 180)
     emptyText.Font = Enum.Font.Roboto
     emptyText.TextScaled = true
@@ -1421,94 +1424,65 @@ function Tab.new(name: string, parent: Instance)
     emptyText.ZIndex = 7
     emptyText.Parent = emptyBox
 
-    self._overlay = overlay
+    RegisterThemeItem("EmptyStateTextColor", emptyText, "TextColor3")
+end
 
-    -- Função de reaplicação de cores para temas
+-- > Configura reaplicação de cores específicas da aba
+function Tab:_SetupThemeReapplication()
     function self:_reapplyScrollAndEmptyColors()
-        -- 1. Barra de Rolagem
-        c.ScrollBarImageColor3 = DESIGN.ComponentHoverColor
-
-        -- 2. Empty State Box
-        emptyBox.BackgroundColor3 = DESIGN.EmptyStateBoxColor or Color3.fromRGB(30, 30, 30)
-        
-        -- 3. Empty State Stroke
-        stroke.Color = DESIGN.EmptyStateBorderColor or Color3.fromRGB(80, 80, 80)
+        self.Container.ScrollBarImageColor3 = DESIGN.ComponentHoverColor
+        self.EmptyBox.BackgroundColor3 = DESIGN.EmptyStateBoxColor or Color3.fromRGB(30, 30, 30)
+        if self._emptyStroke then
+            self._emptyStroke.Color = DESIGN.EmptyStateBorderColor or Color3.fromRGB(80, 80, 80)
+        end
     end
-    
-    -- Registra a função para as chaves de tema relevantes
+
     RegisterThemeItem("ComponentHoverColor", self, "_reapplyScrollAndEmptyColors")
     RegisterThemeItem("EmptyStateBoxColor", self, "_reapplyScrollAndEmptyColors")
     RegisterThemeItem("EmptyStateBorderColor", self, "_reapplyScrollAndEmptyColors")
-
-
-    -- Controle automático de visibilidade
-    listLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-        local hasComponents = #self.Components > 0
-        overlay.Visible = not hasComponents
-
-        local totalContentHeight = listLayout.AbsoluteContentSize.Y + (DESIGN.ContainerPadding * 2)
-        local containerHeight = c.AbsoluteSize.Y
-        c.ScrollBarImageTransparency = totalContentHeight > containerHeight and 0 or 1
-    end)
-
-    return self
 end
 
----
--- Lógica de Abas (com lazy visibility para performance)
----
+-- > Controla visibilidade do empty state e transparência da scrollbar
+function Tab:_SetupVisibilityControl()
+    self._listLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+        local hasComponents = #self.Components > 0
+        self._overlay.Visible = not hasComponents
+
+        local totalContentHeight = self._listLayout.AbsoluteContentSize.Y + (DESIGN.ContainerPadding * 2)
+        local containerHeight = self.Container.AbsoluteSize.Y
+        self.Container.ScrollBarImageTransparency = totalContentHeight > containerHeight and 0 or 1
+    end)
+end
+
+-- > Cria uma nova aba e configura botão + lógica de ativação
 function Tekscripts:CreateTab(options: { Title: string })
     local title = assert(options.Title, "CreateTab: argumento 'Title' inválido")
     assert(type(title) == "string", "CreateTab: argumento 'Title' deve ser string")
 
     local tab = Tab.new(title, self.TabContentContainer)
-    tab._connections = {}
-    self.Tabs[title] = tab
     tab._parentRef = self
+    self.Tabs[title] = tab
 
-    local button = Instance.new("TextButton")
-    button.Name = title
-    button.Text = title
-    button.Size = UDim2.new(1, 0, 0, DESIGN.TabButtonHeight)
-    button.TextColor3 = DESIGN.ComponentTextColor
-    button.BackgroundColor3 = DESIGN.TabInactiveColor -- Cor inicial INATIVA
-    button.Font = Enum.Font.Roboto
-    button.TextScaled = true
-    button.BorderSizePixel = 0
-    button.AutoButtonColor = false
-    button.ZIndex = 3
-    button.Parent = self.TabContainer
-    tab.Button = button
-    
-    RegisterThemeItem("ComponentTextColor", button, "TextColor3") -- Mantém o registro para cor do texto
+    -- > Cria o botão da aba no container lateral
+    tab:_CreateTabButton(self)
 
-    addRoundedCorners(button, DESIGN.CornerRadius)
-    addHoverEffect(button, DESIGN.TabInactiveColor, DESIGN.ComponentHoverColor, function()
-        return self.CurrentTab ~= tab
-    end)
-
-    table.insert(tab._connections, button.MouseButton1Click:Connect(function()
-        if not self.Blocked then
-            self:SetActiveTab(tab)
-        end
-    end))
-
-    tab.Container.Visible = false
-
+    -- > Define aba inicial se necessário
     if (self.startTab == title) or not self.CurrentTab then
         self:SetActiveTab(tab)
     end
 
+    -- > Atualiza label de "sem abas"
     self.NoTabsLabel.Visible = next(self.Tabs) == nil
 
+    -- > Método Destroy da aba
     function tab:Destroy()
         if self._destroyed then return end
         self._destroyed = true
-        local parent = self._parentRef
+
         self._parentRef = nil
 
-        for _, c in ipairs(self._connections) do
-            if c.Connected then c:Disconnect() end
+        for _, conn in ipairs(self._connections or {}) do
+            if conn.Connected then conn:Disconnect() end
         end
         self._connections = {}
 
@@ -1517,23 +1491,23 @@ function Tekscripts:CreateTab(options: { Title: string })
                 comp:Destroy()
             end
         end
-        self.Components = nil
+        self.Components = {}
 
         if self.Container then self.Container:Destroy() end
         if self.Button then self.Button:Destroy() end
 
-        if parent and parent.Tabs then
-            parent.Tabs[title] = nil
+        if self._parentRef and self._parentRef.Tabs then
+            self._parentRef.Tabs[title] = nil
 
-            if parent.CurrentTab == self then
-                local nextTabKey = next(parent.Tabs)
-                local nextTab = nextTabKey and parent.Tabs[nextTabKey] or nil
+            if self._parentRef.CurrentTab == self then
+                local nextKey = next(self._parentRef.Tabs)
+                local nextTab = nextKey and self._parentRef.Tabs[nextKey]
 
-                parent.CurrentTab = nextTab
-                parent.NoTabsLabel.Visible = nextTab == nil
+                self._parentRef.CurrentTab = nextTab
+                self._parentRef.NoTabsLabel.Visible = nextTab == nil
 
                 if nextTab then
-                    parent:SetActiveTab(nextTab)
+                    self._parentRef:SetActiveTab(nextTab)
                 end
             end
         end
@@ -1541,32 +1515,63 @@ function Tekscripts:CreateTab(options: { Title: string })
         table.clear(self)
     end
 
-    table.insert(tab._connections, button.AncestryChanged:Connect(function(_, p)
-        if not p and not tab._destroyed then
-            tab:Destroy()
-        end
-    end))
-
     return tab
 end
 
+-- > Cria e configura o botão visual da aba
+function Tab:_CreateTabButton(parentWindow)
+    local button = Instance.new("TextButton")
+    self.Button = button
+    button.Name = self.Name
+    button.Text = self.Name
+    button.Size = UDim2.new(1, 0, 0, DESIGN.TabButtonHeight)
+    button.TextColor3 = DESIGN.ComponentTextColor
+    button.BackgroundColor3 = DESIGN.TabInactiveColor
+    button.Font = Enum.Font.Roboto
+    button.TextScaled = true
+    button.BorderSizePixel = 0
+    button.AutoButtonColor = false
+    button.ZIndex = 3
+    button.Parent = parentWindow.TabContainer
+
+    RegisterThemeItem("ComponentTextColor", button, "TextColor3")
+    addRoundedCorners(button, DESIGN.CornerRadius)
+
+    addHoverEffect(button, DESIGN.TabInactiveColor, DESIGN.ComponentHoverColor, function()
+        return parentWindow.CurrentTab ~= self
+    end)
+
+    table.insert(self._connections, button.MouseButton1Click:Connect(function()
+        if not parentWindow.Blocked then
+            parentWindow:SetActiveTab(self)
+        end
+    end))
+
+    table.insert(self._connections, button.AncestryChanged:Connect(function(_, p)
+        if not p and not self._destroyed then
+            self:Destroy()
+        end
+    end))
+
+    self.Container.Visible = false
+end
+
+-- > Ativa uma aba específica (lazy visibility)
 function Tekscripts:SetActiveTab(tab)
-    if self.CurrentTab then
+    if self.CurrentTab and self.CurrentTab ~= tab then
         self.CurrentTab.Container.Visible = false
-        self.CurrentTab.Button.BackgroundColor3 = DESIGN.TabInactiveColor -- Define como INATIVA
+        self.CurrentTab.Button.BackgroundColor3 = DESIGN.TabInactiveColor
     end
 
     self.CurrentTab = tab
     if tab then
         tab.Container.Visible = true
-        tab.Button.BackgroundColor3 = DESIGN.TabActiveColor -- Define como ATIVA
+        tab.Button.BackgroundColor3 = DESIGN.TabActiveColor
     end
 end
 
----
--- Construtor da GUI
----
-
+-- > Construtor principal da janela Tekscripts (mantido como antes, já refatorado)
+-- > Construtor principal da janela Tekscripts
 function Tekscripts.new(options: { 
     Name: string?, 
     Parent: Instance?, 
@@ -1576,25 +1581,32 @@ function Tekscripts.new(options: {
     Transparent: boolean?, 
     TabContainerTransparency: number?, 
     WindowTransparency: number?,
-    LoadScreen: boolean?,       -- Novo parâmetro
-    Loading: table?             -- Tabela de configuração do Loading
+    LoadScreen: boolean?,       
+    Loading: table?             
 })
     options = options or {}
     
-    -- // CONFIGURAÇÃO DE VARIÁVEIS DE TRANSPARÊNCIA
-    local useThemeTransparency = options.Transparent == true
-    local initialWindowTransparency = (useThemeTransparency and (options.WindowTransparency or DESIGN.WindowTransparency)) or DESIGN.WindowTransparency or 0.1
-    local initialTabContainerTransparency = (useThemeTransparency and (options.TabContainerTransparency or DESIGN.TabContainerTransparency)) or DESIGN.TabContainerTransparency or 0.1
+    local UserInputService = game:GetService("UserInputService")
+    local TweenService = game:GetService("TweenService")
+    local Players = game:GetService("Players")
+    local localPlayer = Players.LocalPlayer
 
-    -- // ESTRUTURA E ESTADOS INICIAIS
-    
+    -- > Configuração inicial de transparência baseada nas opções do usuário
+    local useThemeTransparency = options.Transparent == true
+    local windowTransparency = useThemeTransparency 
+        and (options.WindowTransparency or DESIGN.WindowTransparency) 
+        or DESIGN.WindowTransparency or 0.1
+    local tabContainerTransparency = useThemeTransparency 
+        and (options.TabContainerTransparency or DESIGN.TabContainerTransparency) 
+        or DESIGN.TabContainerTransparency or 0.1
+
+    -- > Detecção de dispositivo móvel para escala responsiva
+    local isMobile = UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled
+    local responsiveScale = isMobile and 0.85 or 1.0
+
+    -- > Criação do objeto principal com estado inicial
     local self = setmetatable({
         ScreenGui = nil,
-        MinimizedState = nil,
-        Tabs = {},
-        CurrentTab = nil,
-        IsDragging = false,
-        IsResizing = false,
         Window = nil,
         TitleBar = nil,
         TabContainer = nil,
@@ -1605,362 +1617,381 @@ function Tekscripts.new(options: {
         Connections = {},
         BlockScreen = nil,
         Blocked = false,
-        startTab = options.startTab,
+        MinimizedState = nil,
+        Tabs = {},
+        CurrentTab = nil,
+        IsDragging = false,
+        IsResizing = false,
         
-        CloseButtonContainer = nil, 
+        CloseButtonContainer = nil,
         CloseButton = nil,
-        
         NoTabsLabel = nil,
         Title = nil,
-        TitleScrollTween = nil,
-        TitleScrollConnection = nil,
         BlurEffect = nil,
-        LastWindowPosition = nil,
-        LastWindowSize = nil,
-        _activeTween = nil,
-        _dragStart = nil,
-        _resizeStart = nil,
-        _lastMousePos = nil,
-        _isSmallScreen = nil,
-        _viewSize = nil,
-
-        -- Transparência
+        
+        startTab = options.startTab,
+        
         _useThemeTransparency = useThemeTransparency,
         _userWindowTransparency = options.WindowTransparency,
-        _userTabContainerTransparency = options.TabContainerTransparency
+        _userTabContainerTransparency = options.TabContainerTransparency,
     }, Tekscripts)
 
-    -- Atualizações de ambiente (tamanho de tela)
-    -- self:_UpdateScreenSize() -- Assumido que existe na classe
-    -- self:UpdateContainersSize() -- Assumido que existe na classe
+    -- > Criação do ScreenGui base
+    self:_CreateScreenGui(options, localPlayer)
 
-    -- Criação do ScreenGui
+    -- > Cálculo do tamanho e posição final da janela
+    local finalWindowSize = self:_GetWindowSize()
+    local finalWindowPos = self:_GetWindowPosition()
+    local finalAnchorPoint = self._isSmallScreen and Vector2.new(0.5, 0.5) or Vector2.new(0, 0)
+
+    -- > Verifica se deve iniciar com loading screen
+    local isLoading = options.LoadScreen == true and options.Loading ~= nil
+
+    -- > Criação da janela principal com tamanho inicial adequado
+    self:_CreateMainWindow(isLoading, finalWindowSize, finalWindowPos, finalAnchorPoint, responsiveScale, windowTransparency)
+
+    -- > Configuração da barra de título completa
+    self:_SetupTitleBar(isLoading, options, responsiveScale, tabContainerTransparency)
+
+    -- > Configuração do dropdown de fechar (••• → Fechar)
+    self:_SetupCloseDropdown()
+
+    -- > Configuração dos containers de abas e conteúdo
+    self:_SetupTabContainers(tabContainerTransparency, windowTransparency, isLoading)
+
+    -- > Componentes adicionais (resize, float button, block screen)
+    self:_SetupAdditionalComponents(options.FloatText or "Expandir")
+
+    -- > Sistema de reaplicação de tema
+    self:_SetupThemeReapplication()
+
+    -- > Conexão para destruir a UI ao sair do jogo
+    self.Connections.PlayerRemoving = Players.PlayerRemoving:Connect(function(player)
+        if player == localPlayer then
+            self:Destroy()
+        end
+    end)
+
+    -- > Inicialização do loading screen, se ativado
+    if isLoading then
+        self:_SetupLoadingScreen(options.Loading, finalWindowSize, finalWindowPos, finalAnchorPoint)
+    end
+
+    return self
+end
+
+-- > Cria o ScreenGui e define propriedades básicas
+function Tekscripts:_CreateScreenGui(options, localPlayer)
     self.ScreenGui = Instance.new("ScreenGui")
     self.ScreenGui.Name = options.Name or "Tekscripts"
     self.ScreenGui.ResetOnSpawn = false
     self.ScreenGui.Parent = options.Parent or localPlayer:WaitForChild("PlayerGui")
-    
-    -- =========================================================================
-    -- CONFIGURAÇÃO DO LOADING SCREEN (LÓGICA PRELIMINAR)
-    -- =========================================================================
-    local isLoading = (options.LoadScreen == true) and (options.Loading ~= nil)
-    local finalWindowSize = self:_GetWindowSize() -- Assume a existência
-    local finalWindowPos = self:_GetWindowPosition() -- Assume a existência
-    local finalAnchorPoint = self._isSmallScreen and Vector2.new(0.5, 0.5) or Vector2.new(0, 0)
-    
-    -- // JANELA PRINCIPAL (WINDOW)
-    
+end
+
+-- > Cria a janela principal (Frame) com gradiente e escala
+function Tekscripts:_CreateMainWindow(isLoading, finalSize, finalPos, finalAnchor, scale, transparency)
     self.Window = Instance.new("Frame")
     
     if isLoading then
-        -- Estado inicial de Carregamento: Compacto e Centralizado
-        self.Window.Size = UDim2.new(0, 280, 0, 120)
+        self.Window.Size = UDim2.new(0, 280 * scale, 0, 120 * scale)
         self.Window.Position = UDim2.new(0.5, 0, 0.5, 0)
         self.Window.AnchorPoint = Vector2.new(0.5, 0.5)
     else
-        -- Estado normal direto
-        self.Window.Size = finalWindowSize
-        self.Window.Position = finalWindowPos
-        self.Window.AnchorPoint = finalAnchorPoint
+        self.Window.Size = finalSize
+        self.Window.Position = finalPos
+        self.Window.AnchorPoint = finalAnchor
     end
 
     self.Window.BackgroundColor3 = DESIGN.WindowColor1
-    self.Window.BackgroundTransparency = initialWindowTransparency
+    self.Window.BackgroundTransparency = transparency
     self.Window.BorderSizePixel = 0
-    self.Window.Parent = self.ScreenGui
     self.Window.ClipsDescendants = true
+    self.Window.Parent = self.ScreenGui
+
+    local uiScale = Instance.new("UIScale")
+    uiScale.Scale = scale
+    uiScale.Parent = self.Window
 
     addRoundedCorners(self.Window, DESIGN.CornerRadius)
 
-    local windowGradient = Instance.new("UIGradient")
-    windowGradient.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, DESIGN.WindowColor1),
-        ColorSequenceKeypoint.new(1, DESIGN.WindowColor2)
-    })
-    windowGradient.Rotation = 90
-    windowGradient.Parent = self.Window
-    
-    -- // BARRA DE TÍTULO (TITLE BAR)
-    
+    local gradient = Instance.new("UIGradient")
+    gradient.Color = ColorSequence.new(DESIGN.WindowColor1, DESIGN.WindowColor2)
+    gradient.Rotation = 90
+    gradient.Parent = self.Window
+    self._windowGradient = gradient  -- guardado para uso no reapply
+end
+
+-- > Configura toda a barra de título (ícone, título, botões)
+function Tekscripts:_SetupTitleBar(isLoading, options, scale, transparency)
     self.TitleBar = Instance.new("Frame")
     self.TitleBar.Size = UDim2.new(1, 0, 0, DESIGN.TitleHeight)
-    self.TitleBar.Position = UDim2.new(0, 0, 0, 0)
-    RegisterThemeItem("WindowColor2", self.TitleBar, "BackgroundColor3")
     self.TitleBar.BackgroundColor3 = DESIGN.WindowColor2
-    self.TitleBar.BackgroundTransparency = initialTabContainerTransparency
-    self.TitleBar.BorderSizePixel = 0 
+    self.TitleBar.BackgroundTransparency = transparency
+    self.TitleBar.BorderSizePixel = 0
+    self.TitleBar.Visible = not isLoading
     self.TitleBar.Parent = self.Window
-    self.TitleBar.Visible = not isLoading -- Esconde se estiver carregando
 
-    local titleCorner = Instance.new("UICorner")
-    titleCorner.CornerRadius = UDim.new(0, DESIGN.CornerRadius)
-    titleCorner.Parent = self.TitleBar 
-    
-    local mainHeader = Instance.new("Frame")
-    mainHeader.Size = UDim2.new(1, 0, 1, 0)
-    mainHeader.BackgroundTransparency = 1
-    mainHeader.LayoutOrder = 1
-    mainHeader.Parent = self.TitleBar
+    addRoundedCorners(self.TitleBar, DESIGN.CornerRadius)
+    RegisterThemeItem("WindowColor2", self.TitleBar, "BackgroundColor3")
+
+    local header = Instance.new("Frame")
+    header.Size = UDim2.new(1, 0, 1, 0)
+    header.BackgroundTransparency = 1
+    header.Parent = self.TitleBar
 
     local listLayout = Instance.new("UIListLayout")
     listLayout.FillDirection = Enum.FillDirection.Horizontal
     listLayout.VerticalAlignment = Enum.VerticalAlignment.Center
     listLayout.Padding = UDim.new(0, 5)
-    listLayout.Parent = mainHeader
+    listLayout.Parent = header
 
     local padding = Instance.new("UIPadding")
     padding.PaddingLeft = UDim.new(0, 10)
     padding.PaddingRight = UDim.new(0, 10)
-    padding.Parent = mainHeader
+    padding.Parent = header
 
-	-- Ícone
+    -- Ícone opcional
     local iconSize = 0
-    local iconPadding = 0
     if options.iconId then
         iconSize = DESIGN.IconSize
-        iconPadding = 5
         local iconFrame = Instance.new("Frame")
         iconFrame.Size = UDim2.new(0, iconSize, 0, iconSize)
         iconFrame.BackgroundTransparency = 1
         iconFrame.ClipsDescendants = true
-        iconFrame.Parent = mainHeader
-        
+        iconFrame.Parent = header
+
         local icon = Instance.new("ImageLabel")
         icon.Image = options.iconId
         icon.Size = UDim2.new(1, 0, 1, 0)
         icon.BackgroundTransparency = 1
         icon.Parent = iconFrame
-        
-        local corner = Instance.new("UICorner")
-        corner.CornerRadius = UDim.new(0, 5)
-        corner.Parent = iconFrame
+
+        addRoundedCorners(iconFrame, 5)
     end
 
     -- Título
-    local titleOffset = (iconSize + iconPadding) + (DESIGN.TitleHeight * 2) + DESIGN.TitlePadding
+    local titleOffset = iconSize + (iconSize > 0 and 5 or 0) + (DESIGN.TitleHeight * 2) + DESIGN.TitlePadding
     local titleFrame = Instance.new("Frame")
-    local titleWidth = UDim2.new(1, -titleOffset, 1, 0)
-    titleFrame.Size = titleWidth
+    titleFrame.Size = UDim2.new(1, -titleOffset, 1, 0)
     titleFrame.BackgroundTransparency = 1
     titleFrame.ClipsDescendants = true
-    titleFrame.Parent = mainHeader
+    titleFrame.Parent = header
 
     local title = Instance.new("TextLabel")
     self.Title = title
     title.Name = "Title"
     title.Text = options.Name or "Tekscripts"
     title.Size = UDim2.new(1, 0, 1, 0)
-    title.Position = UDim2.new(0, 0, 0, 0)
     title.BackgroundTransparency = 1
-    RegisterThemeItem("TitleColor", title, "TextColor3")
     title.TextColor3 = DESIGN.TitleColor
     title.Font = Enum.Font.RobotoMono
     title.TextScaled = true
     title.TextXAlignment = Enum.TextXAlignment.Left
     title.Parent = titleFrame
+    RegisterThemeItem("TitleColor", title, "TextColor3")
 
     self:SetupTitleScroll()
 
-    -- Botões de Controle
+    -- Botões de controle
+    self:_SetupTitleBarButtons(header)
+    self:SetupDragSystem()
+end
+
+-- > Cria os botões da barra de título (••• e minimizar)
+function Tekscripts:_SetupTitleBarButtons(parent)
     local buttonFrame = Instance.new("Frame")
     buttonFrame.Size = UDim2.new(0, DESIGN.TitleHeight * 2, 1, 0)
     buttonFrame.BackgroundTransparency = 1
-    buttonFrame.Parent = mainHeader
-    
-    local buttonListLayout = Instance.new("UIListLayout")
-    buttonListLayout.FillDirection = Enum.FillDirection.Horizontal
-    buttonListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Right
-    buttonListLayout.Padding = UDim.new(0, 5)
-    buttonListLayout.Parent = buttonFrame
+    buttonFrame.Parent = parent
 
+    local layout = Instance.new("UIListLayout")
+    layout.FillDirection = Enum.FillDirection.Horizontal
+    layout.HorizontalAlignment = Enum.HorizontalAlignment.Right
+    layout.Padding = UDim.new(0, 5)
+    layout.Parent = buttonFrame
+
+    -- Botão de menu
     local controlBtn = Instance.new("TextButton")
     controlBtn.Name = "ControlBtn"
     controlBtn.Text = "•••"
     controlBtn.Size = UDim2.new(0, DESIGN.TitleHeight, 0, DESIGN.TitleHeight)
-    RegisterThemeItem("ComponentBackground", controlBtn, "BackgroundColor3")
     controlBtn.BackgroundColor3 = DESIGN.ComponentBackground
-    RegisterThemeItem("ComponentTextColor", controlBtn, "TextColor3")
     controlBtn.TextColor3 = DESIGN.ComponentTextColor
     controlBtn.Font = Enum.Font.Roboto
     controlBtn.TextScaled = true
     controlBtn.BorderSizePixel = 0
     controlBtn.Parent = buttonFrame
-
+    RegisterThemeItem("ComponentBackground", controlBtn, "BackgroundColor3")
+    RegisterThemeItem("ComponentTextColor", controlBtn, "TextColor3")
     addRoundedCorners(controlBtn, DESIGN.CornerRadius)
     addHoverEffect(controlBtn, DESIGN.ComponentBackground, DESIGN.ComponentHoverColor)
+    self._controlBtn = controlBtn
 
-    -- Botão Minimizar
+    -- Botão minimizar
     local minimizeBtn = Instance.new("ImageButton")
     minimizeBtn.Name = "MinimizeButton"
     minimizeBtn.Size = UDim2.new(0, DESIGN.TitleHeight, 0, DESIGN.TitleHeight)
     minimizeBtn.BackgroundColor3 = DESIGN.MinimizeButtonColor
-    minimizeBtn.BorderSizePixel = 0
     minimizeBtn.Image = "rbxassetid://10734895698"
     minimizeBtn.ScaleType = Enum.ScaleType.Fit
+    minimizeBtn.BorderSizePixel = 0
     minimizeBtn.Parent = buttonFrame
     RegisterThemeItem("MinimizeButtonColor", minimizeBtn, "BackgroundColor3")
     addRoundedCorners(minimizeBtn, DESIGN.CornerRadius)
     addHoverEffect(minimizeBtn, DESIGN.MinimizeButtonColor, DESIGN.ComponentHoverColor)
-    
+
     self.Connections.MinimizeClick = minimizeBtn.MouseButton1Click:Connect(function()
         self:Minimize()
         self:HideCloseButton()
     end)
-    
-    self:SetupDragSystem() 
-    
-    -- Botão Fechar Dropdown
+end
+
+-- > Configura o dropdown de fechar
+function Tekscripts:_SetupCloseDropdown()
     self.CloseButtonContainer = Instance.new("Frame")
-    local buttonWidth = DESIGN.DropdownWidth or 100 
-    local buttonHeight = DESIGN.DropdownItemHeight or 25
-    self.CloseButtonContainer.Size = UDim2.new(0, buttonWidth + 10, 0, buttonHeight + 10)
+    local width = DESIGN.DropdownWidth or 100
+    local height = DESIGN.DropdownItemHeight or 25
+    self.CloseButtonContainer.Size = UDim2.new(0, width + 10, 0, height + 10)
     self.CloseButtonContainer.BackgroundColor3 = DESIGN.DropdownBackground
     self.CloseButtonContainer.BackgroundTransparency = DESIGN.DropdownTransparency or 0
     self.CloseButtonContainer.BorderSizePixel = 0
     self.CloseButtonContainer.Visible = false
-    self.CloseButtonContainer.ZIndex = 10 
-    self.CloseButtonContainer.Parent = self.Window 
+    self.CloseButtonContainer.ZIndex = 10
+    self.CloseButtonContainer.Parent = self.Window
     addRoundedCorners(self.CloseButtonContainer)
 
-    local closeOption = Instance.new("TextButton")
-    self.CloseButton = closeOption
-    closeOption.Name = "CloseButton"
-    closeOption.Text = "Fechar"
-    closeOption.Size = UDim2.new(1, -10, 1, -10) 
-    closeOption.Position = UDim2.new(0, 5, 0, 5)
-    closeOption.BackgroundColor3 = DESIGN.DropdownBackground 
-    closeOption.BackgroundTransparency = 1 
-    RegisterThemeItem("CloseButtonColor", closeOption, "TextColor3")
-    closeOption.TextColor3 = DESIGN.CloseButtonColor
-    closeOption.Font = Enum.Font.Roboto
-    closeOption.TextScaled = true 
-    closeOption.ZIndex = 11 
-    closeOption.BorderSizePixel = 0
-    closeOption.Parent = self.CloseButtonContainer
-    addRoundedCorners(closeOption, 5)
-    addHoverEffect(closeOption, closeOption.BackgroundColor3, DESIGN.DropdownItemHover)
+    local closeBtn = Instance.new("TextButton")
+    self.CloseButton = closeBtn
+    closeBtn.Text = "Fechar"
+    closeBtn.Size = UDim2.new(1, -10, 1, -10)
+    closeBtn.Position = UDim2.new(0, 5, 0, 5)
+    closeBtn.BackgroundTransparency = 1
+    closeBtn.TextColor3 = DESIGN.CloseButtonColor
+    closeBtn.Font = Enum.Font.Roboto
+    closeBtn.TextScaled = true
+    closeBtn.ZIndex = 11
+    closeBtn.BorderSizePixel = 0
+    closeBtn.Parent = self.CloseButtonContainer
+    RegisterThemeItem("CloseButtonColor", closeBtn, "TextColor3")
+    addRoundedCorners(closeBtn, 5)
+    addHoverEffect(closeBtn, DESIGN.DropdownBackground, DESIGN.DropdownItemHover)
 
-    self.Connections.CloseClick = closeOption.MouseButton1Click:Connect(function()
+    self.Connections.CloseClick = closeBtn.MouseButton1Click:Connect(function()
         self:Destroy()
     end)
 
-    self.Connections.ControlBtn = controlBtn.MouseButton1Click:Connect(function()
-        local isOpening = not self.CloseButtonContainer.Visible
-        self.CloseButtonContainer.Visible = isOpening
-        if isOpening then
-            local controlBtnAbsPos = controlBtn.AbsolutePosition
-            local windowAbsPos = self.Window.AbsolutePosition
-            local closeBtnSize = self.CloseButtonContainer.AbsoluteSize
-            local relativeX = controlBtnAbsPos.X - windowAbsPos.X
-            local newXOffset = relativeX + controlBtn.AbsoluteSize.X - closeBtnSize.X
-            local newYOffset = DESIGN.TitleHeight + 2
-            self.CloseButtonContainer.Position = UDim2.new(0, newXOffset, 0, newYOffset)
+    -- Toggle e posicionamento do dropdown
+    self.Connections.ControlBtn = self._controlBtn.MouseButton1Click:Connect(function()
+        local visible = not self.CloseButtonContainer.Visible
+        self.CloseButtonContainer.Visible = visible
+        if visible then
+            local absCtrl = self._controlBtn.AbsolutePosition
+            local absWin = self.Window.AbsolutePosition
+            local size = self.CloseButtonContainer.AbsoluteSize
+            local x = absCtrl.X - absWin.X + self._controlBtn.AbsoluteSize.X - size.X
+            self.CloseButtonContainer.Position = UDim2.new(0, x, 0, DESIGN.TitleHeight + 2)
         end
     end)
 
-    self.Connections.InputBegan = UserInputService.InputBegan:Connect(function(input, gameProcessed)
-        if gameProcessed then return end
-        if self.CloseButtonContainer.Visible and input.UserInputType == Enum.UserInputType.MouseButton1 then
-            local mousePos = UserInputService:GetMouseLocation()
-            local closePos = self.CloseButtonContainer.AbsolutePosition
-            local closeSize = self.CloseButtonContainer.AbsoluteSize
-            local controlBtnPos = controlBtn.AbsolutePosition
-            local controlBtnSize = controlBtn.AbsoluteSize
-            local isOutsideClose = mousePos.X < closePos.X or mousePos.X > closePos.X + closeSize.X or mousePos.Y < closePos.Y or mousePos.Y > closePos.Y + closeSize.Y
-            local isOutsideControlBtn = mousePos.X < controlBtnPos.X or mousePos.X > controlBtnPos.X + controlBtnSize.X or mousePos.Y < controlBtnPos.Y or mousePos.Y > controlBtnPos.Y + controlBtnSize.Y
-            if isOutsideClose and isOutsideControlBtn then
+    -- Fechar ao clicar fora
+    self.Connections.InputBegan = game:GetService("UserInputService").InputBegan:Connect(function(input, gp)
+        if gp or not self.CloseButtonContainer.Visible then return end
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            local mouse = game:GetService("UserInputService"):GetMouseLocation()
+            local dropPos = self.CloseButtonContainer.AbsolutePosition
+            local dropSize = self.CloseButtonContainer.AbsoluteSize
+            local ctrlPos = self._controlBtn.AbsolutePosition
+            local ctrlSize = self._controlBtn.AbsoluteSize
+
+            local outsideDrop = mouse.X < dropPos.X or mouse.X > dropPos.X + dropSize.X
+                or mouse.Y < dropPos.Y or mouse.Y > dropPos.Y + dropSize.Y
+            local outsideCtrl = mouse.X < ctrlPos.X or mouse.X > ctrlPos.X + ctrlSize.X
+                or mouse.Y < ctrlPos.Y or mouse.Y > ctrlPos.Y + ctrlSize.Y
+
+            if outsideDrop and outsideCtrl then
                 self.CloseButtonContainer.Visible = false
             end
         end
     end)
-    
-    -- // CONTAINER DAS ABAS
-    
-    local tabContainerSize = self:_GetTabContainerSize()
+end
+
+-- > Configura containers de abas e conteúdo principal
+function Tekscripts:_SetupTabContainers(tabTransparency, winTransparency, isLoading)
+    local tabSize = self:_GetTabContainerSize()
+
     self.TabContainer = Instance.new("Frame")
-    self.TabContainer.Size = UDim2.new(tabContainerSize.X.Scale, tabContainerSize.X.Offset, 1, -DESIGN.TitleHeight)
+    self.TabContainer.Size = UDim2.new(tabSize.X.Scale, tabSize.X.Offset, 1, -DESIGN.TitleHeight)
     self.TabContainer.Position = UDim2.new(0, 0, 0, DESIGN.TitleHeight)
-    RegisterThemeItem("WindowColor2", self.TabContainer, "BackgroundColor3")
     self.TabContainer.BackgroundColor3 = DESIGN.WindowColor2
-    RegisterThemeItem("TabContainerTransparency", self.TabContainer, "BackgroundTransparency")
-    self.TabContainer.BackgroundTransparency = initialTabContainerTransparency
+    self.TabContainer.BackgroundTransparency = tabTransparency
     self.TabContainer.BorderSizePixel = 0
+    self.TabContainer.Visible = not isLoading
     self.TabContainer.Parent = self.Window
-    self.TabContainer.Visible = not isLoading -- Esconde se estiver carregando
+    RegisterThemeItem("WindowColor2", self.TabContainer, "BackgroundColor3")
+    addRoundedCorners(self.TabContainer, DESIGN.CornerRadius)
 
-    local tabCorner = Instance.new("UICorner")
-    tabCorner.CornerRadius = UDim.new(0, DESIGN.CornerRadius)
-    tabCorner.Parent = self.TabContainer 
-    
-    local tabLayout = Instance.new("UIListLayout")
-    tabLayout.Padding = UDim.new(0, 5)
-    tabLayout.Parent = self.TabContainer
+    local layout = Instance.new("UIListLayout")
+    layout.Padding = UDim.new(0, 5)
+    layout.Parent = self.TabContainer
 
-    local tabPadding = Instance.new("UIPadding")
-    tabPadding.PaddingTop = UDim.new(0, 10)
-    tabPadding.PaddingLeft = UDim.new(0, 5)
-    tabPadding.PaddingRight = UDim.new(0, 5)
-    tabPadding.Parent = self.TabContainer
+    local padding = Instance.new("UIPadding")
+    padding.PaddingTop = UDim.new(0, 10)
+    padding.PaddingLeft = UDim.new(0, 5)
+    padding.PaddingRight = UDim.new(0, 5)
+    padding.Parent = self.TabContainer
 
+    -- Estado vazio
     self.NoTabsLabel = Instance.new("TextLabel")
     self.NoTabsLabel.Size = UDim2.new(1, 0, 1, 0)
     self.NoTabsLabel.BackgroundTransparency = 1
     self.NoTabsLabel.Text = "nada ainda"
-    RegisterThemeItem("EmptyStateTextColor", self.NoTabsLabel, "TextColor3")
     self.NoTabsLabel.TextColor3 = DESIGN.EmptyStateTextColor
     self.NoTabsLabel.Font = Enum.Font.Roboto
     self.NoTabsLabel.TextScaled = true
     self.NoTabsLabel.TextXAlignment = Enum.TextXAlignment.Center
     self.NoTabsLabel.Parent = self.TabContainer
-    self.NoTabsLabel.Visible = true
+    RegisterThemeItem("EmptyStateTextColor", self.NoTabsLabel, "TextColor3")
 
-    -- // CONTEÚDO DAS ABAS
-    
+    -- Conteúdo das abas
     self.TabContentContainer = Instance.new("Frame")
-    local tabContainerXScale = tabContainerSize.X.Scale
-    local tabContainerXOffset = tabContainerSize.X.Offset
-    self.TabContentContainer.Size = UDim2.new(1 - tabContainerXScale, -tabContainerXOffset, 1, -DESIGN.TitleHeight) 
-    self.TabContentContainer.Position = UDim2.new(tabContainerXScale, tabContainerXOffset, 0, DESIGN.TitleHeight)
-    self.TabContentContainer.BackgroundTransparency = initialWindowTransparency
+    self.TabContentContainer.Size = UDim2.new(1 - tabSize.X.Scale, -tabSize.X.Offset, 1, -DESIGN.TitleHeight)
+    self.TabContentContainer.Position = UDim2.new(tabSize.X.Scale, tabSize.X.Offset, 0, DESIGN.TitleHeight)
     self.TabContentContainer.BackgroundColor3 = DESIGN.WindowColor1
+    self.TabContentContainer.BackgroundTransparency = winTransparency
     self.TabContentContainer.BorderSizePixel = 0
+    self.TabContentContainer.Visible = not isLoading
     self.TabContentContainer.Parent = self.Window
-    self.TabContentContainer.Visible = not isLoading -- Esconde se estiver carregando
+end
 
-    -- // OUTROS COMPONENTES
+-- > Configura resize, float button e tela de bloqueio
+function Tekscripts:_SetupAdditionalComponents(floatText)
     self:SetupResizeSystem()
-    self:SetupFloatButton(options.FloatText or "Expandir")
+    self:SetupFloatButton(floatText)
 
     self.BlockScreen = Instance.new("Frame")
     self.BlockScreen.Size = UDim2.new(1, 0, 1, 0)
-    self.BlockScreen.BackgroundTransparency = 0.5
-    RegisterThemeItem("BlockScreenColor", self.BlockScreen, "BackgroundColor3")
     self.BlockScreen.BackgroundColor3 = DESIGN.BlockScreenColor
+    self.BlockScreen.BackgroundTransparency = 0.5
     self.BlockScreen.ZIndex = 10
     self.BlockScreen.Visible = false
     self.BlockScreen.Parent = self.ScreenGui
+    RegisterThemeItem("BlockScreenColor", self.BlockScreen, "BackgroundColor3")
 
     local blur = Instance.new("BlurEffect")
     blur.Size = 0
     blur.Parent = self.BlockScreen
     self.BlurEffect = blur
-    
-    -- // LÓGICA DE TEMA
+end
+
+-- > Configura o sistema de reaplicação de tema
+function Tekscripts:_SetupThemeReapplication()
     function self:_reapplyThemeColors()
-        local windowTransp = DESIGN.WindowTransparency or 0.1
-        local tabTransp = DESIGN.TabContainerTransparency or 0.1
-        if self._useThemeTransparency then
-            windowTransp = self._userWindowTransparency or DESIGN.WindowTransparency or 0.1
-            tabTransp = self._userTabContainerTransparency or DESIGN.TabContainerTransparency or 0.1
-        end
+        local winTransp = self._useThemeTransparency and (self._userWindowTransparency or DESIGN.WindowTransparency) or DESIGN.WindowTransparency or 0.1
+        local tabTransp = self._useThemeTransparency and (self._userTabContainerTransparency or DESIGN.TabContainerTransparency) or DESIGN.TabContainerTransparency or 0.1
 
         self.Window.BackgroundColor3 = DESIGN.WindowColor1
-        self.Window.BackgroundTransparency = windowTransp
-        
-        windowGradient.Color = ColorSequence.new({
-            ColorSequenceKeypoint.new(0, DESIGN.WindowColor1),
-            ColorSequenceKeypoint.new(1, DESIGN.WindowColor2)
-        })
+        self.Window.BackgroundTransparency = winTransp
+        self._windowGradient.Color = ColorSequence.new(DESIGN.WindowColor1, DESIGN.WindowColor2)
 
         self.TitleBar.BackgroundColor3 = DESIGN.WindowColor2
         self.TitleBar.BackgroundTransparency = tabTransp
@@ -1969,14 +2000,11 @@ function Tekscripts.new(options: {
         self.TabContainer.BackgroundColor3 = DESIGN.WindowColor2
         self.TabContainer.BackgroundTransparency = tabTransp
         self.TabContentContainer.BackgroundColor3 = DESIGN.WindowColor1
-        self.TabContentContainer.BackgroundTransparency = windowTransp
+        self.TabContentContainer.BackgroundTransparency = winTransp
 
-        controlBtn.BackgroundColor3 = DESIGN.ComponentBackground
-        controlBtn.TextColor3 = DESIGN.ComponentTextColor
-        addHoverEffect(controlBtn, DESIGN.ComponentBackground, DESIGN.ComponentHoverColor)
-
-        minimizeBtn.BackgroundColor3 = DESIGN.MinimizeButtonColor
-        addHoverEffect(minimizeBtn, DESIGN.MinimizeButtonColor, DESIGN.ComponentHoverColor)
+        self._controlBtn.BackgroundColor3 = DESIGN.ComponentBackground
+        self._controlBtn.TextColor3 = DESIGN.ComponentTextColor
+        addHoverEffect(self._controlBtn, DESIGN.ComponentBackground, DESIGN.ComponentHoverColor)
 
         self.CloseButtonContainer.BackgroundColor3 = DESIGN.DropdownBackground
         self.CloseButtonContainer.BackgroundTransparency = DESIGN.DropdownTransparency or 0
@@ -1985,131 +2013,99 @@ function Tekscripts.new(options: {
 
         self.NoTabsLabel.TextColor3 = DESIGN.EmptyStateTextColor
         self.BlockScreen.BackgroundColor3 = DESIGN.BlockScreenColor
-        
-        if self.ResizeHandle and self.ResizeHandle._reapplyThemeColors then self.ResizeHandle:_reapplyThemeColors() end
-        if self.FloatButton and self.FloatButton._reapplyThemeColors then self.FloatButton:_reapplyThemeColors() end
-    end
-    
-    RegisterThemeItem("WindowColor1", self, "_reapplyThemeColors")
-    RegisterThemeItem("WindowColor2", self, "_reapplyThemeColors")
-    RegisterThemeItem("WindowTransparency", self, "_reapplyThemeColors")
-    RegisterThemeItem("TabContainerTransparency", self, "_reapplyThemeColors")
-    RegisterThemeItem("TitleColor", self, "_reapplyThemeColors")
-    RegisterThemeItem("ComponentBackground", self, "_reapplyThemeColors")
-    RegisterThemeItem("ComponentTextColor", self, "_reapplyThemeColors")
-    RegisterThemeItem("ComponentHoverColor", self, "_reapplyThemeColors")
-    RegisterThemeItem("MinimizeButtonColor", self, "_reapplyThemeColors")
-    RegisterThemeItem("DropdownBackground", self, "_reapplyThemeColors")
-    RegisterThemeItem("DropdownTransparency", self, "_reapplyThemeColors")
-    RegisterThemeItem("CloseButtonColor", self, "_reapplyThemeColors")
-    RegisterThemeItem("DropdownItemHover", self, "_reapplyThemeColors")
-    RegisterThemeItem("EmptyStateTextColor", self, "_reapplyThemeColors")
-    RegisterThemeItem("BlockScreenColor", self, "_reapplyThemeColors")
 
-    self.Connections.PlayerRemoving = Players.PlayerRemoving:Connect(function(player)
-        if player == localPlayer then
-            self:Destroy()
+        if self.ResizeHandle and self.ResizeHandle._reapplyThemeColors then
+            self.ResizeHandle:_reapplyThemeColors()
         end
-    end)
+        if self.FloatButton and self.FloatButton._reapplyThemeColors then
+            self.FloatButton:_reapplyThemeColors()
+        end
+    end
 
-    -- =========================================================================
-    -- LOADING SCREEN COMPACTO E ORGANIZADO
-    -- =========================================================================
-    
-if isLoading then
+    local keys = {
+        "WindowColor1", "WindowColor2", "WindowTransparency", "TabContainerTransparency",
+        "TitleColor", "ComponentBackground", "ComponentTextColor", "ComponentHoverColor",
+        "MinimizeButtonColor", "DropdownBackground", "DropdownTransparency",
+        "CloseButtonColor", "DropdownItemHover", "EmptyStateTextColor", "BlockScreenColor"
+    }
+    for _, key in ipairs(keys) do
+        RegisterThemeItem(key, self, "_reapplyThemeColors")
+    end
+end
+
+-- > Configura e executa a animação do loading screen
+function Tekscripts:_SetupLoadingScreen(config, finalSize, finalPos, finalAnchor)
     self.Blocked = true
-    
-    local loadConfig = options.Loading
-    
-    -- Container do Loading
-    local loadingContent = Instance.new("Frame")
-    loadingContent.Name = "LoadingContent"
-    loadingContent.Size = UDim2.new(1, -40, 1, -40)
-    loadingContent.Position = UDim2.new(0, 20, 0, 20)
-    loadingContent.BackgroundTransparency = 1
-    loadingContent.Parent = self.Window
 
-    -- Layout alinhado à ESQUERDA
+    local content = Instance.new("Frame")
+    content.Name = "LoadingContent"
+    content.Size = UDim2.new(1, -40, 1, -40)
+    content.Position = UDim2.new(0, 20, 0, 20)
+    content.BackgroundTransparency = 1
+    content.Parent = self.Window
+
     local layout = Instance.new("UIListLayout")
     layout.FillDirection = Enum.FillDirection.Vertical
     layout.HorizontalAlignment = Enum.HorizontalAlignment.Left
     layout.VerticalAlignment = Enum.VerticalAlignment.Top
     layout.Padding = UDim.new(0, 2)
-    layout.Parent = loadingContent
+    layout.Parent = content
 
-    -- Título
-    local loadTitle = Instance.new("TextLabel")
-    loadTitle.Text = loadConfig.Title or "Carregando"
-    loadTitle.Font = Enum.Font.SourceSansBold 
-    loadTitle.TextSize = 19
-    loadTitle.TextColor3 = DESIGN.TitleColor or Color3.fromRGB(255, 255, 255)
-    loadTitle.Size = UDim2.new(1, 0, 0, 24)
-    loadTitle.TextXAlignment = Enum.TextXAlignment.Left
-    loadTitle.BackgroundTransparency = 1
-    loadTitle.Parent = loadingContent
+    local title = Instance.new("TextLabel")
+    title.Text = config.Title or "Carregando"
+    title.Font = Enum.Font.SourceSansBold
+    title.TextSize = 19
+    title.TextColor3 = DESIGN.TitleColor or Color3.fromRGB(255, 255, 255)
+    title.Size = UDim2.new(1, 0, 0, 24)
+    title.TextXAlignment = Enum.TextXAlignment.Left
+    title.BackgroundTransparency = 1
+    title.Parent = content
 
-    -- Descrição
-    local loadDesc = Instance.new("TextLabel")
-    loadDesc.Text = loadConfig.Desc or "Aguarde..."
-    loadDesc.Font = Enum.Font.SourceSans
-    loadDesc.TextSize = 13
-    loadDesc.TextColor3 = DESIGN.ComponentTextColor or Color3.fromRGB(160, 160, 160)
-    loadDesc.Size = UDim2.new(1, 0, 0, 18)
-    loadDesc.TextXAlignment = Enum.TextXAlignment.Left
-    loadDesc.BackgroundTransparency = 1
-    loadDesc.TextWrapped = true
-    loadDesc.Parent = loadingContent
+    local desc = Instance.new("TextLabel")
+    desc.Text = config.Desc or "Aguarde..."
+    desc.Font = Enum.Font.SourceSans
+    desc.TextSize = 13
+    desc.TextColor3 = DESIGN.ComponentTextColor or Color3.fromRGB(160, 160, 160)
+    desc.Size = UDim2.new(1, 0, 0, 18)
+    desc.TextXAlignment = Enum.TextXAlignment.Left
+    desc.BackgroundTransparency = 1
+    desc.TextWrapped = true
+    desc.Parent = content
 
-    --- SPINNER MANUAL MINIMALISTA ---
-    local spinnerFrame = Instance.new("Frame")
-    spinnerFrame.Name = "MinimalSpinner"
-    spinnerFrame.Size = UDim2.new(0, 16, 0, 16) -- Menor para ser discreto
-    spinnerFrame.Position = UDim2.new(1, -15, 1, -15)
-    spinnerFrame.AnchorPoint = Vector2.new(1, 1)
-    spinnerFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    spinnerFrame.BackgroundTransparency = 0
-    spinnerFrame.Parent = self.Window
+    local spinner = Instance.new("Frame")
+    spinner.Name = "MinimalSpinner"
+    spinner.Size = UDim2.new(0, 16, 0, 16)
+    spinner.Position = UDim2.new(1, -15, 1, -15)
+    spinner.AnchorPoint = Vector2.new(1, 1)
+    spinner.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    spinner.Parent = self.Window
+    addRoundedCorners(spinner, UDim.new(1, 0))
 
-    -- Deixa o frame redondo
-    local corner = Instance.new("UICorner")
-    corner.CornerRadius = UDim.new(1, 0)
-    corner.Parent = spinnerFrame
+    local grad = Instance.new("UIGradient")
+    grad.Transparency = NumberSequence.new(0, 0, 0.8, 1, 1, 1)
+    grad.Color = ColorSequence.new(DESIGN.ComponentHoverColor or Color3.fromRGB(0, 170, 255))
+    grad.Parent = spinner
 
-    -- Cria o efeito de "carga" usando transparência e gradiente
-    local gradient = Instance.new("UIGradient")
-    gradient.Transparency = NumberSequence.new({
-        NumberSequenceKeypoint.new(0, 0),    -- Opaco no início
-        NumberSequenceKeypoint.new(0.8, 1),  -- Transparente no fim
-        NumberSequenceKeypoint.new(1, 1)
-    })
-    gradient.Color = ColorSequence.new(DESIGN.ComponentHoverColor or Color3.fromRGB(0, 170, 255))
-    gradient.Parent = spinnerFrame
-
-    -- Animação
     task.spawn(function()
-        -- Rotação infinita do Spinner
-        local rotateInfo = TweenInfo.new(0.8, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, -1)
-        local rotateTween = TweenService:Create(spinnerFrame, rotateInfo, {Rotation = 360})
-        rotateTween:Play()
+        local tween = game:GetService("TweenService"):Create(spinner, TweenInfo.new(0.8, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, -1), {Rotation = 360})
+        tween:Play()
 
-        task.wait(2.5) -- Tempo de carregamento simulado
+        task.wait(2.5)
 
-        -- Fade out suave
-        local fadeInfo = TweenInfo.new(0.4)
-        TweenService:Create(loadTitle, fadeInfo, {TextTransparency = 1}):Play()
-        TweenService:Create(loadDesc, fadeInfo, {TextTransparency = 1}):Play()
-        TweenService:Create(spinnerFrame, fadeInfo, {BackgroundTransparency = 1}):Play()
-        
+        local fade = TweenInfo.new(0.4)
+        game:GetService("TweenService"):Create(title, fade, {TextTransparency = 1}):Play()
+        game:GetService("TweenService"):Create(desc, fade, {TextTransparency = 1}):Play()
+        game:GetService("TweenService"):Create(spinner, fade, {BackgroundTransparency = 1}):Play()
+
         task.wait(0.4)
-        loadingContent:Destroy()
-        spinnerFrame:Destroy()
+        content:Destroy()
+        spinner:Destroy()
 
-        -- Expansão da janela
-        local expandInfo = TweenInfo.new(0.7, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
-        local expandTween = TweenService:Create(self.Window, expandInfo, {
-            Size = finalWindowSize,
-            Position = finalWindowPos,
-            AnchorPoint = finalAnchorPoint
+        local expand = TweenInfo.new(0.7, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+        local expandTween = game:GetService("TweenService"):Create(self.Window, expand, {
+            Size = finalSize,
+            Position = finalPos,
+            AnchorPoint = finalAnchor
         })
         expandTween:Play()
         expandTween.Completed:Wait()
@@ -2120,11 +2116,6 @@ if isLoading then
         self.Blocked = false
     end)
 end
-
-    
-    return self
-end
-
 -- Necessário que esta função exista no módulo principal (Tekscripts) para funcionar corretamente.
 function Tekscripts:HideCloseButton()
     if self.CloseButtonContainer and self.CloseButtonContainer.Parent then
@@ -3076,7 +3067,7 @@ function Tekscripts:CreateSlider(tab: any, options: {
         thumbRing.BackgroundColor3 = DESIGN.SliderFillColor
         
         -- Garante que o estado de Lock seja reaplicado com as novas cores
-        publicApi.Lock(publicApi._locked)
+        publicApi.SetLocked(publicApi._locked)
     end
     
     -- Registra a função para os elementos que usam a cor de preenchimento
@@ -3290,7 +3281,7 @@ function Tekscripts:CreateSlider(tab: any, options: {
         end
     end
 
-    function publicApi.Lock(state)
+    function publicApi.SetLocked(state)
         publicApi._locked = state and true or false
         valueLabel.TextEditable = not publicApi._locked
         
@@ -4866,80 +4857,6 @@ function Tekscripts:CreateButton(tab, options)
     return publicApi
 end
 
-function Tekscripts:CreateDivider(tab, options)
-	assert(type(tab) == "table" and tab.Container, "Invalid Tab object provided to CreateDividerBox")
-
-	local text = options and options.Text or "Título"
-	local height = options and options.Height or 28
-	local boxColor = options and options.Color or DESIGN.ComponentBackground
-	local txtColor = options and options.TextColor or DESIGN.ComponentTextColor
-
-	-- CONTAINER COMPATÍVEL COM UIListLayout
-	local container = Instance.new("Frame")
-	container.Name = "DividerBox"
-	container.BackgroundTransparency = 1
-	container.Size = UDim2.new(1, 0, 0, height + 10)
-
-	-- BOX CENTRAL (agora adaptável à largura)
-	local box = Instance.new("Frame")
-	box.Name = "Box"
-	RegisterThemeItem("ComponentBackground", box, "BackgroundColor3")
-	box.BackgroundColor3 = boxColor
-	box.BorderSizePixel = 0
-	box.Size = UDim2.new(1, -20, 0, height) -- 1 = largura total do container, -20 = margem
-	box.Position = UDim2.new(0, 10, 0, 5)    -- 10px de margem à esquerda
-	box.Parent = container
-
-	local corner = Instance.new("UICorner")
-	corner.CornerRadius = UDim.new(0, DESIGN.CornerRadius)
-	corner.Parent = box
-
-	-- TEXTO CENTRAL
-	local label = Instance.new("TextLabel")
-	label.Name = "Label"
-	label.BackgroundTransparency = 1
-	label.Text = text
-	label.Font = Enum.Font.GothamBold
-	label.TextSize = 15
-	label.TextXAlignment = Enum.TextXAlignment.Center
-	label.TextYAlignment = Enum.TextYAlignment.Center
-	RegisterThemeItem("ComponentTextColor", label, "TextColor3")
-	label.TextColor3 = txtColor
-	label.Size = UDim2.new(1, 0, 1, 0)
-	label.Parent = box
-
-	-- API
-	local api = {
-		_instance = container,
-		_box = box,
-		_label = label,
-	}
-
-	function api:SetText(newText)
-		label.Text = newText
-	end
-
-	function api:SetColor(newColor)
-		box.BackgroundColor3 = newColor
-	end
-
-	function api:SetTextColor(newColor)
-		label.TextColor3 = newColor
-	end
-
-	function api:Destroy()
-		if container then
-			container:Destroy()
-		end
-	end
-
-	-- REGISTRAR COMPONENTE NA TAB
-	table.insert(tab.Components, api)
-	container.Parent = tab.Container
-
-	return api
-end
-
 function Tekscripts:CreateFloatButton(options)
     assert(typeof(options) == "table" and type(options.Text) == "string", "Invalid arguments for CreateFloatButton")
 
@@ -5748,165 +5665,6 @@ function Tekscripts:CreateTabContainer(parentTab: any, options: { Title: string?
     return publicApi
 end
 
-function Tekscripts:Notify(options)
-    -- === 1. CONFIGURAÇÕES INICIAIS ===
-    local Title = options.Title or options.Text or "Notificação"
-    local Desc = options.Desc or "Sem descrição."
-    local Duration = options.Duration or 5 
-    local IconID = options.Icon -- Opcional
-    
-    local TweenService = game:GetService("TweenService")
-    local LocalPlayer = game:GetService("Players").LocalPlayer
-    
-    -- === 2. HOLDER COM Z-INDEX MÁXIMO ===
-    local NotificationsHolder = (function()
-        local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
-        local container = PlayerGui:FindFirstChild("TekScriptsNotifications")
-        
-        if not container then
-            container = Instance.new("ScreenGui", PlayerGui)
-            container.Name = "TekScriptsNotifications"
-            container.IgnoreGuiInset = true
-            -- DisplayOrder máximo para sobrepor QUALQUER interface
-            container.DisplayOrder = 2147483647 
-            
-            local holder = Instance.new("Frame", container)
-            holder.Name = "Holder"
-            holder.BackgroundTransparency = 1
-            holder.AnchorPoint = Vector2.new(1, 1)
-            holder.Position = UDim2.new(1, -20, 1, -20)
-            holder.Size = UDim2.new(0, DESIGN.NotifyWidth or 280, 1, 0)
-            
-            local layout = Instance.new("UIListLayout", holder)
-            layout.VerticalAlignment = Enum.VerticalAlignment.Bottom
-            layout.Padding = UDim.new(0, 10)
-        end
-        return container.Holder
-    end)()
-
-    -- === 3. CONSTRUÇÃO DA NOTIFICAÇÃO (CANVAS GROUP) ===
-    local box = Instance.new("CanvasGroup")
-    box.Name = "Notification"
-    box.Size = UDim2.new(1, 0, 0, 0)
-    box.AutomaticSize = Enum.AutomaticSize.Y
-    box.BorderSizePixel = 0
-    box.Position = UDim2.new(1.5, 0, 0, 0)
-    box.GroupTransparency = 1 
-    -- Interactable = false garante que cliques passem através da notificação
-    box.Interactable = false 
-    box.Parent = NotificationsHolder
-
-    RegisterThemeItem("NotifyBackground", box, "BackgroundColor3")
-    
-    local corner = Instance.new("UICorner", box)
-    corner.CornerRadius = UDim.new(0, DESIGN.CornerRadius or 9)
-
-    -- Container de Conteúdo
-    local contentFrame = Instance.new("Frame", box)
-    contentFrame.Name = "Content"
-    contentFrame.Size = UDim2.new(1, 0, 0, 0)
-    contentFrame.AutomaticSize = Enum.AutomaticSize.Y
-    contentFrame.BackgroundTransparency = 1
-    
-    local padding = Instance.new("UIPadding", contentFrame)
-    local pVal = DESIGN.ComponentPadding or 10
-    padding.PaddingTop = UDim.new(0, pVal)
-    padding.PaddingBottom = UDim.new(0, pVal + 5)
-    padding.PaddingLeft = UDim.new(0, pVal)
-    padding.PaddingRight = UDim.new(0, pVal)
-
-    local contentLayout = Instance.new("UIListLayout", contentFrame)
-    contentLayout.Padding = UDim.new(0, 4)
-    contentLayout.SortOrder = Enum.SortOrder.LayoutOrder
-
-    -- Header (Título e Ícone Opcional)
-    local header = Instance.new("Frame", contentFrame)
-    header.Size = UDim2.new(1, 0, 0, 20)
-    header.BackgroundTransparency = 1
-    header.LayoutOrder = 1
-    
-    local headerLayout = Instance.new("UIListLayout", header)
-    headerLayout.FillDirection = Enum.FillDirection.Horizontal
-    headerLayout.Padding = UDim.new(0, 8)
-    headerLayout.VerticalAlignment = Enum.VerticalAlignment.Center
-
-    -- Lógica de Ícone Adaptável
-    if IconID then
-        local icon = Instance.new("ImageLabel", header)
-        icon.Name = "Icon"
-        icon.Size = UDim2.new(0, 16, 0, 16)
-        icon.BackgroundTransparency = 1
-        icon.Image = IconID
-        RegisterThemeItem("AccentColor", icon, "ImageColor3")
-    end
-
-    local titleLabel = Instance.new("TextLabel", header)
-    titleLabel.Name = "TitleLabel"
-    titleLabel.Text = Title
-    titleLabel.Font = Enum.Font.GothamBold
-    titleLabel.TextSize = 14
-    titleLabel.TextXAlignment = Enum.TextXAlignment.Left
-    titleLabel.BackgroundTransparency = 1
-    -- Se tiver ícone, tira 24px (16 do icone + 8 do padding), se não, ocupa 100%
-    titleLabel.Size = IconID and UDim2.new(1, -24, 1, 0) or UDim2.new(1, 0, 1, 0)
-    RegisterThemeItem("TitleColor", titleLabel, "TextColor3")
-
-    -- Descrição
-    local descLabel = Instance.new("TextLabel", contentFrame)
-    descLabel.Text = Desc
-    descLabel.Font = Enum.Font.Gotham
-    descLabel.TextSize = 13
-    descLabel.TextXAlignment = Enum.TextXAlignment.Left
-    descLabel.BackgroundTransparency = 1
-    descLabel.Size = UDim2.new(1, 0, 0, 0)
-    descLabel.AutomaticSize = Enum.AutomaticSize.Y
-    descLabel.TextWrapped = true
-    descLabel.LayoutOrder = 2
-    RegisterThemeItem("NotifyTextColor", descLabel, "TextColor3")
-
-    -- Barra de Progresso (Rodapé)
-    local barBG = Instance.new("Frame", box)
-    barBG.Name = "ProgressBarBG"
-    barBG.Size = UDim2.new(1, 0, 0, 3) 
-    barBG.AnchorPoint = Vector2.new(0, 1) 
-    barBG.Position = UDim2.new(0, 0, 1, 0)
-    barBG.BackgroundColor3 = Color3.new(1, 1, 1)
-    barBG.BackgroundTransparency = 0.85
-    barBG.BorderSizePixel = 0
-    barBG.ZIndex = 10 
-
-    local progressBar = Instance.new("Frame", barBG)
-    progressBar.Name = "Progress"
-    progressBar.Size = UDim2.new(1, 0, 1, 0)
-    progressBar.BorderSizePixel = 0
-    RegisterThemeItem("AccentColor", progressBar, "BackgroundColor3")
-
-    -- === 4. ANIMAÇÕES ===
-    local animSpeed = DESIGN.AnimationSpeed or 0.25
-    local tweenInfo = TweenInfo.new(animSpeed, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
-    
-    TweenService:Create(box, tweenInfo, { 
-        Position = UDim2.new(0, 0, 0, 0),
-        GroupTransparency = 0 
-    }):Play()
-    
-    local barTween = TweenService:Create(progressBar, TweenInfo.new(Duration, Enum.EasingStyle.Linear), { Size = UDim2.new(0, 0, 1, 0) })
-    barTween:Play()
-
-    task.delay(Duration, function()
-        if box and box.Parent then
-            local fadeOut = TweenService:Create(box, tweenInfo, { 
-                Position = UDim2.new(1.5, 0, 0, 0),
-                GroupTransparency = 1 
-            })
-            fadeOut:Play()
-            fadeOut.Completed:Connect(function() box:Destroy() end)
-        end
-    end)
-
-    return { _instance = box }
-end
-
 function Tekscripts:CreateLabel(tab, options)
     assert(type(tab) == "table" and tab.Container, "Objeto de Aba inválido")
     assert(type(options) == "table" and type(options.Title) == "string", "Opções inválidas")
@@ -6073,290 +5831,229 @@ function Tekscripts:CreateLabel(tab, options)
     return component
 end
 
-function Tekscripts:CreateToggle(tab: any, options: { Text: string, Desc: string?, Callback: (state: boolean) -> (), Type: "Toggle" | "CheckBox" | nil })
-    -- Melhoria 1: ProteÃ§Ã£o e ValidaÃ§Ã£o de Argumentos mais explÃ­citas
-    assert(type(tab) == "table" and tab.Container, "Invalid Tab object provided to CreateToggle: 'tab' must be a table with a 'Container' instance.")
-    assert(type(options) == "table" and type(options.Text) == "string", "Invalid arguments for CreateToggle: 'options' must be a table with a string 'Text'.")
-    assert(options.Callback == nil or typeof(options.Callback) == "function", "Invalid arguments for CreateToggle: 'Callback' must be a function or nil.")
-    assert(options.Type == nil or (options.Type == "Toggle" or options.Type == "CheckBox"), "Invalid arguments for CreateToggle: 'Type' must be 'Toggle', 'CheckBox', or nil.")
+function Tekscripts:CreateDivider(tab, options)
+    assert(type(tab) == "table" and tab.Container, "Invalid Tab object provided to CreateDividerBox")
 
-    local TweenService = game:GetService("TweenService")
-    local TextService = game:GetService("TextService")
-      
-    local componentType = options.Type and string.lower(options.Type) == "checkbox" and "CheckBox" or "Toggle"
+    local text = options and options.Text or "Título"
+    local height = options and options.Height or 28
+    local boxColor = options and options.Color or DESIGN.ComponentBackground
+    local txtColor = options and options.TextColor or DESIGN.ComponentTextColor
 
-    local padding = 6
-    local descMinHeight = 18   
-    local descHeight = 0 -- Altura da Ã¡rea de descriÃ§Ã£o (TextLabel + padding)
-      
-    if options.Desc then
-        local textSize = TextService:GetTextSize(
-            options.Desc,   
-            14,   
-            Enum.Font.Roboto,   
-            Vector2.new(tab.Container.AbsoluteSize.X * 0.7 - 10, 1000)
-        )
-        -- Calcula o tamanho do conteÃºdo, arredondando para o mÃºltiplo de descMinHeight mais prÃ³ximo
-        local contentHeight = math.ceil(textSize.Y / descMinHeight) * descMinHeight
-        descHeight = contentHeight + padding
-    end
-      
-    local totalHeight = DESIGN.ComponentHeight + descHeight
-      
-    -- Melhoria 2: LÃ³gica de cÃ¡lculo de altura refinada (garante no mÃ­nimo 2 linhas de descriÃ§Ã£o)
-    if options.Desc then
-        local minTotalHeight = DESIGN.ComponentHeight + descMinHeight * 2
-        totalHeight = math.max(totalHeight, minTotalHeight)
-    end
-      
-    -- Calcula a altura final do TextLabel da descriÃ§Ã£o, garantindo que ele preencha o espaÃ§o restante
-    local finalDescLabelHeight = totalHeight - DESIGN.ComponentHeight - padding   
-
-    local outerBox = Instance.new("Frame")
-    outerBox.Size = UDim2.new(1, 0, 0, totalHeight)
-    RegisterThemeItem("ComponentBackground", outerBox, "BackgroundColor3")
-    outerBox.BackgroundColor3 = DESIGN.ComponentBackground
-    outerBox.BackgroundTransparency = DESIGN.TabContainerTransparency   
-    outerBox.BorderSizePixel = 0
-    outerBox.Parent = tab.Container
-    addRoundedCorners(outerBox, DESIGN.CornerRadius)
-
+    -- CONTAINER COMPATÍVEL COM UIListLayout
     local container = Instance.new("Frame")
-    container.Size = UDim2.new(1, -DESIGN.ComponentPadding*2, 1, 0)
-    container.Position = UDim2.new(0, DESIGN.ComponentPadding, 0, 0)
+    container.Name = "DividerBox"
     container.BackgroundTransparency = 1
-    container.Parent = outerBox
-      
-    local listLayout = Instance.new("UIListLayout")
-    -- ALTERAÃ‡ÃƒO AQUI: Define um padding negativo para aproximar os elementos
-    listLayout.Padding = UDim.new(0, -4) -- Ajuste este valor (-4) se precisar de mais ou menos proximidade
-    listLayout.HorizontalAlignment = Enum.HorizontalAlignment.Left
-    listLayout.VerticalAlignment = Enum.VerticalAlignment.Top
-    listLayout.Parent = container
+    container.Size = UDim2.new(1, 0, 0, height + 10)
 
+    -- BOX CENTRAL
+    local box = Instance.new("Frame")
+    box.Name = "Box"
+    RegisterThemeItem("ComponentBackground", box, "BackgroundColor3")
+    box.BackgroundColor3 = boxColor
+    box.BorderSizePixel = 0
+    box.Size = UDim2.new(1, -20, 0, height) -- Margens laterais de 10px
+    box.Position = UDim2.new(0, 10, 0, 5)
+    box.ClipsDescendants = true -- Impede que qualquer coisa vaze visualmente do box
+    box.Parent = container
+
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, DESIGN.CornerRadius)
+    corner.Parent = box
+
+    -- PADDING INTERNO (Evita o texto colado nas bordas)
+    local padding = Instance.new("UIPadding")
+    padding.PaddingLeft = UDim.new(0, 10)
+    padding.PaddingRight = UDim.new(0, 10)
+    padding.Parent = box
+
+    -- TEXTO CENTRAL
     local label = Instance.new("TextLabel")
-    label.Text = options.Text
-    label.Size = UDim2.new(0.7, -10, 0, DESIGN.ComponentHeight)
+    label.Name = "Label"
     label.BackgroundTransparency = 1
+    label.Text = text
+    label.Font = Enum.Font.GothamBold
+    label.TextSize = 15
+    label.TextScaled = true -- Faz o texto diminuir se for muito grande
+    label.TextXAlignment = Enum.TextXAlignment.Center
+    label.TextYAlignment = Enum.TextYAlignment.Center
     RegisterThemeItem("ComponentTextColor", label, "TextColor3")
-    label.TextColor3 = DESIGN.ComponentTextColor
-    label.Font = Enum.Font.Roboto
-    label.TextScaled = false
-    label.TextSize = 16
-    label.TextXAlignment = Enum.TextXAlignment.Left
-    label.Parent = container
+    label.TextColor3 = txtColor
+    label.Size = UDim2.new(1, 0, 1, 0)
+    label.ZIndex = 2 -- Garante que fique acima de qualquer fundo ou linha
+    label.Parent = box
 
-    local descLabel  
-    if options.Desc then
-        descLabel = Instance.new("TextLabel")
-        descLabel.Text = options.Desc
-        -- Usa a altura calculada final, que respeita o mÃ­nimo imposto
-        descLabel.Size = UDim2.new(0.7, -10, 0, finalDescLabelHeight)   
-        descLabel.BackgroundTransparency = 1
-        descLabel.TextColor3 = Color3.fromRGB(160, 160, 160)
-        descLabel.Font = Enum.Font.Roboto
-        descLabel.TextScaled = false
-        descLabel.TextSize = 14
-        descLabel.TextXAlignment = Enum.TextXAlignment.Left
-        descLabel.TextWrapped = true
-        descLabel.Parent = container
-    end
+    -- LIMITADOR DE TAMANHO DE TEXTO
+    -- Garante que o texto não fique gigante (máximo 15) mas possa diminuir
+    local sizeConstraint = Instance.new("UITextSizeConstraint")
+    sizeConstraint.MaxTextSize = 15
+    sizeConstraint.MinTextSize = 8
+    sizeConstraint.Parent = label
 
-    local controlSize = componentType == "CheckBox" and Vector2.new(24, 24) or Vector2.new(50, 24)
-    local controlCornerRadius = componentType == "CheckBox" and 2 or 100
-
-    local control = Instance.new("TextButton")
-    control.Size = UDim2.new(0, controlSize.X, 0, controlSize.Y)
-    control.Position = UDim2.new(1, -controlSize.X - DESIGN.ComponentPadding, 0.5, -controlSize.Y/2)   
-    RegisterThemeItem("InactiveToggleColor", control, "BackgroundColor3")
-    control.BackgroundColor3 = DESIGN.InactiveToggleColor
-    control.Text = ""
-    control.AutoButtonColor = false
-    control.ClipsDescendants = true
-    control.Parent = outerBox
-    addRoundedCorners(control, controlCornerRadius)
-      
-    local knob  
-    if componentType == "Toggle" then
-        knob = Instance.new("Frame")
-        knob.Size = UDim2.new(0, 20, 0, 20)
-        knob.Position = UDim2.new(0, 2, 0, 2)
-        knob.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-        knob.Parent = control
-        addRoundedCorners(knob, 100)
-    else   
-        knob = Instance.new("TextLabel")
-        knob.Text = "âœ”"
-        knob.Size = UDim2.new(1, 0, 1, 0)
-        knob.BackgroundTransparency = 1
-        knob.TextColor3 = Color3.fromRGB(255, 255, 255)
-        knob.Font = Enum.Font.Roboto
-        knob.TextScaled = true
-        knob.TextSize = 24   
-        knob.TextWrapped = true
-        knob.Visible = false   
-        knob.Parent = control
-    end
-
-    local errorIndicator = Instance.new("Frame")
-    errorIndicator.Size = UDim2.new(0, 8, 0, 8)
-    errorIndicator.Position = UDim2.new(1, -10, 0, 2)
-    errorIndicator.BackgroundColor3 = Color3.fromRGB(255, 60, 60)
-    errorIndicator.Visible = false
-    errorIndicator.Parent = control
-    addRoundedCorners(errorIndicator, 100)
-
-    local state = false
-    local locked = false
-    local inError = false
-    local connections = {}
-
-    local function animateControl(newState)
-        if not control or not knob then return end
-          
-        local activeColor = inError and Color3.fromRGB(255,60,60) or DESIGN.ActiveToggleColor
-        local inactiveColor = inError and Color3.fromRGB(255,60,60) or DESIGN.InactiveToggleColor
-          
-        TweenService:Create(control, TweenInfo.new(0.25, Enum.EasingStyle.Quad), {
-            BackgroundColor3 = newState and activeColor or inactiveColor
-        }):Play()
-
-        if componentType == "Toggle" then
-            TweenService:Create(knob, TweenInfo.new(0.25, Enum.EasingStyle.Quad), {
-                Position = newState and UDim2.new(1, -22, 0, 2) or UDim2.new(0, 2, 0, 2)
-            }):Play()
-        else
-            knob.Visible = newState
-            if newState then
-                TweenService:Create(control, TweenInfo.new(0.25, Enum.EasingStyle.Quad), {
-                    BackgroundColor3 = activeColor
-                }):Play()
-            else
-                TweenService:Create(control, TweenInfo.new(0.25, Enum.EasingStyle.Quad), {
-                    BackgroundColor3 = inactiveColor
-                }):Play()
-            end
-        end
-    end
-
-    local function setError(isError: boolean)
-        inError = isError
-        errorIndicator.Visible = isError
-        animateControl(state) -- Chama animateControl para atualizar a cor do controle
-    end
-
-    local function pulseError()
-        setError(true)
-        task.delay(0.5, function()
-            -- Verifica se o erro nÃ£o foi redefinido manualmente enquanto espera
-            if inError then
-                setError(false)
-            end
-        end)
-    end
-
-    local function toggle(newState, skipCallback)
-        if locked then return end
-        state = newState
-        animateControl(state)
-        if not skipCallback and typeof(options.Callback) == "function" then
-            local ok, err = pcall(function() options.Callback(state) end)
-            if not ok then
-                warn("[Toggle/CheckBox Error] ", err)
-                pulseError()
-            end
-        end
-    end
-
-    connections.Click = control.MouseButton1Click:Connect(function()
-        toggle(not state)
-    end)
-
-    -- Melhoria 5: LÃ³gica de Hover mais limpa e concisa
-    connections.Enter = control.MouseEnter:Connect(function()
-        if not locked then
-            local hoverColor = DESIGN.ComponentHoverColor
-            if inError then
-                hoverColor = Color3.fromRGB(255, 60, 60)
-            elseif state then
-                -- MantÃ©m a cor ativa se jÃ¡ estiver ativo
-                hoverColor = DESIGN.ActiveToggleColor   
-            else
-                -- Usa a cor de hover do componente se estiver inativo
-                hoverColor = DESIGN.ComponentHoverColor
-            end
-
-            TweenService:Create(control, TweenInfo.new(0.15, Enum.EasingStyle.Quad), {
-                BackgroundColor3 = hoverColor
-            }):Play()
-        end
-    end)
-      
-    connections.Leave = control.MouseLeave:Connect(function()
-        if not locked then
-            animateControl(state) -- Retorna ao estado normal (ativo ou inativo/erro)
-        end
-    end)
-
-    local publicApi = {
-        _instance = outerBox,
-        _connections = connections,
-        -- Adicionando o mÃ©todo para forÃ§ar a reanimaÃ§Ã£o apÃ³s uma troca de tema
-        _reanimate = function() animateControl(state) end   
+    -- API
+    local api = {
+        _instance = container,
+        _box = box,
+        _label = label,
     }
 
-    function publicApi:SetState(newState: boolean) toggle(newState, true) end
-    function publicApi:GetState(): boolean return state end
-    function publicApi:Toggle() toggle(not state) end
-    function publicApi:SetText(newText: string) if label then label.Text = newText end end
-    function publicApi:SetDesc(newDesc: string)   
-        if descLabel then   
-            descLabel.Text = newDesc   
-        end   
-    end
-    function publicApi:SetCallback(newCallback)
-        if typeof(newCallback) == "function" then options.Callback = newCallback end
-    end
-    function publicApi:SetLocked(isLocked: boolean)
-        locked = isLocked
-        control.AutoButtonColor = not locked
-        animateControl(state)
-    end
-    -- Melhoria 4: Adiciona mÃ©todos de erro ao API pÃºblico
-    function publicApi:SetError(isError: boolean) setError(isError) end
-    function publicApi:PulseError() pulseError() end
-      
-    function publicApi:Update(newOptions: { Text: string?, Desc: string?, State: boolean? })
-        if newOptions.Text then publicApi:SetText(newOptions.Text) end
-        if newOptions.Desc then publicApi:SetDesc(newOptions.Desc) end
-        if newOptions.State ~= nil then toggle(newOptions.State) end
+    function api:SetText(newText)
+        label.Text = newText
     end
 
-    -- Melhoria 3: Limpeza completa com remoÃ§Ã£o da lista de componentes
-    function publicApi:Destroy()
-        -- Desconecta eventos
-        for _, c in pairs(publicApi._connections) do
-            if c and c.Connected then c:Disconnect() end
+    function api:SetColor(newColor)
+        box.BackgroundColor3 = newColor
+    end
+
+    function api:SetTextColor(newColor)
+        label.TextColor3 = newColor
+    end
+
+    function api:Destroy()
+        if container then
+            container:Destroy()
         end
+    end
 
-        -- Remove o componente da lista da tab (importante para evitar memory leaks na lista)
-        for i, comp in ipairs(tab.Components) do   
-            if comp == publicApi then
-                table.remove(tab.Components, i)
-                break
+    -- REGISTRAR COMPONENTE NA TAB
+    table.insert(tab.Components, api)
+    container.Parent = tab.Container
+
+    return api
+end
+
+
+function Tekscripts:Notify(options)
+    -- === 1. PARÂMETROS E CONFIGURAÇÕES ===
+    local Title = options.Title or options.Text or "Notificação"
+    local Desc = options.Desc or "Sem descrição."
+    local Duration = options.Duration or 5 
+    local IconID = options.Icon
+    local PosMode = options.Position or "Below" -- "Above" ou "Below"
+    
+    local TweenService = game:GetService("TweenService")
+    local LocalPlayer = game:GetService("Players").LocalPlayer
+    local Camera = workspace.CurrentCamera
+    
+    -- Ajustes de Compactação (Mobile vs PC)
+    local isSmallScreen = Camera.ViewportSize.X < 600
+    local maxWidth = isSmallScreen and 230 or 270
+    local textSizeTitle = isSmallScreen and 13 or 14
+    local textSizeDesc = isSmallScreen and 11 or 12
+
+    -- === 2. HOLDER DINÂMICO ===
+    local NotificationsHolder = (function()
+        local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
+        local container = PlayerGui:FindFirstChild("TekScriptsNotifications_" .. PosMode)
+        
+        if not container then
+            container = Instance.new("ScreenGui", PlayerGui)
+            container.Name = "TekScriptsNotifications_" .. PosMode
+            container.IgnoreGuiInset = true
+            container.DisplayOrder = 2147483647 
+            
+            local holder = Instance.new("Frame", container)
+            holder.Name = "Holder"
+            holder.BackgroundTransparency = 1
+            
+            -- Lógica de Posicionamento Vertical
+            if PosMode == "Above" then
+                holder.AnchorPoint = Vector2.new(1, 0)
+                holder.Position = UDim2.new(1, -15, 0, 50) -- Topo Direito
+            else
+                holder.AnchorPoint = Vector2.new(1, 1)
+                holder.Position = UDim2.new(1, -15, 1, -15) -- Baixo Direito
             end
+            
+            holder.Size = UDim2.new(0, maxWidth, 0.8, 0)
+            
+            local layout = Instance.new("UIListLayout", holder)
+            -- Se for Above, as novas aparecem em cima. Se for Below, embaixo.
+            layout.VerticalAlignment = (PosMode == "Above") and Enum.VerticalAlignment.Top or Enum.VerticalAlignment.Bottom
+            layout.HorizontalAlignment = Enum.HorizontalAlignment.Right
+            layout.Padding = UDim.new(0, 8)
+            -- SortOrder garante que a ordem de criação dite a posição
+            layout.SortOrder = Enum.SortOrder.Name 
         end
+        return container.Holder
+    end)()
 
-        -- DestrÃ³i a instÃ¢ncia
-        if publicApi._instance then
-            publicApi._instance:Destroy()
-            publicApi._instance = nil
+    -- === 3. CONSTRUÇÃO DO CARD ===
+    local box = Instance.new("CanvasGroup")
+    -- Nomeamos com tick() para o UIListLayout organizar por ordem de tempo
+    box.Name = tostring(tick())
+    box.Size = UDim2.new(1, 0, 0, 0)
+    box.AutomaticSize = Enum.AutomaticSize.Y
+    box.Position = UDim2.new(1.2, 0, 0, 0) 
+    box.GroupTransparency = 1 
+    box.Parent = NotificationsHolder
+    
+    RegisterThemeItem("NotifyBackground", box, "BackgroundColor3")
+    Instance.new("UICorner", box).CornerRadius = UDim.new(0, 6)
+
+    -- Borda sutil (Stroke)
+    local stroke = Instance.new("UIStroke", box)
+    stroke.Transparency = 0.85
+    RegisterThemeItem("AccentColor", stroke, "Color")
+
+    local contentFrame = Instance.new("Frame", box)
+    contentFrame.Size = UDim2.new(1, 0, 0, 0)
+    contentFrame.AutomaticSize = Enum.AutomaticSize.Y
+    contentFrame.BackgroundTransparency = 1
+    
+    local padding = Instance.new("UIPadding", contentFrame)
+    padding.PaddingTop = UDim.new(0, 8)
+    padding.PaddingBottom = UDim.new(0, 12)
+    padding.PaddingLeft = UDim.new(0, 10)
+    padding.PaddingRight = UDim.new(0, 10)
+
+    -- Conteúdo (Título + Desc)
+    local titleLabel = Instance.new("TextLabel", contentFrame)
+    titleLabel.Size = UDim2.new(1, 0, 0, 18)
+    titleLabel.Text = Title
+    titleLabel.Font = Enum.Font.GothamBold
+    titleLabel.TextSize = textSizeTitle
+    titleLabel.TextXAlignment = Enum.TextXAlignment.Left
+    titleLabel.BackgroundTransparency = 1
+    RegisterThemeItem("TitleColor", titleLabel, "TextColor3")
+
+    local descLabel = Instance.new("TextLabel", contentFrame)
+    descLabel.Position = UDim2.new(0, 0, 0, 20)
+    descLabel.Size = UDim2.new(1, 0, 0, 0)
+    descLabel.AutomaticSize = Enum.AutomaticSize.Y
+    descLabel.Text = Desc
+    descLabel.Font = Enum.Font.Gotham
+    descLabel.TextSize = textSizeDesc
+    descLabel.TextWrapped = true
+    descLabel.TextXAlignment = Enum.TextXAlignment.Left
+    descLabel.BackgroundTransparency = 1
+    RegisterThemeItem("NotifyTextColor", descLabel, "TextColor3")
+
+    -- Barra de Progresso
+    local barBG = Instance.new("Frame", box)
+    barBG.Size = UDim2.new(1, 0, 0, 2)
+    barBG.Position = UDim2.new(0, 0, 1, -2)
+    barBG.BackgroundTransparency = 0.9
+    
+    local progressBar = Instance.new("Frame", barBG)
+    progressBar.Size = UDim2.new(1, 0, 1, 0)
+    RegisterThemeItem("AccentColor", progressBar, "BackgroundColor3")
+
+    -- === 4. ANIMAÇÕES ===
+    local tweenInfo = TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
+    
+    TweenService:Create(box, tweenInfo, { Position = UDim2.new(0, 0, 0, 0), GroupTransparency = 0 }):Play()
+    TweenService:Create(progressBar, TweenInfo.new(Duration, Enum.EasingStyle.Linear), { Size = UDim2.new(0, 0, 1, 0) }):Play()
+
+    task.delay(Duration, function()
+        if box and box.Parent then
+            local fadeOut = TweenService:Create(box, tweenInfo, { 
+                Position = UDim2.new(1.2, 0, 0, 0),
+                GroupTransparency = 1 
+            })
+            fadeOut:Play()
+            fadeOut.Completed:Connect(function() box:Destroy() end)
         end
-        publicApi._connections = nil
-    end
-
-    table.insert(tab.Components, publicApi)
-    return publicApi
+    end)
 end
 
 return Tekscripts
