@@ -80,7 +80,7 @@ Tekscripts:SetActiveTab(MinhaAba)
 ### 🚀 Exemplo de Uso
 ```lua
 -- > Exemplo básico de um Toggle de velocidade
-local meuToggle = Tekscripts:CreateToggle(minhaAba, {
+local meuToggle = Tekscripts:CreateToggle(MinhaAba, {
     Text = "MeuToggle Title", -- > String
     Desc = "MeuToggle Description", -- > String
     Type = "Toggle", -- > Toggle ou CheckBox
