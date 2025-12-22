@@ -5921,6 +5921,232 @@ function Tekscripts:CreateDivider(tab, options)
     return api
 end
 
+function Tekscripts:CreateToggle(tab: any, options: { Text: string, Desc: string?, Callback: (state: boolean) -> (), Type: "Toggle" | "CheckBox" | nil, FeedbackDebug: boolean? })
+    -- Validação robusta de entrada
+    assert(type(tab) == "table" and tab.Container, "Invalid Tab object")
+    assert(type(options.Text) == "string", "Toggle text is required")
+    
+    local TweenService = game:GetService("TweenService")
+    local componentType = options.Type and string.lower(options.Type) == "checkbox" and "CheckBox" or "Toggle"
+    
+    -- Se FeedbackDebug não for definido, o padrão é true (mostrar o erro)
+    local useFeedback = (options.FeedbackDebug == nil) and true or options.FeedbackDebug
+
+    -- === 1. ESTRUTURA PRINCIPAL ===
+    local outerBox = Instance.new("Frame")
+    outerBox.Name = "Toggle_" .. options.Text
+    outerBox.Size = UDim2.new(1, 0, 0, 0)
+    outerBox.AutomaticSize = Enum.AutomaticSize.Y 
+    outerBox.BackgroundColor3 = DESIGN.ComponentBackground
+    outerBox.BackgroundTransparency = DESIGN.TabContainerTransparency
+    outerBox.BorderSizePixel = 0
+    outerBox.Parent = tab.Container
+    addRoundedCorners(outerBox, DESIGN.CornerRadius)
+    RegisterThemeItem("ComponentBackground", outerBox, "BackgroundColor3")
+
+    -- Borda de Erro (UIStroke)
+    local borderStroke = Instance.new("UIStroke")
+    borderStroke.Thickness = 1.6
+    borderStroke.Color = Color3.fromRGB(255, 60, 60)
+    borderStroke.Transparency = 1 
+    borderStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    borderStroke.Parent = outerBox
+
+    -- Indicador de Erro (Bolinha superior esquerda)
+    local errorDot = Instance.new("Frame")
+    errorDot.Name = "ErrorIndicator"
+    errorDot.Size = UDim2.new(0, 6, 0, 6)
+    errorDot.Position = UDim2.new(0, 4, 0, 4)
+    errorDot.BackgroundColor3 = Color3.fromRGB(255, 60, 60)
+    errorDot.BackgroundTransparency = 1 
+    errorDot.BorderSizePixel = 0
+    errorDot.Parent = outerBox
+    addRoundedCorners(errorDot, 100)
+
+    local mainPadding = Instance.new("UIPadding")
+    mainPadding.PaddingTop = UDim.new(0, 8)
+    mainPadding.PaddingBottom = UDim.new(0, 8)
+    mainPadding.PaddingLeft = UDim.new(0, DESIGN.ComponentPadding)
+    mainPadding.PaddingRight = UDim.new(0, DESIGN.ComponentPadding)
+    mainPadding.Parent = outerBox
+
+    -- === 2. TEXTOS ===
+    local textContainer = Instance.new("Frame")
+    textContainer.Size = UDim2.new(1, -60, 0, 0) 
+    textContainer.AutomaticSize = Enum.AutomaticSize.Y
+    textContainer.BackgroundTransparency = 1
+    textContainer.Parent = outerBox
+    
+    local listLayout = Instance.new("UIListLayout")
+    listLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    listLayout.Parent = textContainer
+
+    local label = Instance.new("TextLabel")
+    label.Text = options.Text
+    label.Size = UDim2.new(1, 0, 0, 0)
+    label.AutomaticSize = Enum.AutomaticSize.Y
+    label.BackgroundTransparency = 1
+    label.TextColor3 = DESIGN.ComponentTextColor
+    label.Font = Enum.Font.SourceSansBold
+    label.TextSize = 16
+    label.TextXAlignment = Enum.TextXAlignment.Left
+    label.LayoutOrder = 1
+    label.Parent = textContainer
+    RegisterThemeItem("ComponentTextColor", label, "TextColor3")
+
+    local descLabel
+    if options.Desc and options.Desc ~= "" then
+        descLabel = Instance.new("TextLabel")
+        descLabel.Text = options.Desc
+        descLabel.Size = UDim2.new(1, 0, 0, 0)
+        descLabel.AutomaticSize = Enum.AutomaticSize.Y
+        descLabel.BackgroundTransparency = 1
+        descLabel.TextColor3 = Color3.fromRGB(180, 180, 180)
+        descLabel.Font = Enum.Font.SourceSans
+        descLabel.TextSize = 14
+        descLabel.TextWrapped = true
+        descLabel.TextXAlignment = Enum.TextXAlignment.Left
+        descLabel.LayoutOrder = 2
+        descLabel.Parent = textContainer
+    end
+
+    -- === 3. CONTROLE VISUAL ===
+    local controlSize = componentType == "CheckBox" and Vector2.new(22, 22) or Vector2.new(38, 18)
+    local control = Instance.new("TextButton")
+    control.Size = UDim2.new(0, controlSize.X, 0, controlSize.Y)
+    control.Position = UDim2.new(1, 0, 0.5, 0)
+    control.AnchorPoint = Vector2.new(1, 0.5)
+    control.BackgroundColor3 = DESIGN.InactiveToggleColor
+    control.Text = ""
+    control.AutoButtonColor = false
+    control.Parent = outerBox
+    addRoundedCorners(control, componentType == "CheckBox" and 4 or 100)
+    RegisterThemeItem("InactiveToggleColor", control, "BackgroundColor3")
+
+    local knob
+    if componentType == "Toggle" then
+        knob = Instance.new("Frame")
+        knob.Size = UDim2.new(0, 14, 0, 14)
+        knob.Position = UDim2.new(0, 2, 0.5, -7)
+        knob.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        knob.Parent = control
+        addRoundedCorners(knob, 100)
+    else
+        knob = Instance.new("TextLabel")
+        knob.Text = "✔"
+        knob.Size = UDim2.new(1, 0, 1, 0)
+        knob.BackgroundTransparency = 1
+        knob.TextColor3 = Color3.fromRGB(255, 255, 255)
+        knob.TextSize = 14
+        knob.Visible = false
+        knob.Parent = control
+    end
+
+    -- === 4. LÓGICA E SEGURANÇA ===
+    local state = false
+    local isLocked = false
+    local isBlockedByError = false
+    local connections = {}
+
+    local function animateControl(newState)
+        local targetColor = newState and DESIGN.ActiveToggleColor or DESIGN.InactiveToggleColor
+        local tInfo = TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+        
+        TweenService:Create(control, tInfo, {
+            BackgroundColor3 = targetColor
+        }):Play()
+
+        if componentType == "Toggle" and knob then
+            local targetPos = newState and UDim2.new(1, -16, 0.5, -7) or UDim2.new(0, 2, 0.5, -7)
+            TweenService:Create(knob, tInfo, {
+                Position = targetPos
+            }):Play()
+        elseif componentType == "CheckBox" and knob then
+            knob.Visible = newState
+        end
+    end
+
+    local function pulseError()
+        if not useFeedback then return end -- Só executa se FeedbackDebug for true
+        
+        isBlockedByError = true
+        
+        -- Feedback Visual Instantâneo
+        borderStroke.Transparency = 0
+        errorDot.BackgroundTransparency = 0
+        
+        -- Tremor de 0.3 segundos
+        local originalPos = outerBox.Position
+        task.spawn(function()
+            for i = 1, 6 do
+                outerBox.Position = originalPos + UDim2.new(0, (i % 2 == 0 and 2 or -2), 0, 0)
+                task.wait(0.05)
+            end
+            outerBox.Position = originalPos
+        end)
+
+        -- Esconde tudo em 1 segundo total (0.7s após o tremor)
+        task.delay(0.7, function()
+            isBlockedByError = false
+            local fadeInfo = TweenInfo.new(0.3, Enum.EasingStyle.Linear)
+            TweenService:Create(borderStroke, fadeInfo, { Transparency = 1 }):Play()
+            TweenService:Create(errorDot, fadeInfo, { BackgroundTransparency = 1 }):Play()
+        end)
+    end
+
+    local function toggle(newState, skipCallback)
+        if isLocked or isBlockedByError then return end
+        
+        state = newState
+        animateControl(state)
+        
+        if not skipCallback and options.Callback then
+            local success, result = pcall(function()
+                options.Callback(state)
+            end)
+            
+            if not success then
+                pulseError()
+                -- Reverte estado visual
+                state = not newState
+                task.delay(0.1, function() animateControl(state) end)
+            end
+        end
+    end
+
+    connections.Click = control.MouseButton1Click:Connect(function()
+        toggle(not state)
+    end)
+
+    -- === 5. API PÚBLICA ===
+    local publicApi = {
+        _instance = outerBox,
+        _connections = connections
+    }
+
+    function publicApi:SetState(s)
+        state = s
+        animateControl(s)
+    end
+
+    function publicApi:GetState() return state end
+    function publicApi:SetLocked(l) isLocked = l end
+    function publicApi:PulseError() pulseError() end
+    function publicApi:SetBlocked(b) isBlockedByError = b end
+
+    function publicApi:Destroy()
+        for _, c in pairs(connections) do c:Disconnect() end
+        outerBox:Destroy()
+        if tab.Components then
+            for i, comp in ipairs(tab.Components) do
+                if comp == publicApi then table.remove(tab.Components, i) break end
+            end
+        end
+    end
+
+    table.insert(tab.Components, publicApi)
+    return publicApi
+end
 
 function Tekscripts:Notify(options)
     -- === 1. PARÂMETROS E CONFIGURAÇÕES ===
